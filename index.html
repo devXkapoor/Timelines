@@ -6,12 +6,11 @@
 <title>The Long Road to Thinking Machines</title>
 </head>
 <body>
-<main>
 
 
 <div>
 <div>
-<p>A Complete History · From First Principles</p>
+<div>A Complete History · From First Principles</div>
 <h1>The Long Road to<br/><em>Thinking Machines</em></h1>
 <p>How humanity moved from counting on fingers, to discovering neurons, to building systems that
         learn — tracing every foundational idea across mathematics, biology, statistics, and computer science that made
@@ -21,12 +20,12 @@
 <div>
 <div>Eras Covered</div>
 <ul>
-<li><a><span></span>Foundations: Math &amp; Logic</a></li>
-<li><a><span></span>The Brain &amp; Statistics</a></li>
-<li><a><span></span>Birth of AI (1940s–60s)</a></li>
-<li><a><span></span>AI Winters &amp; Revivals</a></li>
-<li><a><span></span>Deep Learning Revolution</a></li>
-<li><a><span></span>Modern Era &amp; Agents</a></li>
+<li><a href="#era1"><span></span>Foundations: Math &amp; Logic</a></li>
+<li><a href="#era2"><span></span>The Brain &amp; Statistics</a></li>
+<li><a href="#era3"><span></span>Birth of AI (1940s–60s)</a></li>
+<li><a href="#era4"><span></span>AI Winters &amp; Revivals</a></li>
+<li><a href="#era5"><span></span>Deep Learning Revolution</a></li>
+<li><a href="#era6"><span></span>Modern Era &amp; Agents</a></li>
 </ul>
 </div>
 <!-- ═══════════════════════════════════════════════ -->
@@ -35,16 +34,16 @@
 <div>
 <div>
 <div></div>
-<h2>Era I · Mathematical &amp; Logical Foundations · ~300 BCE – 1940s</h2>
+<div>Era I · Mathematical &amp; Logical Foundations · ~300 BCE – 1940s</div>
 <div></div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>~300 BCE</p>
-<h3>What is Logic? — Aristotle's Rules of Reasoning</h3>
-<p>The first formal system for determining if an argument is valid</p>
+<div>~300 BCE</div>
+<div>What is Logic? — Aristotle's Rules of Reasoning</div>
+<div>The first formal system for determining if an argument is valid</div>
 </div>
 
 </div>
@@ -58,10 +57,10 @@
 <h3>What He Built</h3>
 <p>Aristotle created <strong>syllogistic logic</strong> — a system of argument patterns called syllogisms. A
             syllogism has two premises and a conclusion:</p>
-<pre>All men are mortal. (Premise 1)
+<div>All men are mortal. (Premise 1)
             Socrates is a man. (Premise 2)
             ─────────────────────────
-            Therefore, Socrates is mortal. (Conclusion)</pre>
+            Therefore, Socrates is mortal. (Conclusion)</div>
 <p>The key insight: if the premises are true and the argument <em>form</em> is valid, the conclusion must be
             true. You can check validity without knowing anything about men, mortality, or Socrates.</p>
 <h3>Vocabulary</h3>
@@ -89,9 +88,9 @@
 <div>
 <div></div>
 <div>
-<p>1600s</p>
-<h3>Probability — Measuring Uncertainty with Numbers</h3>
-<p>Pascal, Fermat, and the mathematics of chance</p>
+<div>1600s</div>
+<div>Probability — Measuring Uncertainty with Numbers</div>
+<div>Pascal, Fermat, and the mathematics of chance</div>
 </div>
 
 </div>
@@ -106,9 +105,9 @@
 <h3>The Core Idea</h3>
 <p>A <strong>probability</strong> is a number between 0 and 1 assigned to an event. 0 means impossible. 1
             means certain. 0.5 means equally likely to happen or not.</p>
-<pre>P(event) = (number of favorable outcomes) / (total possible outcomes)
+<div>P(event) = (number of favorable outcomes) / (total possible outcomes)
 
-            Example: P(rolling a 3 on a die) = 1/6 ≈ 0.167</pre>
+            Example: P(rolling a 3 on a die) = 1/6 ≈ 0.167</div>
 <h3>Vocabulary</h3>
 <div>
 <div><span>Probability</span><span>A numerical
@@ -132,9 +131,9 @@
 <div>
 <div></div>
 <div>
-<p>1763</p>
-<h3>Bayes' Theorem — Updating Beliefs with Evidence</h3>
-<p>The mathematical rule for learning from new information</p>
+<div>1763</div>
+<div>Bayes' Theorem — Updating Beliefs with Evidence</div>
+<div>The mathematical rule for learning from new information</div>
 </div>
 
 </div>
@@ -145,13 +144,13 @@
             given a hypothesis, how do you work backwards to figure out how likely the hypothesis is given the evidence?
           </p>
 <h3>The Theorem</h3>
-<pre>P(Hypothesis | Evidence) = P(Evidence | Hypothesis) × P(Hypothesis)
+<div>P(Hypothesis | Evidence) = P(Evidence | Hypothesis) × P(Hypothesis)
             ─────────────────────────────────────
             P(Evidence)
 
             In plain English:
             "Updated belief" = ("How well hypothesis predicts evidence" × "Prior belief")
-            ÷ "How common this evidence is overall"</pre>
+            ÷ "How common this evidence is overall"</div>
 <h3>A Concrete Example</h3>
 <p>Imagine a medical test for a rare disease. The test is 99% accurate. But the disease only affects 1 in
             10,000 people. If you test positive, what's the probability you actually have the disease?</p>
@@ -174,18 +173,18 @@
                 practice of continually updating probabilities as new evidence arrives, using Bayes' theorem.</span>
 </div>
 </div>
-<blockquote>This is how learning actually works — at its mathematical core. A machine learning model
+<div>This is how learning actually works — at its mathematical core. A machine learning model
             starts with some initial belief (random weights), sees evidence (training data), and updates its beliefs
-            (adjusts weights). Bayes' theorem is the theoretical backbone of this process.</blockquote>
+            (adjusts weights). Bayes' theorem is the theoretical backbone of this process.</div>
 </div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1800s</p>
-<h3>Linear Algebra — The Language of Data</h3>
-<p>Vectors, matrices, and operations on high-dimensional data</p>
+<div>1800s</div>
+<div>Linear Algebra — The Language of Data</div>
+<div>Vectors, matrices, and operations on high-dimensional data</div>
 </div>
 
 </div>
@@ -214,7 +213,7 @@
                 space — hard to visualize, but mathematically well-defined.</span></div>
 </div>
 <h3>Key Operations</h3>
-<pre>Matrix multiplication: combines two matrices into one.
+<div>Matrix multiplication: combines two matrices into one.
             [a b] × [e f] = [ae+bg af+bh]
             [c d] [g h] [ce+dg cf+dh]
 
@@ -224,7 +223,7 @@
             Dot product: multiplies two vectors element-by-element, then sums.
             [1, 2, 3] · [4, 5, 6] = 1×4 + 2×5 + 3×6 = 32
 
-            Used to measure similarity between vectors.</pre>
+            Used to measure similarity between vectors.</div>
 <div>Matrix multiplication is the single most-executed operation in all of deep learning.
             The reason we use GPUs for AI is that GPUs are specialized processors designed to do matrix multiplications
             very fast, in parallel. This is not a software choice — it's the mathematics demanding a specific kind of
@@ -235,9 +234,9 @@
 <div>
 <div></div>
 <div>
-<p>1847</p>
-<h3>Boolean Algebra — Logic Becomes Mathematics</h3>
-<p>George Boole reduces all logical reasoning to algebra with 0s and 1s</p>
+<div>1847</div>
+<div>Boolean Algebra — Logic Becomes Mathematics</div>
+<div>George Boole reduces all logical reasoning to algebra with 0s and 1s</div>
 </div>
 
 </div>
@@ -246,9 +245,9 @@
 <p>George Boole published <em>The Mathematical Analysis of Logic</em> in 1847, proposing something
             extraordinary: the laws of thought are mathematical. Logical statements (true/false) could be represented as
             numbers (1/0), and logical operations (AND, OR, NOT) could be represented as arithmetic.</p>
-<pre>AND: 1 AND 1 = 1, 1 AND 0 = 0, 0 AND 0 = 0
+<div>AND: 1 AND 1 = 1, 1 AND 0 = 0, 0 AND 0 = 0
             OR: 1 OR 0 = 1, 0 OR 0 = 0, 1 OR 1 = 1
-            NOT: NOT 1 = 0, NOT 0 = 1</pre>
+            NOT: NOT 1 = 0, NOT 0 = 1</div>
 <p>This means <em>any logical reasoning process can be described as arithmetic</em>. And arithmetic can be
             mechanized. A hundred years later, engineers would build Boolean logic gates from transistors to make
             computers.</p>
@@ -263,17 +262,17 @@
                 electronic component that implements a Boolean operation. An AND gate outputs electricity only if both
                 inputs carry electricity.</span></div>
 </div>
-<blockquote>You've already built Boolean logic gates from scratch in Nand2Tetris. What you built
-            there was a physical realization of Boole's 1847 mathematics — hardware implementing logical thought.</blockquote>
+<div>You've already built Boolean logic gates from scratch in Nand2Tetris. What you built
+            there was a physical realization of Boole's 1847 mathematics — hardware implementing logical thought.</div>
 </div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1800s</p>
-<h3>Calculus &amp; Derivatives — The Mathematics of Change</h3>
-<p>Newton and Leibniz's tool becomes the engine of learning</p>
+<div>1800s</div>
+<div>Calculus &amp; Derivatives — The Mathematics of Change</div>
+<div>Newton and Leibniz's tool becomes the engine of learning</div>
 </div>
 
 </div>
@@ -285,11 +284,11 @@
 <h3>The Derivative: Rate of Change</h3>
 <p>A derivative tells you: if I change the input to a function by a tiny amount, how much does the output
             change? Geometrically, it's the slope of a curve at a specific point.</p>
-<pre>f(x) = x² (a parabola, bowl-shaped)
+<div>f(x) = x² (a parabola, bowl-shaped)
             f'(x) = 2x (the derivative — the slope at each point x)
 
             At x = 3: slope = 6 (steeply rising)
-            At x = 0: slope = 0 (flat — this is the minimum!)</pre>
+            At x = 0: slope = 0 (flat — this is the minimum!)</div>
 <p>The minimum of a function is where the derivative equals zero — the slope is flat. Machine learning uses
             this to find the model settings that minimize error.</p>
 <h3>Gradient: Derivatives in Multiple Dimensions</h3>
@@ -319,9 +318,9 @@
 <div>
 <div></div>
 <div>
-<p>1805 – 1900s</p>
-<h3>Statistics — Making Sense of Data</h3>
-<p>Gauss, Galton, and Pearson develop tools to find patterns in measurements</p>
+<div>1805 – 1900s</div>
+<div>Statistics — Making Sense of Data</div>
+<div>Gauss, Galton, and Pearson develop tools to find patterns in measurements</div>
 </div>
 
 </div>
@@ -355,19 +354,19 @@
                 a line: find the line where the sum of (squared distances from each data point to the line) is
                 minimized. Still used in ML today.</span></div>
 </div>
-<blockquote>Linear regression — fitting a line to data to make predictions — is the simplest machine
+<div>Linear regression — fitting a line to data to make predictions — is the simplest machine
             learning algorithm. It's 200 years old. Modern neural networks are, in one sense, very deep, non-linear
-            regression.</blockquote>
+            regression.</div>
 </div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1936</p>
-<h3>Turing's Universal Machine — Can Machines Think?</h3>
-<p>Alan Turing formalizes computation and plants the seed of artificial intelligence
-            </p>
+<div>1936</div>
+<div>Turing's Universal Machine — Can Machines Think?</div>
+<div>Alan Turing formalizes computation and plants the seed of artificial intelligence
+            </div>
 </div>
 
 </div>
@@ -415,17 +414,17 @@
 <div>
 <div>
 <div></div>
-<h2>Era II · Biology, the Brain &amp; Statistical Learning · 1800s – 1950s</h2>
+<div>Era II · Biology, the Brain &amp; Statistical Learning · 1800s – 1950s</div>
 <div></div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1800s</p>
-<h3>Discovering the Neuron — How the Brain Actually Works</h3>
-<p>Cajal's drawings reveal the brain is made of individual cells that communicate
-            </p>
+<div>1800s</div>
+<div>Discovering the Neuron — How the Brain Actually Works</div>
+<div>Cajal's drawings reveal the brain is made of individual cells that communicate
+            </div>
 </div>
 
 </div>
@@ -472,9 +471,9 @@
 <div>
 <div></div>
 <div>
-<p>1943</p>
-<h3>McCulloch &amp; Pitts — The First Artificial Neuron</h3>
-<p>A mathematician and a neuroscientist propose that neurons are logic gates</p>
+<div>1943</div>
+<div>McCulloch &amp; Pitts — The First Artificial Neuron</div>
+<div>A mathematician and a neuroscientist propose that neurons are logic gates</div>
 </div>
 
 </div>
@@ -485,13 +484,13 @@
             mathematical model of a neuron can perform logical operations.</p>
 <h3>The McCulloch-Pitts Neuron</h3>
 <p>Their artificial neuron works like this:</p>
-<pre>Inputs: x₁, x₂, x₃ (each is 0 or 1)
+<div>Inputs: x₁, x₂, x₃ (each is 0 or 1)
             Weights: w₁, w₂, w₃ (fixed numbers representing connection strength)
             Threshold: θ (a number)
 
             Step 1: Compute weighted sum = w₁x₁ + w₂x₂ + w₃x₃
             Step 2: If sum ≥ θ, output = 1 (fires)
-            If sum &lt; θ, output=0 (doesn't fire)</pre>
+            If sum &lt; θ, output=0 (doesn't fire)</div>
 <p>By choosing the right weights and threshold, this neuron can implement AND, OR, NOT — all of Boolean
                 logic. And since any computation can be built from Boolean logic, networks of these neurons could
                 theoretically compute anything.</p>
@@ -509,18 +508,18 @@
                     neuron fires (1) or not (0). Later generalized to any function that converts the weighted sum to an
                     output.</span></div>
 </div>
-<blockquote>McCulloch and Pitts had no learning mechanism — the weights were set by hand. Their
+<div>McCulloch and Pitts had no learning mechanism — the weights were set by hand. Their
                 neuron couldn't learn from data. But they established the mathematical template. Everything that
-                followed was about making these neurons <em>learn</em> their own weights.</blockquote>
+                followed was about making these neurons <em>learn</em> their own weights.</div>
 </div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1949</p>
-<h3>Hebbian Learning — "Neurons That Fire Together, Wire Together"</h3>
-<p>Donald Hebb proposes the first biological learning rule</p>
+<div>1949</div>
+<div>Hebbian Learning — "Neurons That Fire Together, Wire Together"</div>
+<div>Donald Hebb proposes the first biological learning rule</div>
 </div>
 
 </div>
@@ -535,14 +534,14 @@
               efficiency, as one of the cells firing B, is increased."</p>
 <p>In plain English: <strong>if two neurons consistently fire at the same time, the connection between them
                 gets stronger.</strong> This is often summarized as "neurons that fire together, wire together."</p>
-<pre>Hebbian update rule:
+<div>Hebbian update rule:
               Δw = η × x × y
 
               where:
               Δw = change in connection weight
               η = learning rate (how fast to learn)
               x = input neuron's activation
-              y = output neuron's activation</pre>
+              y = output neuron's activation</div>
 <div>
 <div><span>Synaptic plasticity</span><span>The
                   ability of synapses to strengthen or weaken over time based on activity. The biological basis of
@@ -565,9 +564,9 @@
 <div>
 <div></div>
 <div>
-<p>1950</p>
-<h3>Information Theory — Measuring Knowledge Itself</h3>
-<p>Claude Shannon quantifies information and defines entropy</p>
+<div>1950</div>
+<div>Information Theory — Measuring Knowledge Itself</div>
+<div>Claude Shannon quantifies information and defines entropy</div>
 </div>
 
 </div>
@@ -579,13 +578,13 @@
 <h3>Entropy: Information as Surprise</h3>
 <p>Shannon defined information as the amount of <em>surprise</em> or <em>uncertainty</em> in a message.
               Predictable things carry little information. Surprising things carry a lot.</p>
-<pre>Entropy H = -Σ p(x) × log₂(p(x))
+<div>Entropy H = -Σ p(x) × log₂(p(x))
 
               If a coin is fair: P(heads) = 0.5, P(tails) = 0.5
               H = -(0.5 × log₂0.5 + 0.5 × log₂0.5) = 1 bit
 
               If coin always lands heads: P(heads) = 1.0
-              H = -(1.0 × log₂1.0) = 0 bits (no surprise, no information)</pre>
+              H = -(1.0 × log₂1.0) = 0 bits (no surprise, no information)</div>
 <h3>Cross-Entropy: Comparing Predictions to Reality</h3>
 <p>A key concept derived from entropy is <strong>cross-entropy</strong>, which measures the difference
               between a predicted probability distribution and the actual distribution. If a model predicts a cat image
@@ -621,16 +620,16 @@
 <div>
 <div>
 <div></div>
-<h2>Era III · Birth of AI &amp; Symbolic Reasoning · 1950s – 1970s</h2>
+<div>Era III · Birth of AI &amp; Symbolic Reasoning · 1950s – 1970s</div>
 <div></div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1956</p>
-<h3>The Dartmouth Conference — AI is Born as a Field</h3>
-<p>A summer workshop coins the term "Artificial Intelligence"</p>
+<div>1956</div>
+<div>The Dartmouth Conference — AI is Born as a Field</div>
+<div>A summer workshop coins the term "Artificial Intelligence"</div>
 </div>
 
 </div>
@@ -661,19 +660,19 @@
                   of exploring possible states or sequences of actions to find a solution. Chess-playing programs search
                   billions of possible board positions.</span></div>
 </div>
-<blockquote>The great debate in AI has always been: symbolic AI (program the rules explicitly) vs.
+<div>The great debate in AI has always been: symbolic AI (program the rules explicitly) vs.
               connectionism/neural networks (let the system learn the rules from data). Modern AI has decisively
               answered: learning from data wins. But symbolic AI dominated for 30 years and produced many real insights.
-            </blockquote>
+            </div>
 </div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1957</p>
-<h3>The Perceptron — The First Learning Machine</h3>
-<p>Frank Rosenblatt builds a machine that can learn to classify patterns</p>
+<div>1957</div>
+<div>The Perceptron — The First Learning Machine</div>
+<div>Frank Rosenblatt builds a machine that can learn to classify patterns</div>
 </div>
 
 </div>
@@ -686,7 +685,7 @@
 <h3>How the Perceptron Learns</h3>
 <p>The perceptron is an artificial neuron with a crucial addition: a <em>learning algorithm</em> that
               automatically adjusts the weights based on mistakes.</p>
-<pre>The Perceptron Learning Algorithm:
+<div>The Perceptron Learning Algorithm:
 
               1. Initialize weights randomly (or to zero)
               2. Show the perceptron a training example (input + correct label)
@@ -694,7 +693,7 @@
               4. If correct: do nothing
               5. If wrong (predicted 0, should be 1): increase weights for active inputs
               If wrong (predicted 1, should be 0): decrease weights for active inputs
-              6. Repeat until no mistakes on training data</pre>
+              6. Repeat until no mistakes on training data</div>
 <p>This is the first algorithm where a machine automatically adjusts its own parameters to improve
               performance. Not programmed explicitly — it <em>learns</em>.</p>
 <div>
@@ -722,9 +721,9 @@
 <div>
 <div></div>
 <div>
-<p>1969</p>
-<h3>Minsky &amp; Papert's Critique — The XOR Problem &amp; First AI Winter</h3>
-<p>A devastating book shows the perceptron cannot solve simple problems</p>
+<div>1969</div>
+<div>Minsky &amp; Papert's Critique — The XOR Problem &amp; First AI Winter</div>
+<div>A devastating book shows the perceptron cannot solve simple problems</div>
 </div>
 
 </div>
@@ -734,7 +733,7 @@
               single-layer perceptron cannot solve the XOR problem — and by extension, many real-world problems.</p>
 <p>The XOR function: output 1 if exactly one of two inputs is 1, else output 0. It's simple, but a single
               perceptron cannot learn it.</p>
-<pre>XOR truth table:
+<div>XOR truth table:
               Input A | Input B | Output
               --------|---------|--------
               0 | 0 | 0
@@ -743,7 +742,7 @@
               1 | 1 | 0
 
               A single straight line CANNOT separate the 1s from the 0s.
-              (This is the "linear separability" constraint.)</pre>
+              (This is the "linear separability" constraint.)</div>
 <p>To solve XOR, you need at least two layers of neurons — a <strong>hidden layer</strong>. But in 1969, no
               one knew how to train a multi-layer network. The perceptron learning algorithm only worked for one layer.
             </p>
@@ -771,9 +770,9 @@
 <div>
 <div></div>
 <div>
-<p>1960s–1980s</p>
-<h3>Expert Systems — Programming Knowledge Explicitly</h3>
-<p>The dominant AI paradigm: encode human expertise as IF-THEN rules</p>
+<div>1960s–1980s</div>
+<div>Expert Systems — Programming Knowledge Explicitly</div>
+<div>The dominant AI paradigm: encode human expertise as IF-THEN rules</div>
 </div>
 
 </div>
@@ -782,10 +781,10 @@
 <p>If machines couldn't learn complex patterns, maybe the solution was to encode human expertise directly.
               Expert systems emerged as the dominant AI approach: interview human experts, write down their
               decision-making rules as IF-THEN statements, and let a computer apply them.</p>
-<pre>Example expert system rules for medical diagnosis:
+<div>Example expert system rules for medical diagnosis:
               IF patient has fever AND cough THEN suspect respiratory infection
               IF suspect respiratory infection AND white blood cell count &gt; 11000 THEN likely bacterial
-              IF likely bacterial THEN recommend antibiotic</pre>
+              IF likely bacterial THEN recommend antibiotic</div>
 <p>MYCIN (1972, Stanford) was an early expert system for diagnosing blood infections that performed at the
               level of human specialists. DENDRAL analyzed chemical compounds. By the 1980s, expert systems were
               generating billions of dollars in commercial value.</p>
@@ -807,9 +806,9 @@
                   fully explain why a move feels right. This kind of knowledge can't be encoded as rules, but can be
                   learned by neural networks.</span></div>
 </div>
-<blockquote>The expert system era established an important lesson: the bottleneck of AI is
+<div>The expert system era established an important lesson: the bottleneck of AI is
               knowledge. The question is: do you encode it by hand (symbolic AI) or let the system extract it from data
-              (machine learning)? Modern AI answers: always the latter, at scale.</blockquote>
+              (machine learning)? Modern AI answers: always the latter, at scale.</div>
 </div>
 </div>
 </div><!-- /era-3 -->
@@ -819,16 +818,16 @@
 <div>
 <div>
 <div></div>
-<h2>Era IV · Backpropagation, Classical ML &amp; Revivals · 1980s – 2010</h2>
+<div>Era IV · Backpropagation, Classical ML &amp; Revivals · 1980s – 2010</div>
 <div></div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>1986</p>
-<h3>Backpropagation — Teaching Multi-Layer Networks to Learn</h3>
-<p>Rumelhart, Hinton &amp; Williams solve the credit assignment problem</p>
+<div>1986</div>
+<div>Backpropagation — Teaching Multi-Layer Networks to Learn</div>
+<div>Rumelhart, Hinton &amp; Williams solve the credit assignment problem</div>
 </div>
 
 </div>
@@ -845,7 +844,7 @@
               depends on the last layer, and the last layer depends on the previous layer, and so on — you can compute
               exactly how much each weight in any layer contributed to the final error, by multiplying derivatives along
               the chain.</p>
-<pre>Forward pass (prediction):
+<div>Forward pass (prediction):
               input → layer 1 → layer 2 → layer 3 → output → compute error
 
               Backward pass (learning):
@@ -854,7 +853,7 @@
               At each layer, apply chain rule:
               dError/dWeight = dError/dOutput × dOutput/dWeight
 
-              Update weights: w = w - (learning_rate × gradient)</pre>
+              Update weights: w = w - (learning_rate × gradient)</div>
 <h3>Vocabulary</h3>
 <div>
 <div><span>Backpropagation</span><span>Short for
@@ -886,9 +885,9 @@
 <div>
 <div></div>
 <div>
-<p>1986 – present</p>
-<h3>Activation Functions — Giving Networks Non-Linearity</h3>
-<p>Without activation functions, deep networks are just linear algebra</p>
+<div>1986 – present</div>
+<div>Activation Functions — Giving Networks Non-Linearity</div>
+<div>Without activation functions, deep networks are just linear algebra</div>
 </div>
 
 </div>
@@ -900,7 +899,7 @@
 <p>To unlock depth's power, each neuron applies a <strong>non-linear activation function</strong> to its
               output. This breaks the linearity, allowing networks to approximate arbitrarily complex functions.</p>
 <h3>The Major Activation Functions</h3>
-<pre>Sigmoid: σ(x) = 1 / (1 + e⁻ˣ)
+<div>Sigmoid: σ(x) = 1 / (1 + e⁻ˣ)
               Output: 0 to 1. Squashes input to a probability-like value.
               Problem: "Vanishing gradients" — gradient ≈ 0 for large |x|, learning stops.
 
@@ -912,7 +911,7 @@
               Simple, fast, avoids vanishing gradients. Standard choice since ~2012.
 
               GELU: Gaussian Error Linear Unit. Used in GPT models.
-              Smooth version of ReLU. Works well for transformers.</pre>
+              Smooth version of ReLU. Works well for transformers.</div>
 <div>
 <div><span>Activation function</span><span>A
                   non-linear function applied to each neuron's output. Allows neural networks to learn non-linear
@@ -937,10 +936,10 @@
 <div>
 <div></div>
 <div>
-<p>1990s</p>
-<h3>Classical Machine Learning — The Non-Neural Approaches</h3>
-<p>Decision trees, SVMs, k-NN: powerful algorithms that don't use neural networks
-              </p>
+<div>1990s</div>
+<div>Classical Machine Learning — The Non-Neural Approaches</div>
+<div>Decision trees, SVMs, k-NN: powerful algorithms that don't use neural networks
+              </div>
 </div>
 
 </div>
@@ -991,9 +990,9 @@
 <div>
 <div></div>
 <div>
-<p>1990s</p>
-<h3>Supervised, Unsupervised &amp; Reinforcement Learning — The Three Paradigms</h3>
-<p>Three fundamentally different ways a machine can learn</p>
+<div>1990s</div>
+<div>Supervised, Unsupervised &amp; Reinforcement Learning — The Three Paradigms</div>
+<div>Three fundamentally different ways a machine can learn</div>
 </div>
 
 </div>
@@ -1043,9 +1042,9 @@
 <div>
 <div></div>
 <div>
-<p>1998</p>
-<h3>LeNet — The First Practical Convolutional Neural Network</h3>
-<p>Yann LeCun reads handwritten zip codes for the US Postal Service</p>
+<div>1998</div>
+<div>LeNet — The First Practical Convolutional Neural Network</div>
+<div>Yann LeCun reads handwritten zip codes for the US Postal Service</div>
 </div>
 
 </div>
@@ -1060,7 +1059,7 @@
 <p>A <strong>convolutional layer</strong> slides a small filter (e.g., 5×5 pixels) across the entire image,
               computing the dot product at each position. This detects whether a specific pattern (e.g., a horizontal
               edge) is present at each location.</p>
-<pre>Filter (detects horizontal edges):
+<div>Filter (detects horizontal edges):
               [-1, -1, -1]
               [ 0, 0, 0]
               [+1, +1, +1]
@@ -1069,7 +1068,7 @@
               At each position, multiply filter × image patch, sum the results.
               High output = horizontal edge found here.
 
-              One layer might have 32 different filters = 32 different pattern detectors.</pre>
+              One layer might have 32 different filters = 32 different pattern detectors.</div>
 <div>
 <div><span>Convolutional Neural Network (CNN)</span><span>A neural network architecture designed for grid-structured data (images, audio
                   spectrograms). Uses convolution operations to detect local patterns efficiently.</span></div>
@@ -1102,16 +1101,16 @@
 <div>
 <div>
 <div></div>
-<h2>Era V · The Deep Learning Revolution · 2012 – 2020</h2>
+<div>Era V · The Deep Learning Revolution · 2012 – 2020</div>
 <div></div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>2012</p>
-<h3>AlexNet — The Moment Deep Learning Won</h3>
-<p>Hinton's lab crushes ImageNet with a GPU-powered deep CNN</p>
+<div>2012</div>
+<div>AlexNet — The Moment Deep Learning Won</div>
+<div>Hinton's lab crushes ImageNet with a GPU-powered deep CNN</div>
 </div>
 
 </div>
@@ -1158,9 +1157,9 @@
 <div>
 <div></div>
 <div>
-<p>2013 – 2016</p>
-<h3>Word2Vec, Embeddings &amp; Representation Learning</h3>
-<p>Teaching machines that "king - man + woman = queen"</p>
+<div>2013 – 2016</div>
+<div>Word2Vec, Embeddings &amp; Representation Learning</div>
+<div>Teaching machines that "king - man + woman = queen"</div>
 </div>
 
 </div>
@@ -1173,14 +1172,14 @@
 <p>Tomas Mikolov at Google trained a neural network on billions of words of text with a self-supervised
               objective: predict the words surrounding a given word. The network was then discarded — but its hidden
               layer weights (the word vectors it learned) contained something remarkable.</p>
-<pre>Words become points in 300-dimensional space.
+<div>Words become points in 300-dimensional space.
 
               Semantic relationships appear as geometric operations:
               king - man + woman ≈ queen
               Paris - France + Italy ≈ Rome
               walked - walk + run ≈ ran
 
-              Words used in similar contexts end up in similar regions of space.</pre>
+              Words used in similar contexts end up in similar regions of space.</div>
 <h3>Why Embeddings Matter</h3>
 <p>The idea that you can learn dense vector representations of objects — words, images, users, products —
               that capture their semantic relationships became one of the most important ideas in modern AI. Everything
@@ -1208,9 +1207,9 @@
 <div>
 <div></div>
 <div>
-<p>2014 – 2016</p>
-<h3>Recurrent Networks &amp; LSTMs — Processing Sequences</h3>
-<p>Teaching networks to handle language, time series, and ordered data</p>
+<div>2014 – 2016</div>
+<div>Recurrent Networks &amp; LSTMs — Processing Sequences</div>
+<div>Teaching networks to handle language, time series, and ordered data</div>
 </div>
 
 </div>
@@ -1223,14 +1222,14 @@
 <p>An RNN processes a sequence step by step, maintaining a <strong>hidden state</strong> — a vector that
               gets updated at each step based on the current input and the previous hidden state. After seeing the full
               sequence, the hidden state is a compressed representation of everything seen.</p>
-<pre>At each time step t:
+<div>At each time step t:
               h_t = tanh(W_h × h_{t-1} + W_x × x_t + b)
 
               where:
               h_t = hidden state at step t (memory of what's been seen)
               h_{t-1} = previous hidden state
               x_t = current input (e.g., current word embedding)
-              W_h, W_x = learned weight matrices</pre>
+              W_h, W_x = learned weight matrices</div>
 <h3>The Vanishing Gradient Problem (Again)</h3>
 <p>RNNs suffer from vanishing gradients in time. To learn that "The cat, which was very hungry and meowing
               loudly, ate the fish" — you need to remember "cat" when processing "ate." But gradients that must flow
@@ -1264,9 +1263,9 @@
 <div>
 <div></div>
 <div>
-<p>2014</p>
-<h3>GANs — Teaching Machines to Generate</h3>
-<p>Goodfellow's "two networks compete" idea unlocks image synthesis</p>
+<div>2014</div>
+<div>GANs — Teaching Machines to Generate</div>
+<div>Goodfellow's "two networks compete" idea unlocks image synthesis</div>
 </div>
 
 </div>
@@ -1281,12 +1280,12 @@
               discriminator.</p>
 <p><strong>Discriminator (D):</strong> Takes an image (real or fake), outputs probability it's real. Tries
               to correctly identify fakes.</p>
-<pre>Training loop:
+<div>Training loop:
               1. Show D some real images → D should output ≈ 1 (real)
               2. G generates fake images → D should output ≈ 0 (fake)
               3. Train D to get better at distinguishing
               4. Train G to make images D is tricked into calling real
-              5. Repeat until equilibrium: G generates images D can't distinguish</pre>
+              5. Repeat until equilibrium: G generates images D can't distinguish</div>
 <div>
 <div><span>GAN (Generative Adversarial Network)</span><span>Two neural networks (generator and discriminator) trained in competition. The
                   generator learns to produce realistic data; the discriminator learns to detect fakes.</span></div>
@@ -1314,10 +1313,10 @@
 <div>
 <div></div>
 <div>
-<p>2017</p>
-<h3>"Attention is All You Need" — The Transformer Revolution</h3>
-<p>Eight Google researchers publish the architecture that powers all modern AI
-              </p>
+<div>2017</div>
+<div>"Attention is All You Need" — The Transformer Revolution</div>
+<div>Eight Google researchers publish the architecture that powers all modern AI
+              </div>
 </div>
 
 </div>
@@ -1330,7 +1329,7 @@
 <p>The key innovation: instead of processing tokens in sequence, allow every token to directly "attend" to
               every other token simultaneously. Each token asks: which other tokens are relevant to understanding me?
             </p>
-<pre>For each token, compute three vectors:
+<div>For each token, compute three vectors:
               Query (Q): "What am I looking for?"
               Key (K): "What do I contain?"
               Value (V): "What information do I carry?"
@@ -1342,7 +1341,7 @@
               weights = softmax(scores) (sum to 1)
 
               Output for token i:
-              output_i = Σ weights(i,j) × V_j (weighted sum of values)</pre>
+              output_i = Σ weights(i,j) × V_j (weighted sum of values)</div>
 <h3>Multi-Head Attention</h3>
 <p>Run attention multiple times in parallel with different learned Q, K, V projections (different "heads").
               Each head can attend to different types of relationships simultaneously — one head might track syntax,
@@ -1386,10 +1385,10 @@
 <div>
 <div></div>
 <div>
-<p>2018 – 2019</p>
-<h3>BERT &amp; GPT — Pre-training on All of the Internet</h3>
-<p>Language models trained on massive text corpora develop surprising capabilities
-              </p>
+<div>2018 – 2019</div>
+<div>BERT &amp; GPT — Pre-training on All of the Internet</div>
+<div>Language models trained on massive text corpora develop surprising capabilities
+              </div>
 </div>
 
 </div>
@@ -1438,16 +1437,16 @@
 <div>
 <div>
 <div></div>
-<h2>Era VI · Large Language Models, Alignment &amp; Agents · 2020 – Present</h2>
+<div>Era VI · Large Language Models, Alignment &amp; Agents · 2020 – Present</div>
 <div></div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>2020</p>
-<h3>GPT-3 &amp; Scaling Laws — More is Different</h3>
-<p>175 billion parameters and the discovery that scale changes everything</p>
+<div>2020</div>
+<div>GPT-3 &amp; Scaling Laws — More is Different</div>
+<div>175 billion parameters and the discovery that scale changes everything</div>
 </div>
 
 </div>
@@ -1456,11 +1455,11 @@
 <p>A paper by OpenAI's Jared Kaplan and colleagues (2020) showed something remarkable: model performance
               follows smooth, predictable <strong>power laws</strong> as you scale up model size, dataset size, and
               compute. Double the parameters, and you reliably get better performance. There's no plateau in sight.</p>
-<pre>Scaling law (simplified):
+<div>Scaling law (simplified):
               Loss ∝ (1/N)^α where N = number of parameters
 
               Every 10× increase in compute → ~1.7× reduction in loss
-              This relationship holds across 7 orders of magnitude of scale.</pre>
+              This relationship holds across 7 orders of magnitude of scale.</div>
 <h3>GPT-3: Emergent Abilities</h3>
 <p>GPT-3 (175B parameters, trained on ~500B tokens of text) demonstrated something that hadn't been
               predicted: <strong>emergent abilities</strong> — capabilities that appear suddenly at scale and weren't
@@ -1498,10 +1497,10 @@
 <div>
 <div></div>
 <div>
-<p>2021 – 2022</p>
-<h3>RLHF — Teaching Models What Humans Want</h3>
-<p>Reinforcement Learning from Human Feedback aligns LLMs to human preferences
-              </p>
+<div>2021 – 2022</div>
+<div>RLHF — Teaching Models What Humans Want</div>
+<div>Reinforcement Learning from Human Feedback aligns LLMs to human preferences
+              </div>
 </div>
 
 </div>
@@ -1543,9 +1542,9 @@
 <div>
 <div></div>
 <div>
-<p>2021 – 2023</p>
-<h3>Diffusion Models — A New Way to Generate Images</h3>
-<p>DALL-E 2, Stable Diffusion, Midjourney: the image generation revolution</p>
+<div>2021 – 2023</div>
+<div>Diffusion Models — A New Way to Generate Images</div>
+<div>DALL-E 2, Stable Diffusion, Midjourney: the image generation revolution</div>
 </div>
 
 </div>
@@ -1591,9 +1590,9 @@
 <div>
 <div></div>
 <div>
-<p>2022 – 2024</p>
-<h3>ChatGPT, GPT-4 &amp; the LLM Landscape</h3>
-<p>The public discovers AI — 100 million users in 2 months</p>
+<div>2022 – 2024</div>
+<div>ChatGPT, GPT-4 &amp; the LLM Landscape</div>
+<div>The public discovers AI — 100 million users in 2 months</div>
 </div>
 
 </div>
@@ -1636,9 +1635,9 @@
 <div>
 <div></div>
 <div>
-<p>2023 – 2025</p>
-<h3>Chain-of-Thought &amp; Reasoning Models</h3>
-<p>Teaching models to "think out loud" before answering</p>
+<div>2023 – 2025</div>
+<div>Chain-of-Thought &amp; Reasoning Models</div>
+<div>Teaching models to "think out loud" before answering</div>
 </div>
 
 </div>
@@ -1652,7 +1651,7 @@
 <p>Wei et al. at Google discovered a simple trick: include examples of <em>reasoning steps</em> in the
               prompt, and the model learns to generate reasoning steps itself before answering. Performance on math and
               logical reasoning dramatically improved.</p>
-<pre>Without CoT:
+<div>Without CoT:
               Q: "If a train travels at 60 mph for 2.5 hours, how far does it go?"
               A: "150 miles" (might get it, might not)
 
@@ -1662,7 +1661,7 @@
               Distance = speed × time
               Speed = 60 mph, Time = 2.5 hours
               Distance = 60 × 2.5 = 150 miles.
-              The answer is 150 miles."</pre>
+              The answer is 150 miles."</div>
 <h3>Reasoning Models: OpenAI o1 / o3, DeepSeek-R1</h3>
 <p>The next step: train models to generate extended thinking traces using RL, allowing them to spend more
               compute at inference time. OpenAI's o1 (2024) uses a "thinking" phase where the model reasons at length
@@ -1691,9 +1690,9 @@
 <div>
 <div></div>
 <div>
-<p>2023 – present</p>
-<h3>AI Agents — Models That Take Actions in the World</h3>
-<p>From answering questions to autonomously completing multi-step tasks</p>
+<div>2023 – present</div>
+<div>AI Agents — Models That Take Actions in the World</div>
+<div>From answering questions to autonomously completing multi-step tasks</div>
 </div>
 
 </div>
@@ -1703,7 +1702,7 @@
                 agent</strong> is different: it is given a goal and takes a sequence of actions to achieve it,
               interacting with tools and the environment, making decisions at each step.</p>
 <h3>The Agent Architecture</h3>
-<pre>Agent loop:
+<div>Agent loop:
 
               1. Observe: receive observation from environment
               (user request, tool result, webpage content...)
@@ -1716,7 +1715,7 @@
 
               4. Observe: receive the result of the action
 
-              5. Repeat until task is complete</pre>
+              5. Repeat until task is complete</div>
 <h3>Tools and Function Calling</h3>
 <p>Agents are given <strong>tools</strong> — functions they can call. The LLM is shown tool descriptions in
               its context and can decide to call a tool by generating structured output. The tool runs (searches the
@@ -1753,10 +1752,10 @@
 <div>
 <div></div>
 <div>
-<p>2022 – present</p>
-<h3>AlphaFold &amp; AI in Science — Biology's 50-Year Problem Solved</h3>
-<p>DeepMind predicts protein structures, accelerating drug discovery by decades
-              </p>
+<div>2022 – present</div>
+<div>AlphaFold &amp; AI in Science — Biology's 50-Year Problem Solved</div>
+<div>DeepMind predicts protein structures, accelerating drug discovery by decades
+              </div>
 </div>
 
 </div>
@@ -1789,18 +1788,18 @@
                   of identifying and developing new medicines. Knowing a disease-relevant protein's structure speeds up
                   the search for molecules that can interact with it therapeutically.</span></div>
 </div>
-<blockquote>AlphaFold demonstrated that AI isn't just about making chatbots — it's a general
+<div>AlphaFold demonstrated that AI isn't just about making chatbots — it's a general
               scientific tool capable of solving fundamental problems in biology, chemistry, physics, and materials
-              science. AI for science may ultimately be more impactful than AI for language.</blockquote>
+              science. AI for science may ultimately be more impactful than AI for language.</div>
 </div>
 </div>
 <div>
 <div>
 <div></div>
 <div>
-<p>2024 – present</p>
-<h3>The Frontier Today — Where AI Actually Stands</h3>
-<p>What modern models can and cannot do, and what comes next</p>
+<div>2024 – present</div>
+<div>The Frontier Today — Where AI Actually Stands</div>
+<div>What modern models can and cannot do, and what comes next</div>
 </div>
 
 </div>
@@ -1856,6 +1855,5 @@
 </div><!-- /page-wrap -->
 
 
-</main>
 </body>
 </html>
