@@ -485,9 +485,21 @@
       }
     }
   </style>
+
+<style id="reading-mode-enhancements">
+.entry-body { display:block !important; }
+.entry { break-inside: avoid; }
+.entry-trigger { cursor: default !important; }
+@media speech {
+  .entry-body { display:block !important; }
+}
+</style>
+
 </head>
 
 <body>
+<a href="#main-content" style="position:absolute;left:-9999px;">Skip to content</a>
+<main id="main-content" role="main" aria-label="The Long Road to Thinking Machines">
 
   <canvas id="canvas-bg"></canvas>
 
@@ -2696,6 +2708,7 @@
         });
       });
     </script>
+</main>
 </body>
 
 </html>
