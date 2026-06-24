@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story of Algorithms — Era V: Divide, Conquer, Sort, Search</title>
+<style>
+  :root {
+    --paper: #F7F3E9;
+    --paper-warm: #F1EADA;
+    --ink: #2B3A4A;
+    --ink-soft: #4A5A6A;
+    --terracotta: #C77B58;
+    --pencil: #8B8680;
+    --sage: #7D9471;
+    --sage-bg: #EAEFE6;
+    --gold: #C9A227;
+    --line: #D9CFBB;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(139,134,128,0.045) 39px);
+    color: var(--ink);
+    font-family: "Source Serif Pro", Georgia, "Times New Roman", serif;
+    line-height: 1.7;
+    font-size: 18px;
+    padding: 0 0 120px 0;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 60px 28px 0 28px; }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: "Lora", Georgia, serif;
+    font-weight: 700;
+    font-size: 2.6rem;
+    margin: 0 0 12px 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .intro {
+    background: var(--paper-warm);
+    border-left: 4px solid var(--terracotta);
+    padding: 22px 26px;
+    border-radius: 4px;
+    margin-bottom: 52px;
+    font-size: 0.98rem;
+  }
+  .intro p { margin: 0 0 10px 0; }
+  .intro p:last-child { margin-bottom: 0; }
+
+  .timeline { position: relative; padding-left: 36px; }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--terracotta) 0%, var(--sage) 50%, var(--gold) 100%);
+    opacity: 0.35;
+    border-radius: 2px;
+  }
+
+  .entry { position: relative; margin-bottom: 18px; }
+
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -33px;
+    top: 28px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--terracotta);
+    z-index: 2;
+  }
+
+  .entry.sage::before { border-color: var(--sage); }
+  .entry.gold::before { border-color: var(--gold); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(43,58,74,0.06);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+  }
+
+  .card:hover { box-shadow: 0 4px 16px rgba(43,58,74,0.10); }
+
+  .card-header {
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .card-header:hover { background: var(--paper-warm); }
+
+  .meta { flex: 1; }
+
+  .date-tag {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .entry.sage .date-tag { color: var(--sage); }
+  .entry.gold .date-tag { color: var(--gold); }
+
+  .card-title {
+    font-family: "Lora", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .toggle-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--ink-soft);
+    transition: transform 0.3s ease, background 0.2s ease;
+    font-family: "Atkinson Hyperlegible", sans-serif;
+  }
+
+  .card.open .toggle-icon { transform: rotate(45deg); background: var(--paper-warm); }
+
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+
+  .card-body-inner {
+    padding: 0 24px 28px 24px;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+
+  .section-label {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pencil);
+    margin: 22px 0 10px 0;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .source-text {
+    background: var(--paper-warm);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+    border: 1px solid var(--line);
+  }
+
+  .vocab-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .vocab-item { display: flex; gap: 10px; font-size: 0.95rem; align-items: baseline; }
+
+  .vocab-term {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    color: var(--terracotta);
+    flex-shrink: 0;
+    min-width: 130px;
+  }
+  .entry.sage .vocab-term { color: var(--sage); }
+  .entry.gold .vocab-term { color: var(--gold); }
+
+  .vocab-def { color: var(--ink-soft); }
+
+  .elaboration { font-size: 0.99rem; }
+  .elaboration p { margin: 0 0 14px 0; }
+  .elaboration p:last-child { margin-bottom: 0; }
+  .elaboration strong { color: var(--ink); }
+
+  .callout {
+    background: var(--sage-bg);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--sage);
+  }
+
+  .callout-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .diagram {
+    margin: 16px 0;
+    padding: 18px;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .diagram-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+
+  .diagram-row:last-child { margin-bottom: 0; }
+
+  .cell {
+    border: 1.5px solid var(--ink-soft);
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 30px;
+    color: var(--ink);
+  }
+
+  .cell.highlight { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+  .cell.sorted { background: var(--sage-bg); border-color: var(--sage); }
+  .cell.pivot { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+  .diagram-caption {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .step-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-size: 0.78rem;
+    color: var(--pencil);
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  code, .mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    background: var(--paper-warm);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+
+  .era-footer {
+    margin-top: 60px;
+    text-align: center;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    color: var(--pencil);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    h1 { font-size: 1.9rem; }
+    .wrap { padding: 36px 16px 0 16px; }
+    .timeline { padding-left: 28px; }
+    .entry::before { left: -26px; }
+    .vocab-item { flex-direction: column; gap: 2px; }
+    .vocab-term { min-width: 0; }
+    .step-label { min-width: 70px; font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Era V · The Classic Algorithms</div>
+    <h1>Divide, Conquer, Sort, Search</h1>
+    <p class="subtitle">Recursion stops being a curiosity and becomes a deliberate design strategy — and a handful of algorithms invented in the 1960s remain, today, the most-implemented pieces of code in the history of computing.</p>
+  </header>
+
+  <div class="intro">
+    <p><strong>The shift in this era.</strong> Era IV gave us a toolbox of data structures and a precise language (Big-O) for comparing them. This era asks: given that toolbox and that language, what are the actual <em>algorithms</em> — the step-by-step procedures — that people discovered for some of the most common tasks imaginable? Two tasks dominate this era because they underlie an enormous fraction of all computing: <strong>sorting</strong> (putting things in order) and <strong>searching</strong> (finding something).</p>
+    <p>This era also crystallizes a design pattern that you've seen the shadow of throughout this entire timeline — Euclid's GCD shrinking to a smaller GCD problem, the binary search tree eliminating half the possibilities with one comparison, the Egyptian doubling trick — into an explicit, named, reusable strategy: <strong>divide-and-conquer</strong>. Once this pattern is named and understood as a <em>general technique</em> (rather than something that just happens to work in a few specific cases), it becomes a tool you can deliberately reach for when designing a new algorithm — and a huge fraction of "clever" algorithm ideas, even decades later, are applications of this one pattern.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- ENTRY 1: Simple sorting and the O(n^2) baseline -->
+    <div class="entry">
+      <div class="card" id="card-1">
+        <div class="card-header" onclick="toggleCard('card-1')">
+          <div class="meta">
+            <span class="date-tag">Pre-1960s, formalized 1960s · The "obvious" approach</span>
+            <h3 class="card-title">Insertion Sort and the O(n²) Baseline</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Insertion sort builds a sorted sequence one element at a time: for each new element, it is inserted into its correct position among the previously-sorted elements, shifting larger elements over as needed — the same method many people use intuitively when sorting a hand of playing cards.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Sorting</span><span class="vocab-def">arranging a collection of items into a specified order (e.g., numbers from smallest to largest, words alphabetically).</span></div>
+              <div class="vocab-item"><span class="vocab-term">In-place</span><span class="vocab-def">an algorithm that rearranges data within its original storage, without needing a significant amount of extra memory to hold a separate copy.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Comparison-based</span><span class="vocab-def">a sorting algorithm that works only by comparing pairs of elements ("is A bigger than B?") and rearranging based on the answer — as opposed to algorithms that exploit special knowledge about the data (covered in a later entry).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Stable (sort)</span><span class="vocab-def">a sorting algorithm is "stable" if, when two elements are considered equal, their original relative order is preserved in the output. This matters when sorting complex records by one field but wanting ties to retain their prior order.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>It's worth starting here, with the "obvious" approach, for an important reason: understanding <em>why</em> the obvious approach is limited is what makes the cleverer approaches (next entries) feel like genuine insights rather than arbitrary tricks.</p>
+              <p>Insertion sort works exactly the way most people sort a hand of playing cards: keep a sorted pile in your hand, and each time you draw a new card, slide it into the correct position among the cards you're already holding — shifting other cards over as needed.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">start:</div>
+                  <div class="cell sorted">5</div><div class="cell">2</div><div class="cell">8</div><div class="cell">1</div><div class="cell">9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">insert 2:</div>
+                  <div class="cell sorted">2</div><div class="cell sorted">5</div><div class="cell">8</div><div class="cell">1</div><div class="cell">9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">insert 8:</div>
+                  <div class="cell sorted">2</div><div class="cell sorted">5</div><div class="cell sorted">8</div><div class="cell">1</div><div class="cell">9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">insert 1:</div>
+                  <div class="cell sorted">1</div><div class="cell sorted">2</div><div class="cell sorted">5</div><div class="cell sorted">8</div><div class="cell">9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">insert 9:</div>
+                  <div class="cell sorted">1</div><div class="cell sorted">2</div><div class="cell sorted">5</div><div class="cell sorted">8</div><div class="cell sorted">9</div>
+                </div>
+                <div class="diagram-caption">Each new element may need to shift past several already-sorted elements to find its place — inserting 1 had to pass 2, 5, and 8.</div>
+              </div>
+              <p>Why is this O(n²)? Consider the worst case: an array sorted in <em>reverse</em> order. Every single new element is smaller than everything already placed, so every new element must shift past <em>all</em> previously-placed elements. The first element requires 0 shifts, the second requires up to 1, the third up to 2, ... the n-th requires up to n−1. Adding these up: 0+1+2+...+(n−1), which works out to roughly n²/2 — and Big-O drops the constant, giving O(n²).</p>
+              <p>This O(n²) pattern — "for each of n items, do up to n units of work" — is the single most common source of "slow" algorithms, and recognizing it is a basic skill: <strong>any time you have a loop inside a loop, where both loops can run up to n times, you very likely have an O(n²) algorithm.</strong> For small n (say, n ≤ 1,000), O(n²) is perfectly fine — a million operations is instant on modern hardware. The problem appears at scale: n = 100,000 gives 10 billion operations, which is too slow for typical time limits. This is exactly the gap that motivates the next two entries.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why insertion sort still matters</span>
+              Despite being O(n²), insertion sort has a genuinely useful property: it's extremely fast on data that's <em>already mostly sorted</em> (in that case, each new element needs very few shifts) — and it's simple enough that, for very small n (roughly under 10–20 elements), its low overhead actually makes it faster in practice than more "sophisticated" algorithms. Several real-world sorting implementations use insertion sort as a final step for small sub-arrays within a larger, more complex algorithm — a pattern you'll recognize in the next entry.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 2: Merge Sort and divide-and-conquer -->
+    <div class="entry sage">
+      <div class="card" id="card-2">
+        <div class="card-header" onclick="toggleCard('card-2')">
+          <div class="meta">
+            <span class="date-tag">1945, popularized 1960s · John von Neumann (described it), widely adopted</span>
+            <h3 class="card-title">Merge Sort — Divide-and-Conquer Gets a Name</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Merge sort works by splitting a sequence in half, recursively sorting each half, and then merging the two sorted halves back together into a single sorted sequence — a "merge" step that can be done efficiently because both halves are already sorted.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Divide-and-conquer</span><span class="vocab-def">a strategy for solving a problem by (1) dividing it into smaller subproblems of the same type, (2) solving each subproblem (often by applying the same strategy recursively), and (3) combining the subproblems' solutions into a solution for the original problem.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Base case</span><span class="vocab-def">the simplest version of a problem, small enough to solve directly without further recursion — for sorting, a sequence of length 0 or 1 is already sorted, with nothing to do.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Merge (step)</span><span class="vocab-def">combining two already-sorted sequences into one sorted sequence, by repeatedly comparing the front elements of each and taking the smaller one.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Recursion tree</span><span class="vocab-def">a way of visualizing recursive calls as a tree, where each node represents one call, and its children represent the recursive calls it makes. The depth of this tree, and the work done at each level, together determine the algorithm's overall complexity.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Auxiliary space</span><span class="vocab-def">extra memory an algorithm needs beyond the input itself. Merge sort, in its standard form, needs O(n) auxiliary space to hold the merged results — unlike insertion sort, which is in-place.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Here is the divide-and-conquer pattern, explicitly, for the first time in this timeline: to sort an array, (1) <strong>divide</strong> it into two halves, (2) <strong>recursively sort each half</strong> (i.e., apply this exact same procedure to each half — "the same kind of problem, but smaller," exactly like Euclid's GCD reducing to a smaller GCD), and (3) <strong>combine</strong> the two sorted halves via the merge step.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">original:</div>
+                  <div class="cell">5</div><div class="cell">2</div><div class="cell">8</div><div class="cell">1</div><div class="cell">9</div><div class="cell">3</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">split:</div>
+                  <div class="cell highlight">5 2 8</div>&nbsp;&nbsp;<div class="cell highlight">1 9 3</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">split again:</div>
+                  <div class="cell">5</div><div class="cell">2 8</div>&nbsp;&nbsp;<div class="cell">1</div><div class="cell">9 3</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">sorted halves:</div>
+                  <div class="cell sorted">5</div><div class="cell sorted">2 8</div>&nbsp;&nbsp;<div class="cell sorted">1</div><div class="cell sorted">3 9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">merge up:</div>
+                  <div class="cell sorted">2 5 8</div>&nbsp;&nbsp;<div class="cell sorted">1 3 9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">final merge:</div>
+                  <div class="cell sorted">1 2 3 5 8 9</div>
+                </div>
+                <div class="diagram-caption">Splitting continues until pieces are size 0 or 1 (the base case). All the "real work" happens during the merges, which combine already-sorted pieces.</div>
+              </div>
+              <p>Now, the complexity. Splitting in half repeatedly: how many times can you halve n before reaching pieces of size 1? That's exactly log₂(n) — the same quantity that appeared in the binary search tree's height. So there are roughly log(n) "levels" of splitting. At each level, the total work done across all the merges at that level is roughly n (every element gets touched once during a merge at each level, because merging is "walk through both halves once"). Total work: roughly n × log(n) — giving merge sort its famous <strong>O(n log n)</strong> complexity.</p>
+              <p>Go back to the numbers from Era IV: for n = 1,000,000, O(n²) is a trillion operations (too slow), but O(n log n) is about 1,000,000 × 20 = 20 million operations (fast, well under a second). Merge sort isn't a minor improvement over insertion sort — it's a fundamentally different category, and this category difference is <em>exactly</em> what divide-and-conquer, done right, can achieve: turning an O(n²) problem into an O(n log n) one by recursively halving.</p>
+              <p>The "recursion tree" framing is worth sitting with, because it's the standard way divide-and-conquer algorithms are analyzed from here on: draw a tree where the root is "sort all n elements," its two children are "sort the left n/2" and "sort the right n/2," their children are "sort n/4" each, and so on, down to leaves of size 1. The tree has log(n) levels (since you halve at each level until reaching 1), and the total work at each level is proportional to n (because the merge work across all pieces at one level adds up to roughly n regardless of how many pieces there are). log(n) levels × O(n) work per level = O(n log n) total. This "count the levels, count the work per level, multiply" technique is how you'll analyze most divide-and-conquer algorithms you encounter.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP</span>
+              Merge sort itself is rarely hand-written in contests (most languages have a fast built-in sort), but the <em>technique</em> — and especially the merge step — reappears constantly: merging is the core of algorithms for counting inversions, certain range-query problems, and "merge sort tree" structures (an advanced data structure combining segment trees, which you'll meet later, with merge sort's idea). More broadly, "split the problem in half, solve each half, combine" is one of the first strategies experienced competitive programmers try when a brute-force approach is too slow.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 3: Quicksort -->
+    <div class="entry gold">
+      <div class="card" id="card-3">
+        <div class="card-header" onclick="toggleCard('card-3')">
+          <div class="meta">
+            <span class="date-tag">1959–1961 · Tony Hoare, England</span>
+            <h3 class="card-title">Quicksort — Partitioning Around a Pivot</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Tony Hoare developed quicksort: choose an element (the "pivot"), rearrange ("partition") the array so that all elements less than the pivot come before it and all elements greater come after it (with the pivot now in its final sorted position), then recursively apply the same process to the sub-arrays on each side of the pivot.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Pivot</span><span class="vocab-def">an element chosen (by some rule — e.g., the first element, the last, or a random one) around which the rest of the array is rearranged during partitioning.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Partition</span><span class="vocab-def">the process of rearranging an array so that all elements smaller than the pivot are on one side and all elements larger are on the other, with the pivot between them.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Average case</span><span class="vocab-def">the expected behavior of an algorithm over "typical" or randomly-distributed inputs, as opposed to the absolute worst possible input. Quicksort's average case is excellent even though its worst case is poor.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Adversarial input</span><span class="vocab-def">an input specifically constructed to trigger an algorithm's worst-case behavior — relevant in competitive programming, where problem setters sometimes deliberately include such inputs ("anti-test cases") to fail naive implementations.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Quicksort is also divide-and-conquer, but it divides the work differently from merge sort — and this difference is illuminating. Merge sort does the "hard work" (merging) <em>after</em> the recursive calls — the recursive calls produce sorted halves, and then merging combines them. Quicksort flips this: it does the "hard work" (partitioning) <em>before</em> the recursive calls — partitioning produces two halves with a guarantee (everything on the left is ≤ pivot, everything on the right is ≥ pivot), and then <em>nothing further is needed to combine them</em> — once both halves are individually sorted, the whole array is sorted, because of the guarantee partitioning already established.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">original:</div>
+                  <div class="cell">5</div><div class="cell">2</div><div class="cell">8</div><div class="cell">1</div><div class="cell pivot">3</div><div class="cell">9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">partition<br>(pivot=3):</div>
+                  <div class="cell highlight">2 1</div><div class="cell pivot">3</div><div class="cell highlight">5 8 9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">recurse left,<br>recurse right:</div>
+                  <div class="cell sorted">1 2</div><div class="cell sorted pivot">3</div><div class="cell sorted">5 8 9</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">done — already<br>fully arranged:</div>
+                  <div class="cell sorted">1 2 3 5 8 9</div>
+                </div>
+                <div class="diagram-caption">After partitioning around pivot 3, everything ≤3 is to its left and everything ≥3 is to its right, AND the pivot is in its final position. No merge step needed — just recursively sort each side.</div>
+              </div>
+              <p>This raises an obvious question: how good the split is depends entirely on how good the pivot choice is. If the pivot happens to be the median (the middle value) of the array, partitioning splits it into two roughly equal halves — and you get the same "halve each time" behavior as merge sort, giving O(n log n). But if the pivot is consistently the <em>smallest</em> or <em>largest</em> element (e.g., if you always pick the first element as pivot, and the array happens to already be sorted), partitioning produces one side with 0 elements and the other with n−1 — barely dividing the problem at all. In that case, the recursion has n levels instead of log(n), and the total work becomes O(n²) — the same bad complexity as insertion sort's worst case.</p>
+              <p>This worst case is the origin of the "average case" vs. "worst case" distinction becoming practically important, not just theoretical. <strong>Quicksort's average case (over random pivot choices, or random input order) is O(n log n) with very good real-world constants — often faster in practice than merge sort despite having the same Big-O class — but its worst case is O(n²)</strong>, and that worst case can be deliberately triggered by an adversary who knows your pivot-selection rule. This is precisely why competitive programming problems sometimes include "anti-quicksort" tests, and why production-quality implementations often choose the pivot randomly or use a more sophisticated rule — making it much harder for any single input to reliably trigger the worst case.</p>
+              <p>There's a broader lesson here that recurs throughout algorithm design: <strong>an algorithm's Big-O classification can hide important practical differences.</strong> Merge sort and quicksort are "both O(n log n)" in the sense that matters for the worst case vs. average case distinction, but they behave very differently in practice, have different memory needs (quicksort can be done in-place; standard merge sort needs auxiliary space), and respond differently to adversarial inputs. Reading Big-O as the <em>complete</em> picture, rather than a useful first-pass summary, is a common early mistake.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP</span>
+              The partitioning idea — "rearrange so everything on one side satisfies property X and everything on the other doesn't, using a single pass" — is the core of the "two pointers" / "Dutch national flag" technique, used constantly for in-place array manipulation problems. Additionally, a variant of quicksort's partitioning, called "quickselect," can find the k-th smallest element in an array in O(n) average time <em>without fully sorting it</em> — a useful trick when a problem asks for a specific rank/percentile rather than a full ordering.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 4: Binary search formalized -->
+    <div class="entry">
+      <div class="card" id="card-4">
+        <div class="card-header" onclick="toggleCard('card-4')">
+          <div class="meta">
+            <span class="date-tag">1946 (first published), widespread by 1960s</span>
+            <h3 class="card-title">Binary Search — The Simplest Divide-and-Conquer Algorithm</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Binary search finds a target value within a sorted array by repeatedly comparing the target to the middle element of the current range: if equal, done; if the target is smaller, restrict the search to the left half; if larger, restrict to the right half — repeating until the target is found or the range becomes empty.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Search space</span><span class="vocab-def">the set of possible answers or positions that haven't yet been ruled out — binary search's defining feature is halving this space with every comparison.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Invariant</span><span class="vocab-def">a condition that remains true throughout an algorithm's execution, no matter how many steps have happened — for binary search, "if the target exists, it's within the current [low, high] range" is an invariant that holds before and after every step. Invariants are the basis for proving an algorithm is correct.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Off-by-one error</span><span class="vocab-def">a very common bug where a loop or range boundary is set to one position too many or too few (e.g., using <code>&lt;</code> instead of <code>&lt;=</code>). Binary search is notorious for these errors precisely because it deals with boundaries (low, high, mid) on every step.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Binary search is, in some sense, the "purest" example of the eliminate-half-the-possibilities idea that's been a thread throughout this entire timeline — Egyptian doubling, the binary search tree, even the underlying intuition of the Sieve. Here it appears in its most distilled form, applied directly to a sorted array rather than a tree structure.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">array (sorted):</div>
+                  <div class="cell">1</div><div class="cell">3</div><div class="cell">5</div><div class="cell">7</div><div class="cell">9</div><div class="cell">11</div><div class="cell">13</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">find 11, step 1:</div>
+                  <div class="cell">1</div><div class="cell">3</div><div class="cell">5</div><div class="cell highlight">7</div><div class="cell">9</div><div class="cell">11</div><div class="cell">13</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">11 > 7, go right:</div>
+                  <div class="cell">9</div><div class="cell highlight">11</div><div class="cell">13</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">11 == 11, found!</div>
+                  <div class="cell sorted">9</div><div class="cell sorted highlight">11</div><div class="cell sorted">13</div>
+                </div>
+                <div class="diagram-caption">7 elements → found target in 2 comparisons. A linear scan could need up to 7. As the array grows, this gap widens dramatically: 1 million elements → ~20 comparisons for binary search vs. up to 1 million for a linear scan.</div>
+              </div>
+              <p>Why does binary search require the array to be <em>sorted</em>? Because the entire algorithm hinges on a single deduction: "if the middle element is greater than the target, the target (if present) cannot be anywhere in the right half." This deduction is only valid if you know everything in the right half is ≥ the middle element — which is exactly what "sorted" guarantees. This is a clean example of a recurring theme: <strong>a precondition (the data being sorted) unlocks an algorithm (binary search) that would be invalid without it</strong> — and the cost of sorting (O(n log n), from this era's earlier entries) is often worth paying once if it enables many subsequent O(log n) searches.</p>
+              <p>The "invariant" concept deserves attention here because binary search is the canonical example for learning to reason about invariants, and this skill transfers to nearly every algorithm you'll write. The invariant — "if the target exists in the array, it exists within the current [low, high] range" — is true at the very start (the range is the whole array) and must remain true after every step. Checking "does my update to low/high preserve this invariant?" is exactly how you verify binary search is correct, and exactly how you debug it when it isn't. Off-by-one errors are so common here precisely because there are several superficially-similar-but-subtly-different ways to update low and high, and only some of them preserve the invariant correctly in all cases.</p>
+              <p>Binary search's reach extends far beyond "find a value in a sorted array." A whole category of problems — sometimes called "binary search on the answer" — applies the same halving logic not to find a value's <em>position</em>, but to find the smallest or largest value of some quantity for which a yes/no condition holds (e.g., "what's the minimum possible maximum load, such that the work can be split among k workers within that load?"). The key requirement is the same kind of invariant: the yes/no answer to "is X achievable?" must be monotonic — once it becomes true (or false) as X increases, it stays that way. Recognizing this monotonicity in a problem that doesn't superficially look like "searching an array" is one of the more satisfying "aha" moments in intermediate competitive programming.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">The shape of this era, looking back</span>
+              Insertion sort (O(n²), the honest baseline), merge sort (O(n log n) via divide-then-combine), quicksort (O(n log n) average via partition-then-divide, with a notable worst case), and binary search (O(log n), the purest expression of halving). Together, these four algorithms — all from roughly the same 15–20 year window — define the vocabulary ("divide and conquer," "pivot," "invariant," "worst case vs. average case") that essentially all subsequent algorithm design builds on. The next era turns to a different kind of problem entirely: not "put things in order" or "find a value," but "find a path, or a structure, within a network of connections" — the birth of graph algorithms.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="era-footer">
+    End of Era V. Next: Era VI — Graphs: Networks, Paths, and the Algorithms That Navigate Them (Dijkstra, BFS/DFS, and the 1950s–60s origins of graph theory in computing).
+  </div>
+
+</div>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const body = card.querySelector('.card-body');
+    const isOpen = card.classList.contains('open');
+
+    if (isOpen) {
+      card.classList.remove('open');
+      body.style.maxHeight = '0px';
+    } else {
+      card.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.card.open').forEach(card => {
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    });
+  });
+</script>
+
+</body>
+</html>

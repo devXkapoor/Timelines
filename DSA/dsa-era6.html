@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story of Algorithms — Era VI: Networks, Paths, and Graphs</title>
+<style>
+  :root {
+    --paper: #F7F3E9;
+    --paper-warm: #F1EADA;
+    --ink: #2B3A4A;
+    --ink-soft: #4A5A6A;
+    --terracotta: #C77B58;
+    --pencil: #8B8680;
+    --sage: #7D9471;
+    --sage-bg: #EAEFE6;
+    --gold: #C9A227;
+    --line: #D9CFBB;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(139,134,128,0.045) 39px);
+    color: var(--ink);
+    font-family: "Source Serif Pro", Georgia, "Times New Roman", serif;
+    line-height: 1.7;
+    font-size: 18px;
+    padding: 0 0 120px 0;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 60px 28px 0 28px; }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: "Lora", Georgia, serif;
+    font-weight: 700;
+    font-size: 2.6rem;
+    margin: 0 0 12px 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .intro {
+    background: var(--paper-warm);
+    border-left: 4px solid var(--terracotta);
+    padding: 22px 26px;
+    border-radius: 4px;
+    margin-bottom: 52px;
+    font-size: 0.98rem;
+  }
+  .intro p { margin: 0 0 10px 0; }
+  .intro p:last-child { margin-bottom: 0; }
+
+  .timeline { position: relative; padding-left: 36px; }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--terracotta) 0%, var(--sage) 50%, var(--gold) 100%);
+    opacity: 0.35;
+    border-radius: 2px;
+  }
+
+  .entry { position: relative; margin-bottom: 18px; }
+
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -33px;
+    top: 28px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--terracotta);
+    z-index: 2;
+  }
+
+  .entry.sage::before { border-color: var(--sage); }
+  .entry.gold::before { border-color: var(--gold); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(43,58,74,0.06);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+  }
+
+  .card:hover { box-shadow: 0 4px 16px rgba(43,58,74,0.10); }
+
+  .card-header {
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .card-header:hover { background: var(--paper-warm); }
+
+  .meta { flex: 1; }
+
+  .date-tag {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .entry.sage .date-tag { color: var(--sage); }
+  .entry.gold .date-tag { color: var(--gold); }
+
+  .card-title {
+    font-family: "Lora", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .toggle-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--ink-soft);
+    transition: transform 0.3s ease, background 0.2s ease;
+    font-family: "Atkinson Hyperlegible", sans-serif;
+  }
+
+  .card.open .toggle-icon { transform: rotate(45deg); background: var(--paper-warm); }
+
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+
+  .card-body-inner {
+    padding: 0 24px 28px 24px;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+
+  .section-label {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pencil);
+    margin: 22px 0 10px 0;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .source-text {
+    background: var(--paper-warm);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+    border: 1px solid var(--line);
+  }
+
+  .vocab-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .vocab-item { display: flex; gap: 10px; font-size: 0.95rem; align-items: baseline; }
+
+  .vocab-term {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    color: var(--terracotta);
+    flex-shrink: 0;
+    min-width: 140px;
+  }
+  .entry.sage .vocab-term { color: var(--sage); }
+  .entry.gold .vocab-term { color: var(--gold); }
+
+  .vocab-def { color: var(--ink-soft); }
+
+  .elaboration { font-size: 0.99rem; }
+  .elaboration p { margin: 0 0 14px 0; }
+  .elaboration p:last-child { margin-bottom: 0; }
+  .elaboration strong { color: var(--ink); }
+
+  .callout {
+    background: var(--sage-bg);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--sage);
+  }
+
+  .callout-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .diagram {
+    margin: 16px 0;
+    padding: 18px;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .graph-svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
+  .diagram-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+
+  .diagram-row:last-child { margin-bottom: 0; }
+
+  .cell {
+    border: 1.5px solid var(--ink-soft);
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 30px;
+    color: var(--ink);
+  }
+
+  .cell.highlight { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+  .cell.sorted { background: var(--sage-bg); border-color: var(--sage); }
+
+  .diagram-caption {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .step-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-size: 0.78rem;
+    color: var(--pencil);
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  code, .mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    background: var(--paper-warm);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+
+  .era-footer {
+    margin-top: 60px;
+    text-align: center;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    color: var(--pencil);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    h1 { font-size: 1.9rem; }
+    .wrap { padding: 36px 16px 0 16px; }
+    .timeline { padding-left: 28px; }
+    .entry::before { left: -26px; }
+    .vocab-item { flex-direction: column; gap: 2px; }
+    .vocab-term { min-width: 0; }
+    .step-label { min-width: 70px; font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Era VI · Networks of Connections</div>
+    <h1>Graphs: Paths, Networks, and the Algorithms That Navigate Them</h1>
+    <p class="subtitle">A new shape of problem emerges — not "a sequence to sort" or "a value to find," but "a web of connections to explore" — and a 200-year-old puzzle about bridges turns out to be exactly the right starting point.</p>
+  </header>
+
+  <div class="intro">
+    <p><strong>The shift in this era.</strong> Every data structure and algorithm so far has dealt with data that has an obvious linear or hierarchical shape: a sequence (array, linked list), a nested structure (stack, tree). But an enormous number of real situations don't fit this mold naturally: cities connected by roads, computers connected by network cables, people connected by friendships, tasks that depend on other tasks being finished first. These are all <strong>networks of relationships</strong> — and this era is about the data structure built to represent exactly that (the <strong>graph</strong>), and the algorithms for navigating it.</p>
+    <p>This era is unusual in this timeline because its starting point is much older than computing itself — the foundational idea of graph theory dates to 1736, over two centuries before electronic computers. The reason it belongs here is that the <em>algorithms</em> for actually traversing and analyzing graphs efficiently are products of the 1950s–60s, built using exactly the tools (queues, stacks, and the complexity analysis) established in Eras IV and V.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- ENTRY 1: Euler and the Seven Bridges -->
+    <div class="entry">
+      <div class="card" id="card-1">
+        <div class="card-header" onclick="toggleCard('card-1')">
+          <div class="meta">
+            <span class="date-tag">1736 · Königsberg (then Prussia)</span>
+            <h3 class="card-title">Euler and the Seven Bridges of Königsberg</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              The city of Königsberg had seven bridges connecting four landmasses divided by a river. A popular puzzle asked whether it was possible to walk through the city crossing every bridge exactly once and returning to the starting point. Leonhard Euler proved this was impossible — not by trying every route, but by representing the landmasses and bridges abstractly (as points and connections) and reasoning about a general property of any such arrangement.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Graph</span><span class="vocab-def">a mathematical structure consisting of "vertices" (also called "nodes") and "edges" (connections between pairs of vertices). Despite the name, a "graph" here has nothing to do with bar charts or line graphs — it means a network of points and connections.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Vertex (plural: vertices) / Node</span><span class="vocab-def">a single point in a graph — in Euler's puzzle, each landmass. The terms "vertex" and "node" are used interchangeably.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Edge</span><span class="vocab-def">a connection between two vertices — in Euler's puzzle, each bridge.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Degree</span><span class="vocab-def">the number of edges connected to a vertex. A landmass with 3 bridges has degree 3.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Abstraction</span><span class="vocab-def">stripping away details that don't matter for the problem at hand, to focus on the structure that does. Euler realized the exact shapes of the landmasses, distances, and bridge designs were irrelevant — only <em>which landmasses connect to which others, and how many times</em> mattered.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>This is one of the most important "aha" moments in the history of mathematics, and it's worth understanding deeply because the same kind of move — strip away irrelevant detail, represent a problem as points and connections — is something you'll do constantly once you're comfortable with graphs.</p>
+              <div class="diagram">
+                <svg class="graph-svg" width="280" height="200" viewBox="0 0 280 200">
+                  <!-- edges -->
+                  <line x1="140" y1="40" x2="60" y2="100" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="140" y1="40" x2="220" y2="100" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="140" y1="40" x2="60" y2="100" stroke="#8B8680" stroke-width="2" transform="translate(8,8)"/>
+                  <line x1="140" y1="40" x2="220" y2="100" stroke="#8B8680" stroke-width="2" transform="translate(-8,8)"/>
+                  <line x1="60" y1="100" x2="140" y2="160" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="220" y1="100" x2="140" y2="160" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="60" y1="100" x2="220" y2="100" stroke="#8B8680" stroke-width="2"/>
+                  <!-- vertices -->
+                  <circle cx="140" cy="40" r="16" fill="#F1EADA" stroke="#C77B58" stroke-width="2"/>
+                  <text x="140" y="45" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#2B3A4A">N</text>
+                  <circle cx="60" cy="100" r="16" fill="#F1EADA" stroke="#C77B58" stroke-width="2"/>
+                  <text x="60" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#2B3A4A">W</text>
+                  <circle cx="220" cy="100" r="16" fill="#F1EADA" stroke="#C77B58" stroke-width="2"/>
+                  <text x="220" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#2B3A4A">E</text>
+                  <circle cx="140" cy="160" r="16" fill="#F1EADA" stroke="#C77B58" stroke-width="2"/>
+                  <text x="140" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#2B3A4A">S</text>
+                </svg>
+                <div class="diagram-caption">Königsberg as a graph: 4 vertices (landmasses N, W, E, S), 7 edges (bridges). Note that N–W and N–E each have two edges (two bridges between those landmasses) — graphs can have multiple edges between the same pair of vertices.</div>
+              </div>
+              <p>Euler's reasoning: think about any single vertex (landmass) that isn't the start or end of the walk. Every time the walk passes <em>through</em> this landmass, it uses one bridge to arrive and a different bridge to leave — bridges get "used up" in pairs. So for a walk to pass through a landmass any number of times and use every bridge exactly once, that landmass needs an <strong>even</strong> degree (its bridges pair up perfectly). Euler showed that in the Königsberg graph, <em>all four</em> landmasses have odd degree — so no such walk can exist, regardless of where you start, end, or what order you try. He proved this for <em>every possible route</em> at once, without checking any of them individually — by reasoning about a structural property (degree parity) of the abstract graph.</p>
+              <p>This is the deepest lesson of this entry, and it echoes Euclid's correctness proof from Era I: <strong>a good abstraction lets you prove something about an entire (often infinite) space of possibilities at once, by reasoning about structure rather than checking cases.</strong> "Represent the problem as a graph, then ask a structural question about the graph" is a move you will make over and over in DSA — turning problems about scheduling, dependencies, networks, relationships, and even seemingly unrelated things (like word transformations, or game states) into graph questions, because graph theory has a rich, well-developed toolkit of structural questions and answers.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for DSA later</span>
+              The property Euler discovered — a walk using every edge exactly once exists if and only if zero or two vertices have odd degree — is now called an "Eulerian path/circuit," and the general technique (reasoning about degree, connectivity, and structural properties rather than brute-force checking) underlies a large category of graph problems. But the much broader lesson — "model this as vertices and edges, then apply known graph algorithms" — is arguably the single highest-value modeling skill in all of competitive programming. A surprising fraction of hard CP problems are, underneath an unfamiliar story, a standard graph algorithm in disguise.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 2: Representing graphs in memory -->
+    <div class="entry sage">
+      <div class="card" id="card-2">
+        <div class="card-header" onclick="toggleCard('card-2')">
+          <div class="meta">
+            <span class="date-tag">1950s–60s · As computing adopted graph theory</span>
+            <h3 class="card-title">Putting a Graph Into Memory — Adjacency Lists and Matrices</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              To work with graphs computationally, two standard representations emerged: the adjacency matrix, a grid where cell (i, j) indicates whether an edge exists between vertex i and vertex j; and the adjacency list, where each vertex stores a list of the vertices it's directly connected to.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Adjacency</span><span class="vocab-def">two vertices are "adjacent" if there's a direct edge between them — i.e., they're directly connected, with no intermediate vertex.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Adjacency matrix</span><span class="vocab-def">a 2D grid (an array of arrays) of size (number of vertices) × (number of vertices), where the cell at row i, column j is, e.g., 1 if there's an edge from vertex i to vertex j, and 0 otherwise.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Adjacency list</span><span class="vocab-def">for each vertex, a list (often a linked list or dynamic array) of the vertices directly connected to it. Vertex i's list contains every j such that an edge (i, j) exists.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Directed / undirected</span><span class="vocab-def">in a "directed" graph, an edge from A to B doesn't necessarily mean there's an edge from B to A (e.g., one-way streets, "follows" on social media). In an "undirected" graph, edges go both ways (e.g., friendships, two-way roads).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Weighted graph</span><span class="vocab-def">a graph where each edge has an associated number ("weight") — e.g., the distance of a road, the cost of a connection, the time of a flight. An "unweighted" graph treats every edge as equivalent (or, equivalently, weight 1).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Sparse / dense</span><span class="vocab-def">a graph is "sparse" if it has relatively few edges compared to the maximum possible (roughly n² for n vertices) — e.g., a road network, where most cities aren't directly connected to most others. A "dense" graph has close to the maximum number of edges.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>This entry might feel like a step back into "implementation details" after the elegance of Euler's proof — but it's a crucial bridge, and it follows the exact same pattern as Era IV's array-vs-linked-list discussion: <strong>there's no single "correct" way to store a graph; the right choice depends on what operations you need, and especially on whether the graph is sparse or dense.</strong></p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">Adjacency<br>matrix:</div>
+                  <div class="cell">&nbsp;&nbsp;A B C D</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell">A 0 1 1 0</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell">B 1 0 1 0</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell">C 1 1 0 1</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell">D 0 0 1 0</div>
+                </div>
+                <div class="diagram-row" style="margin-top: 12px;">
+                  <div class="step-label">Adjacency<br>list:</div>
+                  <div class="cell">A: [B, C]</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell">B: [A, C]</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell">C: [A, B, D]</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell">D: [C]</div>
+                </div>
+                <div class="diagram-caption">The same graph (4 vertices, 5 edges total) stored two ways. The matrix uses 16 cells regardless of how many edges exist; the list uses space proportional to the actual number of edges (here, 10 entries, since each undirected edge appears in both vertices' lists).</div>
+              </div>
+              <p>The adjacency matrix's defining property: "is there an edge between vertex i and vertex j?" is O(1) — just look at cell (i, j) directly, exactly like array indexing from Era IV. But the matrix always uses O(V²) space (V = number of vertices), <em>regardless of how many edges actually exist</em>. For a sparse graph — say, 100,000 vertices but only 200,000 edges (very common for real-world networks: a person doesn't have 100,000 friends) — a matrix would need 10 billion cells, the vast majority storing "0" (no edge), which is wasteful both in memory and in time (algorithms that need to look at "every neighbor of vertex i" must scan the entire row, even though almost all of it is zeroes).</p>
+              <p>The adjacency list's defining property: space proportional to the actual number of edges (O(V + E)) — no waste on non-existent connections. Finding "all neighbors of vertex i" means just reading vertex i's list directly — exactly the size it needs to be, no more. The tradeoff: checking "is there a specific edge between i and j?" now requires searching through vertex i's list (O(degree of i)) rather than O(1) direct lookup.</p>
+              <p>In competitive programming, <strong>the adjacency list is the overwhelmingly more common choice</strong>, because most graph problems involve sparse graphs (the constraints typically make V² far too large to fit in memory or process in time, while V + E is manageable) and because most graph algorithms (the next two entries) work by repeatedly asking "what are the neighbors of this vertex?" — exactly what adjacency lists answer efficiently. The matrix representation remains useful for smaller, dense graphs, or for algorithms (like certain shortest-path-between-all-pairs algorithms) that genuinely need O(1) edge lookups.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">A representation choice with real consequences</span>
+              This is another instance of the theme from Era IV (arrays vs. linked lists): the same abstract object (a graph) can be represented in memory in different ways, and the choice isn't cosmetic — it directly determines which algorithms are feasible at all, given problem constraints. Before writing any graph algorithm, one of the first practical decisions is "adjacency list or matrix?" — and for almost all CP problems with V up to 10^5 or beyond, the answer is "list," simply because a matrix wouldn't fit in memory.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 3: BFS and DFS -->
+    <div class="entry gold">
+      <div class="card" id="card-3">
+        <div class="card-header" onclick="toggleCard('card-3')">
+          <div class="meta">
+            <span class="date-tag">1950s–1960s · Multiple contributors</span>
+            <h3 class="card-title">Breadth-First and Depth-First Search — Two Ways to Explore</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Breadth-first search (BFS) explores a graph outward from a starting vertex, visiting all vertices at distance 1 before any at distance 2, all at distance 2 before any at distance 3, and so on — using a queue to keep track of which vertices to visit next. Depth-first search (DFS) explores as far as possible along one path before backtracking, using a stack (often implicitly, via recursion) to remember where to backtrack to.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Traversal</span><span class="vocab-def">visiting every vertex (and/or edge) of a graph in some systematic order — generalizing the "traversal" concept from Era IV's linked lists and trees to the more general graph setting.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Visited (marking)</span><span class="vocab-def">keeping track of which vertices have already been processed, so the algorithm doesn't process them again — essential in graphs, since (unlike trees) graphs can contain cycles, and without tracking visited vertices, traversal could loop forever.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Backtracking</span><span class="vocab-def">when a search reaches a point where it can't (or shouldn't) continue further, returning to a previous decision point to try a different option. DFS's "go back and try the next branch" behavior is the simplest form of backtracking.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Connected component</span><span class="vocab-def">a maximal group of vertices that are all reachable from each other via some path of edges. A graph can have multiple components — e.g., a social network graph where some people have no path of connections to others.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Shortest path (unweighted)</span><span class="vocab-def">the path between two vertices using the fewest possible edges. BFS finds this naturally because of the order it explores in — a property worth understanding deeply, covered below.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Recall from Era IV: a queue is FIFO (first in, first out — like a line of people), and a stack is LIFO (last in, first out — like a stack of plates). BFS and DFS are, at their core, <em>the exact same traversal skeleton</em> — "keep a collection of vertices to visit next; repeatedly take one out, process it, and add its unvisited neighbors to the collection" — differing <em>only</em> in which of these two collections is used. This is a beautiful payoff for having studied stacks and queues as abstract structures in Era IV: two algorithms that feel quite different in behavior turn out to differ by a single data structure choice.</p>
+              <div class="diagram">
+                <svg class="graph-svg" width="280" height="200" viewBox="0 0 280 200">
+                  <line x1="140" y1="30" x2="60" y2="90" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="140" y1="30" x2="220" y2="90" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="60" y1="90" x2="30" y2="160" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="60" y1="90" x2="100" y2="160" stroke="#8B8680" stroke-width="2"/>
+                  <line x1="220" y1="90" x2="250" y2="160" stroke="#8B8680" stroke-width="2"/>
+                  <circle cx="140" cy="30" r="15" fill="#F1EADA" stroke="#C77B58" stroke-width="2"/>
+                  <text x="140" y="35" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2B3A4A">A</text>
+                  <circle cx="60" cy="90" r="15" fill="#F1EADA" stroke="#7D9471" stroke-width="2"/>
+                  <text x="60" y="95" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2B3A4A">B</text>
+                  <circle cx="220" cy="90" r="15" fill="#F1EADA" stroke="#7D9471" stroke-width="2"/>
+                  <text x="220" y="95" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2B3A4A">C</text>
+                  <circle cx="30" cy="160" r="15" fill="#F1EADA" stroke="#C9A227" stroke-width="2"/>
+                  <text x="30" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2B3A4A">D</text>
+                  <circle cx="100" cy="160" r="15" fill="#F1EADA" stroke="#C9A227" stroke-width="2"/>
+                  <text x="100" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2B3A4A">E</text>
+                  <circle cx="250" cy="160" r="15" fill="#F1EADA" stroke="#C9A227" stroke-width="2"/>
+                  <text x="250" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2B3A4A">F</text>
+                </svg>
+                <div class="diagram-caption">Starting from A: BFS visits A, then B and C (both distance 1, terracotta ring), then D, E, F (all distance 2, gold ring) — strictly layer by layer. DFS visits A, then plunges down one branch entirely (e.g., A→B→D, then A→B→E) before ever reaching C.</div>
+              </div>
+              <p><strong>Why does BFS find shortest paths (in unweighted graphs)?</strong> This is worth proving to yourself carefully, because it's a genuinely important guarantee, not a coincidence. BFS processes vertices in "layers": it fully finishes all vertices at distance 1 from the start before processing any vertex at distance 2, because of how the queue works — every distance-1 vertex was added to the queue before any distance-2 vertex (since distance-2 vertices are only discovered <em>as neighbors of</em> distance-1 vertices, which means they get added to the queue strictly after all distance-1 vertices already are). By induction, this layering holds at every distance. The first time a vertex is reached, it's reached via the shortest possible path — because any longer path to it would require passing through a vertex from a <em>later</em> layer first, which is impossible since later layers haven't been processed yet. This guarantee — <strong>BFS gives shortest paths in unweighted graphs, for free, as a side effect of its exploration order</strong> — is one of the most useful and frequently-applied facts in all of graph algorithms.</p>
+              <p><strong>DFS</strong>, by contrast, doesn't give shortest paths (it might wander deep down a long branch before ever finding a short one), but its "plunge deep, then backtrack" behavior makes it the natural fit for a different family of questions: detecting cycles (if, while going deep, you encounter a vertex that's already "in progress" further up the current path, you've found a cycle), determining connected components, topological ordering (covered in the final entry of a later era on this topic), and exploring all possibilities in problems that are naturally about "try this, and if it doesn't work, backtrack and try something else" — which connects directly to backtracking-based brute-force search, a major category of CP problems in its own right.</p>
+              <p>Both BFS and DFS visit every vertex and every edge at most once (thanks to the "visited" marking), so both run in O(V + E) — linear in the size of the graph's representation. This is about as fast as any algorithm that needs to look at the whole graph could possibly be, and it's why "can this be solved with a BFS/DFS?" is often one of the first questions to ask about a new graph problem — if yes, you likely have an efficient solution already.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP</span>
+              BFS and DFS are arguably the two most fundamental algorithms in all of competitive programming — an enormous fraction of "medium difficulty" problems are, at their core, "model this as a graph, then BFS or DFS on it," sometimes with extra bookkeeping (tracking distances, parent pointers to reconstruct paths, additional state per vertex). Grid-based problems (mazes, image flood-fill, island-counting) are graphs in disguise — each cell is a vertex, adjacent cells are connected by edges — and BFS/DFS apply directly. Recognizing this disguise is one of the first major "leveling up" moments for a new competitive programmer.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 4: Dijkstra's algorithm -->
+    <div class="entry">
+      <div class="card" id="card-4">
+        <div class="card-header" onclick="toggleCard('card-4')">
+          <div class="meta">
+            <span class="date-tag">1956 (devised), 1959 (published) · Edsger Dijkstra, Netherlands</span>
+            <h3 class="card-title">Dijkstra's Algorithm — Shortest Paths When Edges Have Costs</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Dijkstra's algorithm finds the shortest path from a starting vertex to all other vertices in a weighted graph (with non-negative edge weights), by repeatedly selecting the unvisited vertex with the smallest known distance from the start, and using it to update ("relax") the distances of its neighbors.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Relaxation</span><span class="vocab-def">the operation of checking whether going through a particular vertex offers a shorter path to one of its neighbors than the best known so far, and updating that neighbor's distance if so. "Relax edge (u, v)" means: if distance(u) + weight(u,v) < distance(v), update distance(v) to that smaller value.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Greedy algorithm</span><span class="vocab-def">an algorithm that makes the locally-best choice at each step, without reconsidering past choices, hoping (and in some cases, provably guaranteed) that this leads to a globally-best result. Dijkstra's algorithm is greedy: it always finalizes the closest remaining vertex next.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Priority queue</span><span class="vocab-def">a data structure (often implemented as a "heap," covered in a later era) that always gives you the smallest (or largest) element among those currently stored, efficiently — exactly what's needed to repeatedly find "the unvisited vertex with smallest known distance" without scanning everything each time.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Non-negative weights</span><span class="vocab-def">all edge weights are ≥ 0. This condition is essential for Dijkstra's algorithm's correctness — the elaboration explains why.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>BFS solves shortest paths beautifully — but only when every edge "costs" the same (1 step). What if edges have different costs — distances between cities, travel times, prices? Dijkstra's algorithm generalizes BFS's layer-by-layer idea to this setting.</p>
+              <p>The core idea: maintain a "best known distance so far" for every vertex (initially: 0 for the start, infinity for everything else, meaning "unknown/not yet reached"). Repeatedly pick the unvisited vertex with the smallest best-known-distance, mark it as "finalized" (its distance is now guaranteed correct, permanently), and use it to <em>relax</em> its neighbors — check if reaching them via this vertex beats their current best-known-distance, and update if so.</p>
+              <p>Why does picking the smallest unvisited distance guarantee that distance is <em>final</em> (can never be improved later)? This is the crux of the algorithm's correctness, and it directly depends on <strong>non-negative weights</strong>. Suppose vertex X currently has the smallest tentative distance among unvisited vertices. Could some future relaxation, via some other vertex Y (with a larger tentative distance), ever produce a shorter path to X? For that to happen, the path through Y would need: distance(Y) + weight(Y,X) < distance(X). But distance(Y) ≥ distance(X) already (X has the smallest tentative distance), and weight(Y,X) ≥ 0 (non-negative weights) — so distance(Y) + weight(Y,X) ≥ distance(X), which contradicts the inequality needed. <strong>This is why negative edge weights break Dijkstra's algorithm</strong> — a negative weight could let a "later" vertex offer a shortcut that undercuts an already-finalized vertex's distance, violating the very assumption the algorithm relies on. (Graphs with negative weights need a different algorithm, which you'll meet in a later era.)</p>
+              <p>Notice the structural relationship to BFS: BFS's queue processes vertices in order of distance (all distance-0... then distance-1... then distance-2...) because, with all edges costing 1, the order vertices are <em>discovered</em> happens to match the order of their distances. With varying edge weights, discovery order and distance order can differ — a vertex discovered "late" via a long edge might still have a smaller true distance than one discovered "early" via a path of several short edges. The priority queue is what restores the correct ordering: instead of "first discovered, first processed" (a plain queue), it's "smallest distance, first processed" — which is exactly the generalization Dijkstra's algorithm needs.</p>
+              <p>This greedy, "always finalize the current best, then use it to improve others" pattern — making an irrevocable locally-optimal choice and proving it's also globally optimal — is the prototype for an entire category of "greedy algorithms" you'll encounter, where the central challenge is usually <em>proving</em> that the greedy choice is safe (as the non-negative-weights argument above does for Dijkstra), since greedy approaches that <em>aren't</em> provably correct are a very common source of wrong-but-plausible-looking solutions in CP.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Closing this era's thread</span>
+              Across this era: Euler showed that representing a problem as vertices and edges lets you reason about entire classes of solutions via structure (degree parity). Adjacency lists/matrices showed that, as with arrays vs. linked lists, the choice of representation has real performance consequences depending on density. BFS and DFS showed that two seemingly different exploration strategies are really "the same skeleton with a different Era-IV data structure plugged in" — and that this single choice determines whether you get a shortest-path guarantee. Dijkstra's algorithm generalized BFS's guarantee to weighted graphs via a greedy strategy whose correctness hinges on a specific assumption (non-negative weights) — foreshadowing that "what assumptions does this algorithm rely on, and what happens if they're violated?" is a question worth asking of every algorithm you learn. The next era turns to a different algorithmic paradigm entirely — one where, instead of avoiding repeated work via clever ordering (like Dijkstra) or clever halving (like Era V), you avoid repeated work by explicitly remembering answers to subproblems: dynamic programming.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="era-footer">
+    End of Era VI. Next: Era VII — Remembering Your Work: Dynamic Programming, Memoization, and the Problems That Look Exponential But Aren't (1950s–60s, Richard Bellman and beyond).
+  </div>
+
+</div>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const body = card.querySelector('.card-body');
+    const isOpen = card.classList.contains('open');
+
+    if (isOpen) {
+      card.classList.remove('open');
+      body.style.maxHeight = '0px';
+    } else {
+      card.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.card.open').forEach(card => {
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    });
+  });
+</script>
+
+</body>
+</html>

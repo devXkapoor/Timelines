@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story of Algorithms — Era IV: Data Structures Get Names</title>
+<style>
+  :root {
+    --paper: #F7F3E9;
+    --paper-warm: #F1EADA;
+    --ink: #2B3A4A;
+    --ink-soft: #4A5A6A;
+    --terracotta: #C77B58;
+    --pencil: #8B8680;
+    --sage: #7D9471;
+    --sage-bg: #EAEFE6;
+    --gold: #C9A227;
+    --line: #D9CFBB;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(139,134,128,0.045) 39px);
+    color: var(--ink);
+    font-family: "Source Serif Pro", Georgia, "Times New Roman", serif;
+    line-height: 1.7;
+    font-size: 18px;
+    padding: 0 0 120px 0;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 28px 0 28px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: "Lora", Georgia, serif;
+    font-weight: 700;
+    font-size: 2.6rem;
+    margin: 0 0 12px 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .intro {
+    background: var(--paper-warm);
+    border-left: 4px solid var(--terracotta);
+    padding: 22px 26px;
+    border-radius: 4px;
+    margin-bottom: 52px;
+    font-size: 0.98rem;
+  }
+  .intro p { margin: 0 0 10px 0; }
+  .intro p:last-child { margin-bottom: 0; }
+
+  .timeline {
+    position: relative;
+    padding-left: 36px;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--terracotta) 0%, var(--sage) 50%, var(--gold) 100%);
+    opacity: 0.35;
+    border-radius: 2px;
+  }
+
+  .entry { position: relative; margin-bottom: 18px; }
+
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -33px;
+    top: 28px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--terracotta);
+    z-index: 2;
+  }
+
+  .entry.sage::before { border-color: var(--sage); }
+  .entry.gold::before { border-color: var(--gold); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(43,58,74,0.06);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+  }
+
+  .card:hover { box-shadow: 0 4px 16px rgba(43,58,74,0.10); }
+
+  .card-header {
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .card-header:hover { background: var(--paper-warm); }
+
+  .meta { flex: 1; }
+
+  .date-tag {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .entry.sage .date-tag { color: var(--sage); }
+  .entry.gold .date-tag { color: var(--gold); }
+
+  .card-title {
+    font-family: "Lora", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .toggle-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--ink-soft);
+    transition: transform 0.3s ease, background 0.2s ease;
+    font-family: "Atkinson Hyperlegible", sans-serif;
+  }
+
+  .card.open .toggle-icon { transform: rotate(45deg); background: var(--paper-warm); }
+
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+
+  .card-body-inner {
+    padding: 0 24px 28px 24px;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+
+  .section-label {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pencil);
+    margin: 22px 0 10px 0;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .source-text {
+    background: var(--paper-warm);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+    border: 1px solid var(--line);
+  }
+
+  .vocab-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .vocab-item { display: flex; gap: 10px; font-size: 0.95rem; align-items: baseline; }
+
+  .vocab-term {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    color: var(--terracotta);
+    flex-shrink: 0;
+    min-width: 130px;
+  }
+  .entry.sage .vocab-term { color: var(--sage); }
+  .entry.gold .vocab-term { color: var(--gold); }
+
+  .vocab-def { color: var(--ink-soft); }
+
+  .elaboration { font-size: 0.99rem; }
+  .elaboration p { margin: 0 0 14px 0; }
+  .elaboration p:last-child { margin-bottom: 0; }
+  .elaboration strong { color: var(--ink); }
+
+  .callout {
+    background: var(--sage-bg);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--sage);
+  }
+
+  .callout-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  /* Diagram blocks for visualizing data structures */
+  .diagram {
+    margin: 16px 0;
+    padding: 18px;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .diagram-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+  }
+
+  .cell {
+    border: 1.5px solid var(--ink-soft);
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 36px;
+    color: var(--ink);
+  }
+
+  .cell-label {
+    font-size: 0.7rem;
+    color: var(--pencil);
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .arrow {
+    color: var(--terracotta);
+    font-size: 1.1rem;
+  }
+
+  .diagram-caption {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  code, .mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    background: var(--paper-warm);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+
+  .era-footer {
+    margin-top: 60px;
+    text-align: center;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    color: var(--pencil);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    h1 { font-size: 1.9rem; }
+    .wrap { padding: 36px 16px 0 16px; }
+    .timeline { padding-left: 28px; }
+    .entry::before { left: -26px; }
+    .vocab-item { flex-direction: column; gap: 2px; }
+    .vocab-term { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Era IV · The Toolbox Takes Shape</div>
+    <h1>Data Structures Get Names</h1>
+    <p class="subtitle">Arrays, lists, stacks, queues, and trees become formal, named, reusable concepts — and for the first time, people start asking: how do we measure whether one algorithm is actually <em>better</em> than another?</p>
+  </header>
+
+  <div class="intro">
+    <p><strong>The shift in this era.</strong> By the end of Era III, the call stack existed as a working mechanism (for subroutine returns), and "memory as a sequence of numbered slots" was the underlying reality of every program — but these were <em>implementation details</em>, not concepts programmers explicitly designed with. This era is where that changes: people start to notice that <em>the way you arrange data in memory</em> is itself a design decision, with consequences — some arrangements make certain operations fast and others slow, and choosing the right arrangement for the job is a skill in its own right.</p>
+    <p>This era also answers a question that's been lurking since Era I: when the Sieve of Eratosthenes felt obviously "smarter" than checking each number individually — <em>how do you say that precisely?</em> "Smarter" and "faster" need to become measurable, comparable properties of an algorithm, independent of which specific computer runs it or how fast that computer happens to be. That's the birth of <strong>algorithm analysis</strong> — and it's inseparable from the rise of data structures, because the speed of an algorithm is very often determined by which data structure it uses.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- ENTRY 1: Arrays and records as formal concepts -->
+    <div class="entry">
+      <div class="card" id="card-1">
+        <div class="card-header" onclick="toggleCard('card-1')">
+          <div class="meta">
+            <span class="date-tag">1950s · Multiple, via early high-level languages</span>
+            <h3 class="card-title">The Array — Memory Organized as a Grid</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Early high-level languages such as FORTRAN (1957) introduced the array as a built-in language feature: a named collection of values, all of the same type, stored in consecutive memory locations, where any individual element can be accessed directly by specifying its numeric position (index) — without needing to know its actual memory address.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Array</span><span class="vocab-def">a collection of items, all the same type, stored one after another in memory, where each item can be accessed by its position (index), usually starting from 0.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Index</span><span class="vocab-def">a number identifying the position of an element within an array. The first element is at index 0, the second at index 1, and so on (in most modern languages — this "starting at 0" convention itself has a hardware reason, which the elaboration explains).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Contiguous</span><span class="vocab-def">located next to each other, with no gaps in between. An array's elements occupy a single unbroken block of memory.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Constant time / O(1)</span><span class="vocab-def">an operation whose time doesn't depend on how much data there is — accessing array element 5 takes the same amount of time whether the array has 10 elements or 10 million. You'll learn the formal "O(1)" notation properly later in this era, but the intuition starts here.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Type</span><span class="vocab-def">a classification of what kind of value something is (e.g., a whole number, a decimal number, a single character) — important here because all elements of an array being the same type means they all take up the same amount of memory space, which is exactly what makes direct indexing possible.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Recall from Era III: memory is a long sequence of numbered slots (addresses), and the machine can jump to any address directly. The array formalizes a simple but powerful idea: if you reserve a block of, say, 10 consecutive slots, all for the same kind of value (say, each slot holds one whole number, and each whole number takes up exactly 4 bytes of space), then the address of "element number i" can be computed with simple arithmetic: <span class="mono">address_of(element i) = base_address + i × size_of_each_element</span>.</p>
+              <p>This formula is the entire reason arrays are fast. To get to element 1,000,000 of an array, the machine doesn't walk through elements 0 through 999,999 first — it computes the address directly with one multiplication and one addition, then jumps straight there. This is what "constant time access" (O(1)) means: the <em>number of steps</em> to access any element doesn't grow as the array grows, because it's always "one multiplication, one addition, one jump," regardless of which index or how big the array is.</p>
+              <p>This also explains why arrays start at index 0 in most languages: if the array's first element is at the base address itself, then <span class="mono">address_of(element 0) = base_address + 0 × size = base_address</span> — the formula works cleanly with 0 as the first index. (Some languages, like older versions of BASIC, or mathematical convention, start at 1 — both choices exist, but the 0-based version maps more directly onto the underlying address arithmetic, which is why it became dominant in languages designed close to the hardware.)</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div>
+                    <div class="cell">7</div>
+                    <div class="cell-label">index 0<br>addr 1000</div>
+                  </div>
+                  <div>
+                    <div class="cell">3</div>
+                    <div class="cell-label">index 1<br>addr 1004</div>
+                  </div>
+                  <div>
+                    <div class="cell">9</div>
+                    <div class="cell-label">index 2<br>addr 1008</div>
+                  </div>
+                  <div>
+                    <div class="cell">2</div>
+                    <div class="cell-label">index 3<br>addr 1012</div>
+                  </div>
+                  <div>
+                    <div class="cell">5</div>
+                    <div class="cell-label">index 4<br>addr 1016</div>
+                  </div>
+                </div>
+                <div class="diagram-caption">An array of 5 whole numbers (each taking 4 bytes), starting at memory address 1000. To find element at index 3: 1000 + 3 × 4 = 1012 — directly, no searching.</div>
+              </div>
+              <p>The cost of this speed: arrays have a <em>fixed size</em> once created (because the block of contiguous memory was reserved as a whole), and inserting an element in the middle requires shifting every element after it to make room — which takes time proportional to how many elements need to shift. This tradeoff — "fast access, expensive insertion/removal in the middle" — is the first of many tradeoffs you'll learn to weigh when choosing a data structure, and it's the direct motivation for the next entry.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP</span>
+              The array is, by a wide margin, the most-used data structure in competitive programming — not because it's "basic," but because its O(1) access and excellent use of CPU caching (a hardware detail: contiguous memory is read efficiently by modern processors) make it the fastest option whenever its constraints (fixed size, expensive middle-insertion) aren't a problem. A huge fraction of CP techniques — prefix sums, two pointers, sliding window, binary search — are really "clever things you can do because the data sits in an array."
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 2: Linked lists -->
+    <div class="entry sage">
+      <div class="card" id="card-2">
+        <div class="card-header" onclick="toggleCard('card-2')">
+          <div class="meta">
+            <span class="date-tag">1955–1956 · RAND Corporation, USA</span>
+            <h3 class="card-title">The Linked List — Trading Direct Access for Flexibility</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Researchers working on early list-processing systems (including the "Information Processing Language," used for early artificial intelligence research) developed the linked list: a way of storing a sequence of items where each item is stored in its own small block of memory, and each block also stores the memory address of the next item in the sequence — so the items themselves need not be contiguous.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Linked list</span><span class="vocab-def">a sequence of "nodes," where each node holds a value and a pointer (address) to the next node. The nodes can be scattered anywhere in memory; what makes them a "sequence" is purely the chain of pointers connecting them.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Node</span><span class="vocab-def">a single unit of a linked structure — typically a small block of memory containing a value plus one or more pointers to other nodes.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Pointer / reference</span><span class="vocab-def">a value that <em>is</em> a memory address — i.e., a value whose purpose is to tell you where something else is located, rather than to be a piece of data itself. "This node's pointer is address 2048" means "the next node lives at address 2048."</span></div>
+              <div class="vocab-item"><span class="vocab-term">Traversal</span><span class="vocab-def">visiting each element of a structure in sequence, one at a time — for a linked list, this means starting at the first node and repeatedly following the "next" pointer until you've visited every node.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Linear time / O(n)</span><span class="vocab-def">an operation whose time grows proportionally with the amount of data — if there are n items, the operation takes roughly n steps. Finding an element in a linked list by walking from the start is O(n), unlike an array's O(1) direct access.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>The linked list is best understood as the array's mirror image — it makes the opposite tradeoff on purpose. Recall the array's weakness: inserting into the middle requires shifting everything after it, because elements must stay contiguous for the address-arithmetic trick to work. What if you simply <em>gave up</em> contiguity?</p>
+              <p>If each item, instead of living at a predictable address, carries with it the address of "whatever comes next" — then inserting a new item in the middle of the sequence becomes cheap: create the new node anywhere there's free memory, point it at whatever the previous node used to point to, and update the previous node to point at the new node instead. No shifting required — just rewiring a couple of pointers.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div><div class="cell">7 → •</div><div class="cell-label">node @ 3040</div></div>
+                  <div class="arrow">→</div>
+                  <div><div class="cell">3 → •</div><div class="cell-label">node @ 9120</div></div>
+                  <div class="arrow">→</div>
+                  <div><div class="cell">9 → •</div><div class="cell-label">node @ 1500</div></div>
+                  <div class="arrow">→</div>
+                  <div><div class="cell">2 → ∅</div><div class="cell-label">node @ 4488</div></div>
+                </div>
+                <div class="diagram-caption">A linked list holding 7, 3, 9, 2. Each node lives at a scattered address; "∅" marks the end. To insert a new node between 3 and 9: create it anywhere, point it at node@1500, and change node@9120's pointer to point at the new node instead. No shifting.</div>
+              </div>
+              <p>The price you pay: there's no "address arithmetic" shortcut anymore. To get to the 1,000,000th element, you have <em>no choice</em> but to start at the first node and follow the chain of pointers, one node at a time, 999,999 times. There's no way to "jump" to the middle, because the middle's location isn't predictable — it depends on the entire chain of pointers built up so far. This is the origin of the O(1) vs. O(n) access tradeoff that you'll see framed, over and over, as "array vs. linked list" in every introductory DSA resource.</p>
+              <p>Why does this matter beyond this one comparison? Because it's the first clear example of a principle that runs through <em>all</em> of data structure design: <strong>there is no single "best" way to organize data — only better and worse fits for a specific pattern of operations.</strong> If your program mostly reads element 500,000 directly and rarely inserts new elements, arrays win easily. If your program constantly inserts and removes elements from the middle of a sequence and rarely needs "give me element number 500,000 directly," linked lists win. Recognizing <em>which operations a problem actually needs</em>, and picking the structure that makes those operations cheap, is one of the central skills DSA is trying to teach — and it starts mattering from this very first comparison.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Looking ahead</span>
+              The "node with a pointer to the next thing" idea generalizes enormously. A node with pointers to <em>two</em> other nodes (instead of one) becomes the building block of <strong>trees</strong> — which you'll meet later in this era. A node with a pointer to the <em>previous</em> node as well as the next becomes a "doubly linked list." This single idea — a small unit of data, plus pointers connecting it to other units — is the basic building material for almost every "non-array" data structure that exists.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 3: Stacks and queues formalized -->
+    <div class="entry gold">
+      <div class="card" id="card-3">
+        <div class="card-header" onclick="toggleCard('card-3')">
+          <div class="meta">
+            <span class="date-tag">Late 1950s · Formalized in early languages and compiler theory</span>
+            <h3 class="card-title">Stacks and Queues — Order Becomes the Whole Point</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              The stack — a structure where the most recently added item is always the first one removed (Last In, First Out, or LIFO) — and the queue — where the earliest added item is the first removed (First In, First Out, or FIFO) — were formalized as general-purpose abstract data structures, useful far beyond their original specific use (the call stack from Era III). Compiler designers in particular found stacks essential for processing the nested structure of programming language expressions.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Stack</span><span class="vocab-def">a collection where you can only add ("push") or remove ("pop") from one end (the "top"). The last item pushed is always the first one popped — Last In, First Out (LIFO). Think of a physical stack of plates: you add to the top, and you take from the top.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Queue</span><span class="vocab-def">a collection where items are added at one end ("enqueue") and removed from the other end ("dequeue"). The first item added is the first one removed — First In, First Out (FIFO). Think of a physical line of people: whoever joined first gets served first.</span></div>
+              <div class="vocab-item"><span class="vocab-term">LIFO / FIFO</span><span class="vocab-def">acronyms for "Last In, First Out" (stack) and "First In, First Out" (queue) — describing the order in which items come back out relative to the order they went in.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Abstract data type (ADT)</span><span class="vocab-def">a description of a data structure in terms of <em>what operations it supports and what those operations guarantee</em> (e.g., "pop always returns the most recently pushed item"), without specifying <em>how</em> it's implemented internally (it could be built from an array or a linked list — both work). This separation — "what it does" vs. "how it's built" — is itself an important and recurring idea.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Nested / nesting</span><span class="vocab-def">structures contained within structures of the same kind — like parentheses within parentheses: <span class="mono">((a+b)×(c+d))</span>. The innermost nested structure must be resolved before the outer ones can be.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>You already met the stack informally in Era III, as the mechanism behind subroutine calls and returns — but notice that there, it was a <em>side effect</em> of how the machine handles function calls, not something the programmer deliberately reached for. This era is where people realized: the LIFO pattern — "undo the most recent thing first" — shows up constantly, in contexts that have nothing to do with function calls, and deserves to be a tool you deliberately pick up.</p>
+              <p>The clearest example, and the reason compiler writers cared so much: nested expressions. Consider <span class="mono">((a+b)×(c+d))</span>. To process this correctly, you need to handle the <em>innermost</em> parentheses first — but you encounter the <em>outermost</em> opening parenthesis first, while reading left to right. A stack resolves this perfectly: every time you see an opening parenthesis, push it; every time you see a closing parenthesis, pop — and the thing you pop is guaranteed to be the matching opener for the closer you just saw, because of LIFO order. This "matching nested pairs" pattern — parentheses, but also nested function calls, nested loops, nested HTML tags, recursive data — is everywhere, and the stack is precisely the structure whose behavior mirrors it.</p>
+              <p>The <strong>queue</strong> captures a completely different, equally common pattern: fairness and order-of-arrival. If you're processing a sequence of tasks and want to handle them in the order they arrived (rather than most-recent-first), FIFO is what you want. A very important use you'll meet properly in a later era: when exploring a graph "layer by layer" (breadth-first search), a queue is exactly the structure that makes "explore everything at distance 1 before anything at distance 2" happen naturally.</p>
+              <p>The <strong>abstract data type</strong> idea deserves its own attention, because it's a shift in <em>how to think</em>, not just a new structure. Up to now, this timeline has talked about data structures mostly in terms of memory layout (contiguous vs. linked). The ADT framing says: forget the memory layout for a moment, and instead define a structure purely by its <em>interface</em> — the operations it supports (push, pop, peek) and the guarantees those operations make (pop always removes the most recently pushed item). <em>Then</em>, separately, ask how to implement that interface — and it turns out both arrays and linked lists can implement a stack perfectly well, with different tradeoffs. This separation between "the contract" and "the implementation" is one of the most important organizing ideas in all of software design, not just DSA — and stacks/queues are where it's first cleanly introduced.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP</span>
+              Stacks and queues are the backbone of an enormous range of CP problems: validating balanced brackets, evaluating arithmetic expressions, implementing undo functionality, breadth-first search (queue), depth-first search (which often uses a stack — either explicitly, or implicitly via recursion and the call stack from Era III), and "monotonic stack" techniques (a staple intermediate CP trick). Recognizing "this problem has a LIFO or FIFO structure hiding in it" is often the key insight that unlocks a problem.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 4: Trees -->
+    <div class="entry">
+      <div class="card" id="card-4">
+        <div class="card-header" onclick="toggleCard('card-4')">
+          <div class="meta">
+            <span class="date-tag">Late 1950s–1960s · Multiple contexts</span>
+            <h3 class="card-title">Trees — Branching Structure and Hierarchy</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              The tree — a structure consisting of nodes connected in a hierarchy, where each node has one "parent" (except a single root node, which has none) and zero or more "children" — emerged from multiple directions at once: representing the nested structure of arithmetic and logical expressions (expression trees), organizing data for efficient searching (search trees), and representing hierarchical real-world relationships (organizational charts, file systems, family trees).
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Tree</span><span class="vocab-def">a structure of connected nodes where one node (the "root") sits at the top, and every other node has exactly one "parent" connecting it upward — with no cycles (you can never follow connections and end up back where you started).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Root</span><span class="vocab-def">the single top-most node of a tree, with no parent. In diagrams, often drawn at the top even though "roots" in nature are at the bottom — this naming inconsistency is just a historical quirk.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Parent / child</span><span class="vocab-def">if node A connects directly "down" to node B, A is B's parent and B is A's child. A node can have multiple children but only one parent.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Leaf</span><span class="vocab-def">a node with no children — an "end point" of the tree.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Binary tree</span><span class="vocab-def">a tree where every node has at most two children, conventionally called "left" and "right."</span></div>
+              <div class="vocab-item"><span class="vocab-term">Binary search tree (BST)</span><span class="vocab-def">a binary tree with an extra rule: for every node, all values in its left subtree are smaller than the node's value, and all values in its right subtree are larger. This rule is what makes searching fast.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Height / depth</span><span class="vocab-def">the depth of a node is how many steps it is from the root (the root has depth 0). The height of a tree is the depth of its deepest node.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Logarithmic time / O(log n)</span><span class="vocab-def">an operation whose time grows much more slowly than the data size — specifically, proportional to how many times you can divide n in half before reaching 1. A balanced binary search tree with a million items has a height of only about 20 — so finding any item takes roughly 20 steps, not a million.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>You've already seen, informally, why "halving" is powerful — the Egyptian doubling trick from Era I, and the "repeatedly divide the problem in half" intuition mentioned alongside the Sieve. The binary search tree is where that intuition becomes a concrete <em>data structure</em>, not just a technique applied to an array.</p>
+              <p>Here's the idea. Take the rule: "for every node, everything smaller is to the left, everything larger is to the right." Now suppose you want to find the value 42 in the tree. Start at the root. Is 42 less than the root's value? If so, 42 (if it exists) <em>must</em> be somewhere in the left subtree — you can completely ignore the entire right subtree, no matter how large it is. Repeat at the next node. Each step either finds the value or eliminates roughly half of the remaining possibilities.</p>
+              <div class="diagram">
+                <div class="diagram-row" style="flex-direction: column; align-items: center; gap: 14px;">
+                  <div class="cell" style="background: var(--paper-warm);">50</div>
+                  <div style="display: flex; gap: 60px;">
+                    <div class="cell">30</div>
+                    <div class="cell">70</div>
+                  </div>
+                  <div style="display: flex; gap: 20px;">
+                    <div class="cell">20</div>
+                    <div class="cell">40</div>
+                    <div class="cell">60</div>
+                    <div class="cell">80</div>
+                  </div>
+                </div>
+                <div class="diagram-caption">A binary search tree. Searching for 60: 60 > 50 → go right. 60 < 70 → go left. Found in 3 steps, having ignored everything under 30 entirely (4 of the 7 nodes) after just one comparison.</div>
+              </div>
+              <p>This is the same "eliminate half the possibilities with one check" idea as the Egyptian doubling and the Sieve — but now it's baked directly into how the data is <em>stored</em>, not just into how you process it. A well-organized (<strong>"balanced"</strong> — meaning roughly equal numbers of nodes on the left and right at every level) binary search tree gives you O(log n) search, insertion, <em>and</em> deletion — all three, which is a combination neither plain arrays nor plain linked lists can offer simultaneously (arrays: O(1) access but O(n) insertion in general position; linked lists: O(n) access and O(1) insertion once you've found the spot). This is your first real example of a data structure that's specifically <em>designed</em>, structurally, to make a particular operation (searching) fast — rather than that speed being an accident of memory layout.</p>
+              <p>"Balanced" is doing a lot of work in that explanation, and it's worth flagging as an open thread: if you insert values into a binary search tree in a bad order (say, always increasing: 1, 2, 3, 4, 5...), the tree degenerates into something that's basically a linked list in disguise — every node has only a right child, height becomes n instead of log(n), and you lose all the benefits. Keeping a tree balanced as items are inserted and removed is a genuinely hard problem, and the data structures invented to solve it (self-balancing trees) are an important topic in a later era.</p>
+              <p>Trees also show up in a completely different role: representing structure itself. An arithmetic expression like <span class="mono">(a+b)×(c−d)</span> can be drawn as a tree where each operator is a node, and its operands are its children — and evaluating the expression becomes "process the tree" (specifically, process children before their parent — a pattern you'll formalize as a "traversal order" later). This connects directly back to the nested-parentheses problem from the previous entry: a stack helps you <em>parse</em> the nested structure; a tree is the <em>shape</em> of that nested structure once parsed.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">A thread that's now fully visible</span>
+              Look back across this entire era: arrays (contiguous memory, O(1) access, O(n) middle-insertion), linked lists (scattered memory via pointers, O(n) access, O(1) insertion once located), stacks/queues (restricted-order access patterns built on either), trees (hierarchical pointer structures enabling O(log n) search). Every one of these is a different answer to the same underlying question: <strong>given that memory is just a flat sequence of numbered slots (Era III), how should we organize data within it so that the operations our program needs are as fast as possible?</strong> There's no "correct" answer — only better and worse fits for the job. The next entry in this era gives us the precise mathematical language — Big-O notation — for talking about exactly how much better or worse, in a way that doesn't depend on which specific computer you're running on.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 5: Knuth and Big-O -->
+    <div class="entry sage">
+      <div class="card" id="card-5">
+        <div class="card-header" onclick="toggleCard('card-5')">
+          <div class="meta">
+            <span class="date-tag">1968 onward · Stanford, USA</span>
+            <h3 class="card-title">Donald Knuth and "The Art of Computer Programming" — Analysis Becomes a Discipline</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Donald Knuth began publishing "The Art of Computer Programming," a multi-volume work that systematically catalogued algorithms and data structures (sorting, searching, fundamental structures) and, critically, analyzed each one mathematically — determining, as a function of input size, how the number of operations an algorithm performs grows. Knuth popularized the use of "Big-O" notation (borrowed from earlier mathematical analysis) as the standard way to express this growth.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Big-O notation</span><span class="vocab-def">a way of describing how the running time (or memory usage) of an algorithm grows as the input size (usually called "n") grows, ignoring constant factors and focusing only on the dominant trend for large n. Written as O(...) — e.g., O(n), O(n²), O(log n), O(1).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Asymptotic</span><span class="vocab-def">describing behavior "in the limit," i.e., as n becomes very large. Two algorithms might have similar running times for small inputs but wildly different behavior as n grows into the millions or billions — asymptotic analysis focuses on this large-n behavior, since that's where differences matter most.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Worst case</span><span class="vocab-def">the input (of a given size) that causes an algorithm to take the longest. Big-O is most commonly used to describe worst-case behavior — a guarantee that the algorithm will never be <em>slower</em> than this, no matter what input it receives.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Growth rate</span><span class="vocab-def">how quickly a quantity increases as its input increases. O(n²) grows much faster than O(n) — if n doubles, an O(n) algorithm takes roughly twice as long, but an O(n²) algorithm takes roughly four times as long.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Dominant term</span><span class="vocab-def">in an expression describing an algorithm's operation count (e.g., "3n² + 5n + 2"), the dominant term is the one that grows fastest as n increases (here, n²) — for large n, this term overwhelms the others, so Big-O notation drops everything except this term (and even drops its constant: O(n²), not O(3n²)).</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Think back to the Sieve of Eratosthenes (Era I) versus checking each number individually for primality. We described the difference informally — "checking each number individually for all numbers up to N takes roughly N×N steps, while the sieve takes roughly N×log(log(N))." Knuth's contribution (building on earlier mathematical work, but making it central to computer science) was to make this kind of statement <strong>rigorous, standardized, and the default lens through which algorithms are compared</strong>.</p>
+              <p>Why does Big-O deliberately throw away information — constants, lower-order terms, even the exact count of operations? Because of a crucial practical insight: <strong>the exact running time of a program depends on things that have nothing to do with the algorithm itself</strong> — which programming language it's written in, how fast the specific computer is, what else the computer is doing at the time. If you measured "Algorithm A took 3 seconds on my laptop," that number is nearly useless for predicting how Algorithm A behaves on a different computer, or with ten times as much data. But "Algorithm A is O(n log n)" tells you something that remains true <em>regardless</em> of the computer — and tells you, precisely, how the running time will scale if you give it more data.</p>
+              <p>Concretely: an O(n²) algorithm processing 1,000 items does roughly 1,000,000 "units of work." Processing 1,000,000 items, it does roughly 1,000,000,000,000 (a trillion) units of work — even on the fastest computer in the world, a trillion operations takes a noticeable amount of time. An O(n log n) algorithm on 1,000,000 items does roughly 1,000,000 × 20 ≈ 20,000,000 units of work — fifty thousand times less. <strong>This difference is not about better hardware. No hardware improvement can make an O(n²) algorithm competitive with an O(n log n) algorithm at large enough n</strong> — the gap only widens as n grows. This is precisely why "is there a faster algorithm?" is a meaningful, important question, separate from "can we get a faster computer?"</p>
+              <p>This is also the moment where the entire informal vocabulary used throughout this timeline so far — "fast," "slow," "scales well," "blows up" — gets replaced with precise terms: O(1) (constant — array access), O(log n) (logarithmic — balanced binary search tree operations, binary search itself), O(n) (linear — linked list traversal, single pass through an array), O(n log n) (the realm of efficient sorting algorithms, which the next era covers in depth), O(n²) (quadratic — naive nested-loop approaches, often "the slow way" that a smarter algorithm improves upon), and beyond (O(2ⁿ), O(n!) — algorithms that become utterly intractable even for modest n, which connects back to the "undecidable / intractable" questions from Era II).</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP — directly and immediately</span>
+              In competitive programming, every problem states constraints (e.g., "n ≤ 10^5" or "n ≤ 10^9"). A core skill — arguably <em>the</em> core skill before you even start coding — is looking at these constraints and immediately knowing what complexity is required: if n ≤ 10^9, you almost certainly need O(n) or O(log n); an O(n²) solution (10^18 operations) would never finish in the time limit, even though it might be perfectly "correct" in the sense of producing the right answer given infinite time. This is why "what's the complexity of this approach, and does it fit the constraints?" is often the very first question a competitive programmer asks about a new problem — frequently <em>before</em> writing any code at all. Big-O isn't academic decoration; in CP, it's the first filter that determines which approaches are even worth attempting.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="era-footer">
+    End of Era IV. Next: Era V — The Classic Algorithms: Sorting, Searching, and the Divide-and-Conquer Revolution (1960s, with figures like Hoare, and the formalization of recursion as a design technique).
+  </div>
+
+</div>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const body = card.querySelector('.card-body');
+    const isOpen = card.classList.contains('open');
+
+    if (isOpen) {
+      card.classList.remove('open');
+      body.style.maxHeight = '0px';
+    } else {
+      card.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.card.open').forEach(card => {
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    });
+  });
+</script>
+
+</body>
+</html>
