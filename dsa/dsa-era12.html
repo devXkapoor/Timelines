@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story of Algorithms — Era XII: Advanced Structures and the Modern Frontier</title>
+<style>
+  :root {
+    --paper: #F7F3E9;
+    --paper-warm: #F1EADA;
+    --ink: #2B3A4A;
+    --ink-soft: #4A5A6A;
+    --terracotta: #C77B58;
+    --pencil: #8B8680;
+    --sage: #7D9471;
+    --sage-bg: #EAEFE6;
+    --gold: #C9A227;
+    --gold-bg: #FEF9E9;
+    --line: #D9CFBB;
+    --slate: #5C7A8C;
+    --slate-bg: #EBF2F6;
+    --plum: #7B5EA7;
+    --plum-bg: #F0EBF8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(139,134,128,0.045) 39px);
+    color: var(--ink);
+    font-family: "Source Serif Pro", Georgia, "Times New Roman", serif;
+    line-height: 1.7;
+    font-size: 18px;
+    padding: 0 0 120px 0;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 60px 28px 0 28px; }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: "Lora", Georgia, serif;
+    font-weight: 700;
+    font-size: 2.6rem;
+    margin: 0 0 12px 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .intro {
+    background: var(--paper-warm);
+    border-left: 4px solid var(--terracotta);
+    padding: 22px 26px;
+    border-radius: 4px;
+    margin-bottom: 52px;
+    font-size: 0.98rem;
+  }
+  .intro p { margin: 0 0 10px 0; }
+  .intro p:last-child { margin-bottom: 0; }
+
+  .timeline { position: relative; padding-left: 36px; }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(to bottom,
+      var(--terracotta) 0%,
+      var(--gold) 25%,
+      var(--sage) 50%,
+      var(--slate) 75%,
+      var(--plum) 100%);
+    opacity: 0.4;
+    border-radius: 2px;
+  }
+
+  .entry { position: relative; margin-bottom: 18px; }
+
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -33px;
+    top: 28px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--terracotta);
+    z-index: 2;
+  }
+
+  .entry.sage::before { border-color: var(--sage); }
+  .entry.gold::before { border-color: var(--gold); }
+  .entry.slate::before { border-color: var(--slate); }
+  .entry.plum::before { border-color: var(--plum); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(43,58,74,0.06);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+  }
+
+  .card:hover { box-shadow: 0 4px 16px rgba(43,58,74,0.10); }
+
+  .card-header {
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .card-header:hover { background: var(--paper-warm); }
+
+  .meta { flex: 1; }
+
+  .date-tag {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .entry.sage .date-tag { color: var(--sage); }
+  .entry.gold .date-tag { color: var(--gold); }
+  .entry.slate .date-tag { color: var(--slate); }
+  .entry.plum .date-tag { color: var(--plum); }
+
+  .card-title {
+    font-family: "Lora", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .toggle-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--ink-soft);
+    transition: transform 0.3s ease, background 0.2s ease;
+    font-family: "Atkinson Hyperlegible", sans-serif;
+  }
+
+  .card.open .toggle-icon { transform: rotate(45deg); background: var(--paper-warm); }
+
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+
+  .card-body-inner {
+    padding: 0 24px 28px 24px;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+
+  .section-label {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pencil);
+    margin: 22px 0 10px 0;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .source-text {
+    background: var(--paper-warm);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+    border: 1px solid var(--line);
+  }
+
+  .vocab-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .vocab-item { display: flex; gap: 10px; font-size: 0.95rem; align-items: baseline; }
+
+  .vocab-term {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    color: var(--terracotta);
+    flex-shrink: 0;
+    min-width: 150px;
+  }
+  .entry.sage .vocab-term { color: var(--sage); }
+  .entry.gold .vocab-term { color: var(--gold); }
+  .entry.slate .vocab-term { color: var(--slate); }
+  .entry.plum .vocab-term { color: var(--plum); }
+
+  .vocab-def { color: var(--ink-soft); }
+
+  .elaboration { font-size: 0.99rem; }
+  .elaboration p { margin: 0 0 14px 0; }
+  .elaboration p:last-child { margin-bottom: 0; }
+  .elaboration strong { color: var(--ink); }
+
+  .callout {
+    background: var(--sage-bg);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--sage);
+  }
+
+  .callout.gold { background: var(--gold-bg); border-left-color: var(--gold); }
+  .callout.slate { background: var(--slate-bg); border-left-color: var(--slate); }
+  .callout.plum { background: var(--plum-bg); border-left-color: var(--plum); }
+
+  .callout-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .callout.gold .callout-label { color: var(--gold); }
+  .callout.slate .callout-label { color: var(--slate); }
+  .callout.plum .callout-label { color: var(--plum); }
+
+  .diagram {
+    margin: 16px 0;
+    padding: 18px;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .graph-svg { display: block; margin: 0 auto; max-width: 100%; }
+
+  .diagram-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 0.83rem;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .diagram-row:last-child { margin-bottom: 0; }
+
+  .cell {
+    border: 1.5px solid var(--ink-soft);
+    background: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 28px;
+    color: var(--ink);
+    font-size: 0.83rem;
+  }
+
+  .cell.highlight { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+  .cell.range { background: var(--sage-bg); border-color: var(--sage); }
+  .cell.node { background: var(--gold-bg); border-color: var(--gold); }
+
+  .diagram-caption {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .step-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-size: 0.78rem;
+    color: var(--pencil);
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+
+  /* Skill ladder */
+  .skill-ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 14px 0;
+  }
+
+  .skill-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: #fff;
+    font-size: 0.93rem;
+  }
+
+  .skill-rating {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+
+  .skill-content { color: var(--ink-soft); }
+
+  code, .mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    background: var(--paper-warm);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+
+  .era-footer {
+    margin-top: 60px;
+    text-align: center;
+    padding-top: 40px;
+    border-top: 2px solid var(--line);
+    color: var(--pencil);
+    font-size: 0.95rem;
+    font-style: italic;
+    line-height: 1.8;
+  }
+
+  .era-footer strong {
+    color: var(--ink);
+    display: block;
+    font-family: "Lora", Georgia, serif;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    font-style: normal;
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    h1 { font-size: 1.9rem; }
+    .wrap { padding: 36px 16px 0 16px; }
+    .timeline { padding-left: 28px; }
+    .entry::before { left: -26px; }
+    .vocab-item { flex-direction: column; gap: 2px; }
+    .vocab-term { min-width: 0; }
+    .step-label { min-width: 70px; font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Era XII · The Expert Toolkit</div>
+    <h1>Advanced Structures and the Modern Frontier</h1>
+    <p class="subtitle">The data structures that appear at the highest levels of competition, the algorithmic ideas that power modern systems, and the threads connecting everything in this timeline to where the field is going right now.</p>
+  </header>
+
+  <div class="intro">
+    <p><strong>The final era.</strong> Everything in Eras I–XI laid groundwork. This era covers the structures and techniques that separate intermediate competitive programmers from advanced ones — the kind of knowledge that starts appearing at Codeforces Expert level (~1600+) and dominates at Candidate Master and above (~1900+). None of it is disconnected from what came before: every structure here is built from the same raw material as arrays, trees, and graphs — just organized more cleverly to enable specific operations that simpler structures can't do efficiently.</p>
+    <p>This era also closes the loop on the timeline as a whole, by connecting the advanced tools back to the foundational ideas — and placing them in the context of where the field is today and where it seems to be going. By the end, you'll have a complete map of the territory, from Babylonian clay tablets to the algorithms powering modern search engines, genomic databases, and competitive programming at the highest levels.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- ENTRY 1: Fenwick Tree / BIT -->
+    <div class="entry">
+      <div class="card" id="card-1">
+        <div class="card-header" onclick="toggleCard('card-1')">
+          <div class="meta">
+            <span class="date-tag">1994 · Peter Fenwick, New Zealand</span>
+            <h3 class="card-title">The Fenwick Tree (BIT) — Range Sums in O(log n) with an Array</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              A Fenwick tree (also called Binary Indexed Tree, or BIT) supports two operations on an array of numbers: "update" (change one element's value) and "prefix sum query" (find the sum of all elements from index 1 to index i) — both in O(log n) time, using only an auxiliary array of the same size as the input, with no tree pointers at all.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Prefix sum</span><span class="vocab-def">the sum of all elements from the start of an array up to index i. The prefix sum array (where entry i stores the sum of elements 0 through i) can be precomputed in O(n) — but if the underlying array changes, recomputing it naïvely takes O(n) again. The BIT solves this: update and query both O(log n).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Range sum query</span><span class="vocab-def">the sum of elements from index l to index r. Computed from prefix sums as: prefix(r) − prefix(l−1). So any range sum query reduces to two prefix sum queries.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Lowest set bit (LSB)</span><span class="vocab-def">in the binary representation of a number, the position of the rightmost 1-bit. For example, 12 = 1100₂ has LSB = 4 (= 100₂). The BIT's navigation — both for updates and queries — is driven entirely by adding or removing the LSB of the current index, making it extremely compact to implement.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Point update</span><span class="vocab-def">changing the value at a single position in the underlying array. In a BIT, a point update at index i propagates to O(log n) BIT cells by repeatedly adding the LSB of the current index.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Here is the problem precisely. You have an array of numbers. Two things happen: sometimes a number changes (a "point update"), and sometimes you're asked for the sum of a range (a "range sum query"). If you just keep the original array, each update is O(1) but each sum query is O(n) (add up the range). If you precompute prefix sums, each query is O(1) but each update requires recomputing O(n) prefix sums. Can you get both in O(log n)?</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">Array:</div>
+                  <div class="cell">3</div><div class="cell">1</div><div class="cell">4</div><div class="cell">1</div><div class="cell">5</div><div class="cell">9</div><div class="cell">2</div><div class="cell">6</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">Index:</div>
+                  <div class="cell range">1</div><div class="cell range">2</div><div class="cell range">3</div><div class="cell range">4</div><div class="cell range">5</div><div class="cell range">6</div><div class="cell range">7</div><div class="cell range">8</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">BIT cell i stores<br>sum of range<br>determined by<br>LSB of i:</div>
+                  <div class="cell node">3<br><small>[1]</small></div>
+                  <div class="cell node">4<br><small>[1–2]</small></div>
+                  <div class="cell node">4<br><small>[3]</small></div>
+                  <div class="cell node">9<br><small>[1–4]</small></div>
+                  <div class="cell node">5<br><small>[5]</small></div>
+                  <div class="cell node">14<br><small>[5–6]</small></div>
+                  <div class="cell node">2<br><small>[7]</small></div>
+                  <div class="cell node">31<br><small>[1–8]</small></div>
+                </div>
+                <div class="diagram-caption">Each BIT cell stores a partial sum over a range determined by the lowest set bit of its index. Query "sum from 1 to 6": look at BIT[6] (covers [5–6]) + BIT[4] (covers [1–4]) = 14 + 9 = 23. Only 2 lookups for this range — in general, O(log n) lookups.</div>
+              </div>
+              <p>The BIT's genius is that this "range per cell" structure, while not visually obvious, makes <em>both</em> query and update work by walking through a sequence of indices determined purely by adding or removing the LSB — without any explicit tree pointers, just index arithmetic on a plain array. The entire structure fits in one array of size n, has essentially no overhead, and is cache-friendly (since it's a flat array in memory). It's among the most elegant data structures in existence: a hidden tree structure encoded implicitly in array indices, exploiting the binary representation of numbers in a way that makes two operations simultaneously O(log n) with almost no code and no memory overhead.</p>
+              <p>Practical reach: the BIT handles prefix sums, but also prefix minimums/maximums with minor modifications, and "order statistics" (rank of an element, k-th smallest) with a BIT over the value space. It's typically the first "advanced" structure competitive programmers learn after the basics from Era IV–VIII, because it solves a problem (range queries on a mutable array) that comes up constantly, and its implementation is compact (roughly 10 lines) once understood.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">When to reach for a BIT</span>
+              Point updates + prefix sum queries on a 1D array → BIT is almost always the right choice. It's fast (O(log n) with small constants), memory-efficient, and simple to implement correctly. The segment tree (next entry) is more powerful — supporting a wider range of operations — but the BIT's simplicity makes it the first tool to consider when a BIT can solve the problem.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 2: Segment Tree -->
+    <div class="entry sage">
+      <div class="card" id="card-2">
+        <div class="card-header" onclick="toggleCard('card-2')">
+          <div class="meta">
+            <span class="date-tag">1970s–1980s · Range query research; popularized in CP 1990s–2000s</span>
+            <h3 class="card-title">The Segment Tree — Range Queries for (Almost) Any Operation</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              A segment tree is a binary tree built over an array, where each node stores the answer to a query (sum, minimum, maximum, GCD, or any other "combinable" operation) over a contiguous subarray (a "segment") of the input. It supports both point updates and arbitrary range queries in O(log n), and generalizes to "range updates" with lazy propagation.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Segment tree node</span><span class="vocab-def">each node covers a contiguous range [l, r] of the array. The root covers [0, n−1], and each node's two children cover [l, mid] and [mid+1, r] respectively. Leaf nodes cover single elements.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Lazy propagation</span><span class="vocab-def">a technique for deferring ("being lazy about") updates to child nodes — instead of immediately propagating a range update to all affected leaves, you mark parent nodes with a "pending" tag and push it down only when you actually need a child's value. This enables range updates in O(log n) instead of O(n).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Associative operation</span><span class="vocab-def">an operation where (a ⊕ b) ⊕ c = a ⊕ (b ⊕ c) — the grouping doesn't matter. Sum, min, max, GCD, XOR, bitwise AND/OR are all associative — and any associative operation can be the "stored value" in a segment tree. Non-associative operations (like "last element") cannot.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Range update</span><span class="vocab-def">changing all elements in a range [l, r] by some operation at once — e.g., "add 5 to every element from index 3 to 7." Without lazy propagation, this takes O(n) time. With lazy propagation, O(log n).</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>The segment tree extends the BIT's "split the range into O(log n) pieces" idea, but builds it as an explicit binary tree rather than an implicit index trick — which makes it more flexible at the cost of slightly more code and memory.</p>
+              <div class="diagram">
+                <svg class="graph-svg" width="340" height="190" viewBox="0 0 340 190">
+                  <!-- Array at bottom -->
+                  <text x="170" y="185" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" fill="#8B8680">Array: [3, 1, 4, 1, 5, 9, 2, 6]  (operation: range minimum)</text>
+                  <!-- Level 0: root -->
+                  <rect x="125" y="5" width="90" height="28" rx="4" fill="#F1EADA" stroke="#C77B58" stroke-width="1.5"/>
+                  <text x="170" y="22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#2B3A4A">min[0..7]=1</text>
+                  <!-- Level 1 -->
+                  <line x1="155" y1="33" x2="90" y2="60" stroke="#8B8680" stroke-width="1.2"/>
+                  <line x1="185" y1="33" x2="255" y2="60" stroke="#8B8680" stroke-width="1.2"/>
+                  <rect x="45" y="60" width="90" height="26" rx="4" fill="#EAEFE6" stroke="#7D9471" stroke-width="1.5"/>
+                  <text x="90" y="76" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">min[0..3]=1</text>
+                  <rect x="210" y="60" width="90" height="26" rx="4" fill="#EAEFE6" stroke="#7D9471" stroke-width="1.5"/>
+                  <text x="255" y="76" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">min[4..7]=2</text>
+                  <!-- Level 2 -->
+                  <line x1="72" y1="86" x2="36" y2="112" stroke="#8B8680" stroke-width="1.2"/>
+                  <line x1="108" y1="86" x2="144" y2="112" stroke="#8B8680" stroke-width="1.2"/>
+                  <line x1="238" y1="86" x2="202" y2="112" stroke="#8B8680" stroke-width="1.2"/>
+                  <line x1="272" y1="86" x2="308" y2="112" stroke="#8B8680" stroke-width="1.2"/>
+                  <rect x="8" y="112" width="56" height="24" rx="4" fill="#FEF9E9" stroke="#C9A227" stroke-width="1.5"/>
+                  <text x="36" y="127" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">min[0..1]</text>
+                  <rect x="116" y="112" width="56" height="24" rx="4" fill="#FEF9E9" stroke="#C9A227" stroke-width="1.5"/>
+                  <text x="144" y="127" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">min[2..3]</text>
+                  <rect x="175" y="112" width="56" height="24" rx="4" fill="#FEF9E9" stroke="#C9A227" stroke-width="1.5"/>
+                  <text x="203" y="127" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">min[4..5]</text>
+                  <rect x="283" y="112" width="56" height="24" rx="4" fill="#FEF9E9" stroke="#C9A227" stroke-width="1.5"/>
+                  <text x="311" y="127" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">min[6..7]</text>
+                  <!-- Leaf hints -->
+                  <text x="20" y="152" font-family="JetBrains Mono, monospace" font-size="9" fill="#8B8680">[3] [1]</text>
+                  <text x="127" y="152" font-family="JetBrains Mono, monospace" font-size="9" fill="#8B8680">[4] [1]</text>
+                  <text x="188" y="152" font-family="JetBrains Mono, monospace" font-size="9" fill="#8B8680">[5] [9]</text>
+                  <text x="296" y="152" font-family="JetBrains Mono, monospace" font-size="9" fill="#8B8680">[2] [6]</text>
+                </svg>
+                <div class="diagram-caption">Each node stores the minimum over its range. Query "minimum from index 2 to 6" decomposes into O(log n) nodes that together cover exactly [2..6], combines their stored minimums, and returns the answer — without checking all 5 elements individually.</div>
+              </div>
+              <p>The key insight is the same as the BIT's, expressed differently: an arbitrary range [l, r] can always be decomposed into O(log n) nodes of the segment tree, because at each level of the tree, any range can "skip" nodes whose ranges are fully inside [l, r] and recurse only into nodes that partially overlap. Combining the stored values at these O(log n) nodes gives the range answer — and this decomposition works for <em>any</em> associative operation, not just sum.</p>
+              <p><strong>Lazy propagation</strong> is the crucial extension. Without it, "add 5 to every element from index 3 to 7" would require updating all affected leaf nodes and rebuilding their ancestors — O(n) in the worst case. With lazy propagation: mark the O(log n) segment-tree nodes that together cover [3..7] with a "pending add 5" tag. When a query later needs a child of one of these nodes, <em>then</em> push the pending tag down, just in time. This deferred propagation keeps both updates and queries at O(log n). Implementing lazy propagation correctly for a new operation requires care (the push-down logic must correctly combine tags), and this is exactly the kind of implementation challenge that distinguishes intermediate from advanced competitive programmers.</p>
+              <p>Beyond the standard segment tree, several powerful extensions exist: the <strong>sparse segment tree</strong> (used when the index range is huge but only few positions are actually queried), the <strong>persistent segment tree</strong> (which stores all historical versions of the tree, enabling "what was the range minimum at time t?" queries), and the <strong>merge sort tree</strong> (a segment tree where each node stores a sorted list of its range's elements, enabling "how many elements in [l,r] are ≤ x?" in O(log² n)).</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">BIT vs. segment tree — the decision</span>
+              If you need point updates + prefix/range sums on a 1D array → BIT: simpler, faster in practice. If you need point updates + range min/max/GCD/any-other-operation, OR range updates, OR 2D range queries, OR any of the extensions → segment tree. The segment tree is strictly more powerful; the BIT is strictly simpler for the cases it handles. Knowing which to reach for immediately is a sign of intermediate-to-advanced CP experience.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 3: Union-Find -->
+    <div class="entry gold">
+      <div class="card" id="card-3">
+        <div class="card-header" onclick="toggleCard('card-3')">
+          <div class="meta">
+            <span class="date-tag">1964–1975 · Bernard Galler, Michael Fischer, Robert Tarjan and others</span>
+            <h3 class="card-title">Union-Find (Disjoint Set Union) — Tracking Connected Components Dynamically</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              The Union-Find (or Disjoint Set Union, DSU) data structure tracks a collection of items partitioned into groups, supporting two operations: "union" (merge two groups into one) and "find" (determine which group an item belongs to, and whether two items share a group). With two optimizations — path compression and union by rank — both operations run in amortized nearly-O(1) time: technically O(α(n)), where α is the inverse Ackermann function, a quantity so slow-growing it is effectively constant for any realistic n.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Disjoint sets</span><span class="vocab-def">groups (sets) with no overlap — no item belongs to two groups simultaneously. The data structure maintains a partition of the full collection into disjoint subsets.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Representative / root</span><span class="vocab-def">each group has one designated "representative" element — find(x) returns the representative of x's group. Two items are in the same group iff their representatives are the same element.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Path compression</span><span class="vocab-def">when find(x) walks up the tree from x to the root, it retroactively points every visited node directly to the root, flattening the tree for all future queries through those nodes.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Union by rank/size</span><span class="vocab-def">when merging two groups, attach the smaller (or shallower) tree under the root of the larger (or deeper) one — keeping trees short, which keeps find() fast.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Inverse Ackermann (α)</span><span class="vocab-def">a function that grows so incredibly slowly that α(n) ≤ 4 for all practical values of n (n would need to be incomprehensibly larger than the number of atoms in the observable universe before α(n) exceeds 4). For all practical purposes, DSU operations are O(1).</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>The DSU solves a specific but recurring problem: you start with n items, each in its own group, and you process a sequence of "merge these two groups" events — then at any point you might ask "are items A and B in the same group?" The naive approach (maintain an array saying which group each item is in, update it on every merge) gives O(1) find but O(n) union (you might need to relabel half the items). DSU gives effectively O(1) for both, amortized.</p>
+              <p>The structure is elegant: each item has a "parent" pointer. Items in the same group form a tree pointing toward a root (the representative). Find(x) walks up to the root. Union(x, y) finds both roots and makes one the parent of the other. The two optimizations — path compression (after finding the root, make every item on the path point directly to it) and union by rank (always attach the shorter tree under the taller one) — together prevent the tree from ever becoming tall, maintaining the near-O(1) amortized performance.</p>
+              <p>DSU is the natural tool for Kruskal's minimum spanning tree algorithm (process edges in order of weight, use DSU to check whether adding an edge would create a cycle — if the two endpoints are already in the same component, skip it; otherwise, union them and include the edge). It also answers "are these two nodes connected?" queries on a dynamic graph (where edges are added over time) far more efficiently than re-running BFS/DFS for every query.</p>
+            </div>
+
+            <div class="callout gold">
+              <span class="callout-label">When to reach for DSU</span>
+              Any problem involving "group items together as you process connections, and efficiently ask whether two items have been connected yet" → DSU. Classic uses: minimum spanning tree (Kruskal), cycle detection, connected components with dynamic edge additions, offline connectivity queries. Recognizing "this is a grouping/connectivity problem" and reaching immediately for DSU is a hallmark of an intermediate-to-advanced competitive programmer.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 4: Network Flow -->
+    <div class="entry slate">
+      <div class="card" id="card-4">
+        <div class="card-header" onclick="toggleCard('card-4')">
+          <div class="meta">
+            <span class="date-tag">1956 · Ford and Fulkerson, then Edmonds-Karp 1972</span>
+            <h3 class="card-title">Network Flow — Maximizing Throughput in a Directed Network</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              A network flow problem is defined on a directed graph where each edge has a "capacity" — the maximum flow that can pass through it. The goal is to find the maximum total flow that can be sent from a source vertex to a sink vertex, respecting all edge capacities. Ford and Fulkerson proved the max-flow min-cut theorem (the maximum flow equals the minimum cut capacity); Edmonds and Karp later gave an efficient O(V × E²) implementation via BFS-augmented paths.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Flow network</span><span class="vocab-def">a directed graph where each edge has a non-negative capacity (max flow it can carry). Flow is sent from a source (a vertex with no incoming edges, or a designated "start") to a sink (vertex with no outgoing edges, or a designated "end").</span></div>
+              <div class="vocab-item"><span class="vocab-term">Max-flow</span><span class="vocab-def">the maximum total amount of "flow" that can be simultaneously routed from source to sink without violating any edge's capacity. Finding this maximum is the core max-flow problem.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Min-cut</span><span class="vocab-def">a partition of the vertices into two sets S (containing source) and T (containing sink) such that removing all edges from S to T disconnects source from sink. The min-cut value is the total capacity of these removed edges. By the max-flow min-cut theorem, min-cut = max-flow.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Augmenting path</span><span class="vocab-def">a path from source to sink in the "residual graph" (where each edge has "remaining capacity" = original capacity − current flow, plus a "back edge" allowing flow reversal). Sending flow along an augmenting path increases the total flow.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Bipartite matching</span><span class="vocab-def">a special case of max-flow: given a bipartite graph (two vertex groups, edges only between groups), find the maximum matching (maximum set of edges with no shared vertices). Reduces directly to a max-flow problem with unit capacities.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Max-flow captures a class of problems about <em>routing under constraints</em> — water through pipes with limited diameters, data through a network with limited bandwidth, people through a crowd with limited corridors. The max-flow min-cut theorem gives a beautiful duality: the bottleneck in any routing network is precisely the "thinnest slice" you could cut through the network, and the maximum flow through the network equals the capacity of this thinnest slice.</p>
+              <p>The algorithmic insight is the "residual graph" — when flow is routed along an edge, you don't just reduce that edge's remaining capacity; you also add a "back edge" with capacity equal to the flow just sent, allowing you to "undo" that routing decision later. This makes augmenting paths able to reroute previously-committed flow, which is necessary for finding the true maximum and not just a local optimum. Without back edges, a greedy "keep routing along any available path" approach might commit flow along a suboptimal path and have no way to correct the mistake.</p>
+              <p>The most important special case in competitive programming is <strong>bipartite matching</strong>: given two groups (say, applicants and jobs, or tasks and machines), with edges representing compatibility, find the maximum number of compatible pairs. This reduces cleanly to a max-flow problem (connect a super-source to all left vertices with capacity 1, all right vertices to a super-sink with capacity 1, keep the original edges with capacity 1 — max flow = maximum matching) and enables a wide class of assignment problems to be solved optimally in polynomial time.</p>
+              <p>Network flow problems are among the harder topics in competitive programming — they require recognizing that a problem has a flow structure (which isn't always obvious from the problem statement), modeling it correctly as a flow network, and implementing the algorithm correctly. They begin appearing at higher Codeforces difficulty levels (roughly 2000+ rating) and are heavily present in ICPC World Finals problems.</p>
+            </div>
+
+            <div class="callout slate">
+              <span class="callout-label">The "it's actually flow" recognition skill</span>
+              Many problems that sound nothing like "send water through pipes" turn out to reduce to network flow once you find the right model: scheduling with conflict constraints, covering problems, splitting problems into two groups optimally. The meta-skill here — "if this problem feels like it involves simultaneously satisfying many capacity-like constraints, try modeling it as flow" — is hard to teach prescriptively but develops with exposure to many worked examples.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 5: The modern frontier -->
+    <div class="entry plum">
+      <div class="card" id="card-5">
+        <div class="card-header" onclick="toggleCard('card-5')">
+          <div class="meta">
+            <span class="date-tag">1990s–present · The frontier of competitive programming techniques</span>
+            <h3 class="card-title">The Modern Frontier — What Lies Beyond This Timeline</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">Overview</div>
+            <div class="source-text">
+              Beyond the structures covered in this era, a rich frontier of advanced techniques exists — most appearing at Codeforces Master level (2100+) and above. This entry gives an honest map of what lies ahead, without pretending to teach what requires months of dedicated study to internalize.
+            </div>
+
+            <div class="section-label">The Skill Ladder</div>
+            <div class="skill-ladder">
+              <div class="skill-row">
+                <div class="skill-rating" style="color: var(--pencil);">Newbie–Pupil<br><small style="color: var(--pencil);">&lt;1400</small></div>
+                <div class="skill-content">Arrays, strings, basic math, simple loops, greedy. Era I–V content. Learning to read problems carefully and translate them into code.</div>
+              </div>
+              <div class="skill-row">
+                <div class="skill-rating" style="color: #0088aa;">Specialist<br><small style="color: var(--pencil);">1400–1599</small></div>
+                <div class="skill-content">Sorting + binary search fluency, BFS/DFS on grids and graphs, basic DP (1D, 2D), hash maps in practice. Era VI–VIII content solidifying.</div>
+              </div>
+              <div class="skill-row">
+                <div class="skill-rating" style="color: #0055ff;">Expert<br><small style="color: var(--pencil);">1600–1899</small></div>
+                <div class="skill-content">Graph algorithms (Dijkstra, MST, topological sort), string algorithms (KMP, Z-function), intermediate DP, BIT + segment tree basics, DSU. Era IX–XII entry-level content.</div>
+              </div>
+              <div class="skill-row">
+                <div class="skill-rating" style="color: #aa00aa;">Candidate Master<br><small style="color: var(--pencil);">1900–2099</small></div>
+                <div class="skill-content">Segment tree with lazy propagation, advanced DP (bitmask, tree DP, digit DP), suffix arrays/automata, LCA (Lowest Common Ancestor), SCC (Strongly Connected Components), network flow basics.</div>
+              </div>
+              <div class="skill-row">
+                <div class="skill-rating" style="color: #ff8800;">Master+<br><small style="color: var(--pencil);">2100+</small></div>
+                <div class="skill-content">Persistent/offline data structures, Heavy-Light Decomposition (HLD) on trees, centroid decomposition, convex hull trick, divide and conquer DP, FFT/NTT for polynomial multiplication, randomized algorithms (treap, hashing tricks), and original problem-specific insights.</div>
+              </div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>A few specific advanced topics deserve naming and brief framing, so they're not mysterious when you encounter them.</p>
+              <p><strong>Suffix arrays and suffix automata</strong> are advanced string structures that, between them, can answer nearly any query about all substrings of a given text — "find the longest repeated substring," "count distinct substrings," "find the lexicographically k-th substring" — in O(n log n) or O(n) time. They're the capstone of string algorithms (Era IX), appearing at Candidate Master level and above, and they're built by taking the ideas of KMP and tries much further.</p>
+              <p><strong>Heavy-Light Decomposition (HLD)</strong> is a technique for trees that allows segment-tree-style range queries on <em>paths in a tree</em> — "what's the minimum edge weight on the path from node A to node B?" This is the kind of problem a segment tree solves trivially on an array, but a tree's paths don't map neatly to array intervals. HLD decomposes the tree into a set of "heavy paths" that collectively cover the tree, then maps each path to a contiguous segment in an array, allowing segment tree queries to answer tree-path queries in O(log² n). It's a beautiful example of "reduce the harder structure to a structure we already know how to handle."</p>
+              <p><strong>Fast Fourier Transform (FFT)</strong> is an algorithm (from 1965, independently by Cooley and Tukey — though with much earlier history) that computes a polynomial multiplication of two degree-n polynomials in O(n log n) instead of the naive O(n²). This might sound purely mathematical, but it appears in CP whenever you need to compute something equivalent to "for every pair of indices (i, j), combine arr1[i] and arr2[j]" — a "convolution" — at scale. FFT is one of the most practically important algorithms in science and engineering (digital signal processing, image compression, and many other fields use it), and its appearance in competitive programming marks the intersection of CP with the algorithmic techniques underlying much of modern technology.</p>
+              <p><strong>Randomized algorithms and probabilistic structures</strong> are a growing presence at all levels of CP. Hashing (Era VIII) is the most basic example, but more sophisticated ones include randomized treaps (a probabilistically balanced BST), randomized hashing for string matching (the "Rabin-Karp" algorithm), and randomized primality testing. The common thread: introduce carefully-controlled randomness to achieve either a simpler algorithm that's correct with high probability, or an exact algorithm whose bad-case behavior is vanishingly unlikely rather than guaranteed.</p>
+              <p><strong>Geometry</strong> is a broad area of CP problems involving computational geometry — convex hulls (find the smallest convex polygon containing all given points), line segment intersection, polygon area and containment, circle/line relationships. These problems require both geometric insight and careful numerical implementation (floating-point precision is a persistent source of bugs). Geometry problems are common at ICPC World Finals and appear frequently from Expert level upward.</p>
+            </div>
+
+            <div class="callout plum">
+              <span class="callout-label">The honest learning path from here</span>
+              Mastery at each level of this ladder requires time measured in months, not days. The effective method — consistently shown across thousands of competitive programmers — is: compete in rated contests regularly (Codeforces Div 2/3, CodeChef Starters), attempt each problem genuinely before looking at editorials, upsolve every problem you couldn't solve in-contest, and gradually push into the next difficulty tier as the current one becomes comfortable. There's no shortcut that substitutes for this cycle of attempt → struggle → learn → internalize, run many times over many months. But the cycle works reliably — people who maintain it improve, steadily and measurably, which is one of competitive programming's most appealing properties as a discipline: it's hard to fake, hard to plateau in if you're doing it right, and the improvement is visible in your rating over time.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="era-footer">
+    <strong>The End of the Timeline — and the Beginning of the Practice</strong>
+    From Babylonian clay tablets to Fenwick trees, from Euclid's GCD proof to the P vs NP problem, from the first subroutines to Codeforces rounds — twelve eras, spanning nearly four thousand years, leading to a single discipline you can practice tonight. The theory and the history are the map. The problems are the territory. Go explore.
+  </div>
+
+</div>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const body = card.querySelector('.card-body');
+    const isOpen = card.classList.contains('open');
+
+    if (isOpen) {
+      card.classList.remove('open');
+      body.style.maxHeight = '0px';
+    } else {
+      card.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.card.open').forEach(card => {
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    });
+  });
+</script>
+
+</body>
+</html>

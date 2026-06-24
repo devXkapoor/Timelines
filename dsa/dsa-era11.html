@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story of Algorithms — Era XI: The Rise of Competitive Programming</title>
+<style>
+  :root {
+    --paper: #F7F3E9;
+    --paper-warm: #F1EADA;
+    --ink: #2B3A4A;
+    --ink-soft: #4A5A6A;
+    --terracotta: #C77B58;
+    --pencil: #8B8680;
+    --sage: #7D9471;
+    --sage-bg: #EAEFE6;
+    --gold: #C9A227;
+    --gold-bg: #FEF9E9;
+    --line: #D9CFBB;
+    --slate: #5C7A8C;
+    --slate-bg: #EBF2F6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(139,134,128,0.045) 39px);
+    color: var(--ink);
+    font-family: "Source Serif Pro", Georgia, "Times New Roman", serif;
+    line-height: 1.7;
+    font-size: 18px;
+    padding: 0 0 120px 0;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 60px 28px 0 28px; }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: "Lora", Georgia, serif;
+    font-weight: 700;
+    font-size: 2.6rem;
+    margin: 0 0 12px 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .intro {
+    background: var(--paper-warm);
+    border-left: 4px solid var(--terracotta);
+    padding: 22px 26px;
+    border-radius: 4px;
+    margin-bottom: 52px;
+    font-size: 0.98rem;
+  }
+  .intro p { margin: 0 0 10px 0; }
+  .intro p:last-child { margin-bottom: 0; }
+
+  .timeline { position: relative; padding-left: 36px; }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--terracotta) 0%, var(--gold) 40%, var(--sage) 70%, var(--slate) 100%);
+    opacity: 0.4;
+    border-radius: 2px;
+  }
+
+  .entry { position: relative; margin-bottom: 18px; }
+
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -33px;
+    top: 28px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--terracotta);
+    z-index: 2;
+  }
+
+  .entry.sage::before { border-color: var(--sage); }
+  .entry.gold::before { border-color: var(--gold); }
+  .entry.slate::before { border-color: var(--slate); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(43,58,74,0.06);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+  }
+
+  .card:hover { box-shadow: 0 4px 16px rgba(43,58,74,0.10); }
+
+  .card-header {
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .card-header:hover { background: var(--paper-warm); }
+
+  .meta { flex: 1; }
+
+  .date-tag {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .entry.sage .date-tag { color: var(--sage); }
+  .entry.gold .date-tag { color: var(--gold); }
+  .entry.slate .date-tag { color: var(--slate); }
+
+  .card-title {
+    font-family: "Lora", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .toggle-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--ink-soft);
+    transition: transform 0.3s ease, background 0.2s ease;
+    font-family: "Atkinson Hyperlegible", sans-serif;
+  }
+
+  .card.open .toggle-icon { transform: rotate(45deg); background: var(--paper-warm); }
+
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+
+  .card-body-inner {
+    padding: 0 24px 28px 24px;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+
+  .section-label {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pencil);
+    margin: 22px 0 10px 0;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .source-text {
+    background: var(--paper-warm);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+    border: 1px solid var(--line);
+  }
+
+  .vocab-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .vocab-item { display: flex; gap: 10px; font-size: 0.95rem; align-items: baseline; }
+
+  .vocab-term {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    color: var(--terracotta);
+    flex-shrink: 0;
+    min-width: 140px;
+  }
+  .entry.sage .vocab-term { color: var(--sage); }
+  .entry.gold .vocab-term { color: var(--gold); }
+  .entry.slate .vocab-term { color: var(--slate); }
+
+  .vocab-def { color: var(--ink-soft); }
+
+  .elaboration { font-size: 0.99rem; }
+  .elaboration p { margin: 0 0 14px 0; }
+  .elaboration p:last-child { margin-bottom: 0; }
+  .elaboration strong { color: var(--ink); }
+
+  .callout {
+    background: var(--sage-bg);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--sage);
+  }
+
+  .callout.gold {
+    background: var(--gold-bg);
+    border-left-color: var(--gold);
+  }
+
+  .callout.slate {
+    background: var(--slate-bg);
+    border-left-color: var(--slate);
+  }
+
+  .callout-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .callout.gold .callout-label { color: var(--gold); }
+  .callout.slate .callout-label { color: var(--slate); }
+
+  /* Platform cards */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  .platform-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+
+  .platform-name {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .platform-year {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-size: 0.75rem;
+    color: var(--terracotta);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .platform-desc {
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .diagram {
+    margin: 16px 0;
+    padding: 18px;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .graph-svg { display: block; margin: 0 auto; max-width: 100%; }
+
+  .diagram-caption {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  code, .mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    background: var(--paper-warm);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+
+  .era-footer {
+    margin-top: 60px;
+    text-align: center;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    color: var(--pencil);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    h1 { font-size: 1.9rem; }
+    .wrap { padding: 36px 16px 0 16px; }
+    .timeline { padding-left: 28px; }
+    .entry::before { left: -26px; }
+    .vocab-item { flex-direction: column; gap: 2px; }
+    .vocab-term { min-width: 0; }
+    .platform-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Era XI · The Sport of Algorithms</div>
+    <h1>The Rise of Competitive Programming</h1>
+    <p class="subtitle">From a Putnam math exam in 1938 and a handful of university mainframes, to a global ecosystem of tens of millions of programmers, live leaderboards, and contests that decide who gets hired at the world's top technology companies.</p>
+  </header>
+
+  <div class="intro">
+    <p><strong>The shift in this era.</strong> The previous ten eras have been about <em>ideas</em> — algorithms and data structures as intellectual objects, discovered and formalized by researchers. This era is about what happened when those ideas met a community: the emergence of competitive programming as a culture, a sport, an educational pipeline, and ultimately a hiring signal.</p>
+    <p>This is the era you're personally entering. Everything in Eras I through X is the <em>body of knowledge</em> that competitive programming contests draw from, test, and reward. Understanding how that world works — its history, its structure, its incentives, its platforms, and its current state — is just as practically useful as knowing any specific algorithm, because it tells you what to study, how to practice, what "good" looks like at different levels, and how the skills you're building actually connect to a career in software engineering.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- ENTRY 1: Math Olympiads — the prehistory -->
+    <div class="entry">
+      <div class="card" id="card-1">
+        <div class="card-header" onclick="toggleCard('card-1')">
+          <div class="meta">
+            <span class="date-tag">1894–1960s · The mathematical precursors</span>
+            <h3 class="card-title">Mathematical Olympiads — Before Code, There Was Proof</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Mathematical olympiad competitions — timed exams where contestants solve challenging proof-based problems without computers — predate programming by decades. Hungary's Eötvös competition began in 1894; the International Mathematical Olympiad (IMO) began in 1959. These established the template of "individually solve hard problems under a time limit," a template that competitive programming would eventually inherit wholesale.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Olympiad</span><span class="vocab-def">a competition modeled after the ancient Olympic Games — typically an individual event, held on a regular schedule, with ranked outcomes. Mathematical olympiads test problem-solving ability with no external resources, under time pressure.</span></div>
+              <div class="vocab-item"><span class="vocab-term">IMO</span><span class="vocab-def">International Mathematical Olympiad — the most prestigious math competition for pre-university students, held annually since 1959. Each participating country selects a team of up to 6 students; problems require proofs, not just numerical answers.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Problem-solving culture</span><span class="vocab-def">a community orientation toward treating problems as puzzles worthy of extended thought, valuing cleverness and elegance, and developing "problem-solving intuition" through exposure to many problems — a culture that flows directly from mathematical olympiads into competitive programming.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>To understand competitive programming's character — why it feels the way it does, why certain things are valued and others dismissed — you have to start with mathematical olympiads, which defined the aesthetic before any computer was involved. Mathematical olympiads share several properties that transferred almost unchanged into competitive programming: problems are <em>precisely stated</em> (no ambiguity about what's being asked), solutions are <em>objectively correct or incorrect</em> (not "pretty good" or "approximately right"), time pressure is real and uniform across contestants, and the problems are designed to reward <em>insight</em> — a clever observation that reduces what looks like a hard problem to something much simpler — over brute-force persistence.</p>
+              <p>That last property — the premium placed on insight — is perhaps the most important cultural inheritance. In a mathematical olympiad, the "right" solution to a problem is often not the one that grinds through all cases but the one that finds the single key observation that makes the problem collapse. This value system migrated into competitive programming: the "elegant" solution that runs in O(n log n) by finding the right structure is culturally valued over the O(n²) brute-force that happens to pass the constraints. This isn't purely aesthetic — the insight is often the thing that <em>scales</em> to harder inputs, and the ability to find it is what distinguishes genuinely strong programmers from those who can only code what they've memorized.</p>
+              <p>The Putnam Mathematical Competition (USA, started 1938) also belongs here: a six-hour, twelve-problem exam for university undergraduates in the US and Canada, running annually since 1938. It specifically produced early figures in theoretical computer science — many of the people in Eras II, V, and VII competed in or were deeply shaped by olympiad-style mathematics. The IMO similarly produced competitive programmers: a striking fraction of top competitive programmers have strong mathematical olympiad backgrounds, and mathematical intuition (combinatorics, number theory, geometry, algebra) remains deeply useful in CP today.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">The cultural thread</span>
+              Math olympiad → competitive programming is not just a historical lineage — it's an active present-day pipeline. USAMO (USA Mathematical Olympiad) winners frequently become competitive programming champions; the IMO has produced Codeforces legends. The overlap is so strong that "good at math olympiads" and "good at competitive programming" are highly correlated skills, even though the specific knowledge domains are different. If you've ever done any olympiad math, those reasoning muscles directly transfer.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 2: ACM-ICPC -->
+    <div class="entry sage">
+      <div class="card" id="card-2">
+        <div class="card-header" onclick="toggleCard('card-2')">
+          <div class="meta">
+            <span class="date-tag">1970 · Texas A&M University, then worldwide</span>
+            <h3 class="card-title">ACM-ICPC — The World Championship of Programming</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              The ACM International Collegiate Programming Contest (ICPC) began in 1970 as a small local competition among university students at Texas A&M. By the 1980s it had expanded to regional contests feeding into a World Finals. By the 2000s it had grown to tens of thousands of teams from hundreds of countries — becoming the most prestigious programming competition in the world for university students, widely called the "Olympics of programming."
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">ACM</span><span class="vocab-def">Association for Computing Machinery — the largest professional organization for computer scientists. "ACM-ICPC" means this organization runs and sanctions the contest.</span></div>
+              <div class="vocab-item"><span class="vocab-term">ICPC format</span><span class="vocab-def">teams of exactly 3 students, sharing a single computer, solve as many problems as possible from a set (typically 10–13 problems) in a 5-hour window. Teams are ranked first by number of problems solved, then by total time (including 20-minute penalties for wrong submissions). One computer forces team strategy and communication to become key factors.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Online judge</span><span class="vocab-def">a computer system that automatically compiles and runs submitted code against hidden test cases, returning a verdict: "Accepted" (all test cases passed), "Wrong Answer" (incorrect output), "Time Limit Exceeded," "Runtime Error," etc. The automation is what makes large-scale programming contests possible at all.</span></div>
+              <div class="vocab-item"><span class="vocab-term">World Finals</span><span class="vocab-def">the culminating event of ICPC, to which the highest-scoring teams from each regional contest are invited. Held annually in a different city; historically the single most prestigious CP achievement.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>ICPC established almost every convention that competitive programming still follows today, even on platforms built decades later. The <strong>online judge</strong> is perhaps the most transformative invention: before automated judging, a competition required human judges to read and evaluate every submission, which was slow and subjective. An online judge checks against hidden test cases in seconds, allowing thousands of submissions per hour, immediate feedback, and fair, objective evaluation. The entire subsequent history of competitive programming — including the existence of Codeforces, CodeChef, and LeetCode — is only possible because automated judging scaled the feedback loop from "days" to "seconds."</p>
+              <p>The <strong>one computer per team</strong> format is unusual and intentional. It creates a fundamentally team-oriented experience — while one person types, the others think, debug on paper, or plan next problems. It rewards communication, trust, and knowing your teammates' strengths as much as individual skill. This is quite different from modern online platforms (individual by default) and creates a distinctive culture around ICPC preparation.</p>
+              <p>The <strong>problem structure</strong> matters too: ICPC problems are not just "implement this known algorithm" — they're designed to require recognizing which algorithm applies, often after stripping away a "story wrapper" (the problem is described as a puzzle about building roads or scheduling ships or coloring maps, and the insight is realizing it's actually a shortest-path problem or a bipartite matching problem or a max-flow problem). This "modeling" skill — translating a problem's story into the right algorithmic abstraction — is arguably the central skill ICPC tests, and the one that maps most directly to real engineering work.</p>
+              <p>ICPC's growth trajectory tells the story of the entire field: a single-university contest in 1970, a regional structure by the 1980s, global reach by the 1990s. The 2000s brought explosive growth as the internet made programming globally accessible, and university CS programs multiplied worldwide. Today, over 50,000 teams from 3,000+ universities in 100+ countries participate annually — making it genuinely the world's largest programming contest by participation.</p>
+            </div>
+
+            <div class="callout gold">
+              <span class="callout-label">How ICPC connects to careers</span>
+              ICPC performance became, from roughly the 1990s onward, a strong hiring signal — particularly at companies like Google, Microsoft, and later Facebook/Meta. The reasoning: ICPC performance correlates with exactly the skills these companies need — algorithmic problem-solving under time pressure, clarity of thinking, and depth of CS knowledge. Many of the most significant engineers and researchers at these companies are former ICPC competitors or coaches. This signaling function is now largely shared with online platforms, but ICPC remains the most prestigious "on paper" achievement in competitive programming.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 3: Topcoder and the online era -->
+    <div class="entry gold">
+      <div class="card" id="card-3">
+        <div class="card-header" onclick="toggleCard('card-3')">
+          <div class="meta">
+            <span class="date-tag">2001 · Topcoder, and the opening of competitive programming to the world</span>
+            <h3 class="card-title">Topcoder and the Individual Online Era</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Topcoder launched in 2001 as the first major platform for individual, online competitive programming — anyone with an internet connection could compete, regardless of university affiliation. It introduced the "rating system" as a persistent public number representing a programmer's skill level, and the "Division" system (Div 1 for the highest-rated, Div 2 for others). Topcoder's algorithms competitions directly influenced every major platform that followed.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Rating (Elo-inspired)</span><span class="vocab-def">a single number representing an estimated skill level, calculated from contest performance. Ratings go up when you perform better than expected given your current rating and the ratings of other contestants; ratings go down when you perform worse. Borrowed from chess's Elo rating system (developed in the 1960s).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Division system</span><span class="vocab-def">separating contestants into tiers based on rating — typically a "Div 2" for less experienced participants with more accessible problems, and "Div 1" for highly-rated participants with harder problems. Allows beginners to compete meaningfully without being crushed by experts.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Hacking</span><span class="vocab-def">in Topcoder-style contests, after the coding phase ends, contestants can read and submit challenge test cases against other contestants' solutions. A successful challenge (finding a test case that breaks someone's code) gives the challenger points and penalizes the challenged. This "adversarial" phase rewards both coding and test case design.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Systematic rating</span><span class="vocab-def">Topcoder's key innovation: rather than a one-time credential (like winning ICPC), rating is a continuously-updated, publicly visible number that reflects your current skill level as you compete over time. It degrades if you stop competing well and rises as you improve.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Topcoder's most significant contribution wasn't technical — it was <strong>making competitive programming accessible to individuals globally, not just university teams</strong>. ICPC required a university affiliation, a team, and a regional competition near you. Topcoder required only an internet connection. This opened competitive programming to people outside well-resourced universities, to working professionals, and eventually to students in countries where university CS programs were thin but internet access was growing. The community grew correspondingly.</p>
+              <p>The <strong>rating system</strong> deserves deep attention because it fundamentally changed how competitive programming felt as an activity. With ICPC, your achievement was a discrete credential (made World Finals, won regionals, etc.) that didn't change between competitions. With a rating system, your skill level is a continuously updating number — visible to you and to anyone who looks, changing with every contest. This creates a very different psychology: you're not just competing for one big prize but watching a number that reflects your growth over time. It's motivating (watching your rating rise as you improve) and sometimes stressful (a bad contest can drop it noticeably), but it provides something genuinely valuable: a signal you can track over months and years of practice.</p>
+              <p>The <strong>hacking phase</strong> introduced an adversarial dimension absent from most programming competitions: you're not just trying to write a correct solution, you're also trying to anticipate what test cases might break an incomplete or buggy solution, and to write your own solution robustly enough to survive other people's attempts to break it. This added a game-theoretic element — you might strategically submit a slightly-wrong solution that you expect to pass hacking (hoping the challenger misses the edge case) or spend time hacking others rather than improving your own code. This aspect of Topcoder became much less prominent in later platforms, but it established the idea that "reading and breaking code" is itself a competitive skill.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Topcoder's lasting impact</span>
+              Topcoder directly trained a generation of competitive programmers who became engineers and researchers at the most significant technology companies of the 2000s and 2010s. Its rating system, Division structure, and contest format were adopted — with modifications — by every major platform that followed. The "competitive programmer as individual athlete with a tracked rating" model originated here and is now the default way most people think about the activity.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 4: Codeforces, CodeChef, and the democratization era -->
+    <div class="entry">
+      <div class="card" id="card-4">
+        <div class="card-header" onclick="toggleCard('card-4')">
+          <div class="meta">
+            <span class="date-tag">2009–2013 · Codeforces, CodeChef, and global democratization</span>
+            <h3 class="card-title">Codeforces and CodeChef — Competitive Programming for Everyone</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Codeforces launched in 2009 from Saratov State University in Russia (built by Mikhail Mirzayanov and colleagues), offering frequent short-duration contests with a refined rating system and an active community. CodeChef launched in 2009 from India (built by Directi), with a focus on long contests, monthly challenges, and specifically nurturing the growing Indian competitive programming community. Together, they expanded the competitive programming community from tens of thousands to millions of active participants.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Codeforces rounds</span><span class="vocab-def">typically 2–3 hour contests with 5–8 problems of increasing difficulty, held multiple times per week. Problems are scored based on how quickly they're solved (a problem solved early in the contest earns more points). A "Div 3" for beginners, "Div 2" for intermediate, "Div 1" for experts, and "Div 1+2" for all levels.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Codeforces rating tiers</span><span class="vocab-def">color-coded levels: Newbie (grey, &lt;1200), Pupil (green, 1200–1399), Specialist (cyan, 1400–1599), Expert (blue, 1600–1899), Candidate Master (purple, 1900–2099), Master (orange, 2100–2299), International Master (orange, 2300–2399), Grandmaster (red, 2400–2599), International Grandmaster (red, 2600–2999), Legendary Grandmaster (red+, 3000+). These tiers are widely recognized as the "language" of competitive programming skill levels.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Editorial</span><span class="vocab-def">a post-contest writeup explaining the intended solution for each problem, including the key observations, algorithm selection, and complexity analysis. Editorials are a primary learning resource in competitive programming — studying "why this solution works" after attempting a problem is often more educational than simply copying the solution.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Upsolving</span><span class="vocab-def">solving problems you didn't solve during the actual contest, after the contest ends — often using the editorial as a hint when stuck. Upsolving is widely considered the single most effective practice method: you attempt a problem at your current skill level, fail, then learn exactly what you were missing.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Codeforces changed the pace and texture of competitive programming practice in a way that's easy to underestimate. Before Codeforces, major programming contests happened monthly or quarterly. Codeforces introduced multiple rounds per week — sometimes multiple per day — each with immediate rating updates. This frequency transformed CP from an occasional event into a continuous practice discipline, more like daily athletic training than a seasonal sport.</p>
+              <p>The <strong>rating tier system with color names</strong> became the lingua franca of competitive programming. Saying "I'm an Expert" or "targeting Candidate Master" carries immediate, precise meaning to anyone in the community — a shared vocabulary for skill level that didn't exist before Codeforces standardized it. This language appears in GitHub profiles, college applications, job resumes, and casual conversation among competitive programmers worldwide. The thresholds (1600 for Expert, 2100 for Master, 2400 for Grandmaster) are now as widely understood in the CP community as belt colors in martial arts.</p>
+              <p>The <strong>editorial culture</strong> that Codeforces institutionalized deserves special emphasis because it's the primary mechanism by which competitive programming is self-teaching. After every round, the problem-setter publishes a detailed editorial explaining each problem's solution — not just code, but the <em>sequence of observations</em> that leads to the solution. A competitive programmer's standard practice loop is: attempt the problem, get stuck or wrong, read just enough of the editorial to get unstuck, implement, and only then read the full editorial to compare approaches. Iterating through this loop hundreds of times, across hundreds of problems, is how people actually improve — and Codeforces made this loop available for free, at scale, for millions of people.</p>
+              <p><strong>CodeChef's contribution</strong> is different in character but equally important for the global story. Where Codeforces grew from a Russian university context (with heavy Eastern European participation initially), CodeChef was built specifically with India in mind. India had — and continues to have — a massive, rapidly-growing population of engineering students with strong mathematics backgrounds who discovered CP as a discipline in the 2000s and 2010s. CodeChef's long challenges (10-day contests where you could solve problems at your own pace) lowered the barrier for people without fast internet connections or flexible schedules, and its "Starters" series (easy weekly contests) specifically targeted absolute beginners. The combination of CodeChef and Codeforces drove Indian participation in competitive programming to the point where India now consistently produces a substantial fraction of the world's top competitive programmers and ICPC competitors.</p>
+            </div>
+
+            <div class="callout gold">
+              <span class="callout-label">The Indian competitive programming story</span>
+              India's specific relationship with competitive programming is worth naming explicitly, since you're part of it. The combination of strong mathematics education tradition, enormous numbers of engineering students, CodeChef's India-specific nurturing, and the career signal value in the Indian tech hiring market created an environment where competitive programming became a serious pursuit for millions of students. Competitive programming performance is explicitly valued at Indian tech companies and in software engineering hiring more broadly — a reality that makes the investment in building skills from Era I through XI directly career-relevant in a way that's not always true in other markets.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 5: LeetCode and the interview-prep bifurcation -->
+    <div class="entry slate">
+      <div class="card" id="card-5">
+        <div class="card-header" onclick="toggleCard('card-5')">
+          <div class="meta">
+            <span class="date-tag">2011–present · LeetCode and the interview-prep ecosystem</span>
+            <h3 class="card-title">LeetCode and the Interview-Preparation Bifurcation</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              LeetCode launched in 2011 with a different focus from Codeforces or CodeChef: problems specifically modeled on the technical interview questions used by major technology companies (Google, Amazon, Facebook/Meta, Apple, Microsoft — the "FAANG" cluster). Its problems are tagged by company and topic, and its model is self-paced practice rather than live competition.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">LeetCode</span><span class="vocab-def">an online platform with a library of ~3,000+ problems (as of the mid-2020s), primarily targeting software engineering interview preparation. Problems are categorized by difficulty (Easy, Medium, Hard) and tagged by topic and company.</span></div>
+              <div class="vocab-item"><span class="vocab-term">FAANG / MAANG</span><span class="vocab-def">informal acronym for the cluster of large US technology companies (Facebook/Meta, Amazon, Apple, Netflix, Google — later rearranged to MAANG when Microsoft replaced Netflix in common usage) that are widely considered the most desirable employers in software engineering and that use algorithm-heavy technical interviews.</span></div>
+              <div class="vocab-item"><span class="vocab-term">DSA interview</span><span class="vocab-def">a technical interview format (used by most major technology companies) where candidates are asked to solve algorithmic problems — typically from a LeetCode-style problem set — on a whiteboard or shared coding environment, under the interviewer's observation, within 30–45 minutes. This format is now standard in tech hiring globally, not just at FAANG companies.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Grind</span><span class="vocab-def">informal term for the practice of solving large numbers of LeetCode problems systematically as interview preparation — as in "LeetCode grind" or "grinding LeetCode." The connotation is repetitive, volume-focused practice aimed at pattern familiarity rather than deep understanding.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>LeetCode created a formal bifurcation in the competitive programming world that's worth understanding clearly, because it affects how you should think about your own goals and practice.</p>
+              <p><strong>Competitive programming</strong> (Codeforces, CodeChef, ICPC): the goal is to solve hard algorithmic problems, often requiring advanced techniques (segment trees, network flow, advanced DP), under strict time limits in live competition. Problems are often highly original — specifically designed <em>not</em> to be solvable by just recognizing a known pattern. The skill being developed is creative problem-solving under pressure. Rating and rank are how skill is measured.</p>
+              <p><strong>Interview preparation</strong> (LeetCode): the goal is to demonstrate, in a 30–45 minute interview, familiarity with standard algorithmic patterns well enough to solve an unseen problem that the interviewer already knows the answer to. The problem space is much smaller (essentially the patterns in this timeline through Era VIII, plus some standard string and math problems) and pattern recognition matters more than originality. "Solved 500 problems" is how preparation is measured.</p>
+              <p>These goals overlap significantly in the middle — someone who is genuinely strong at competitive programming will be excellent at LeetCode-style interviews, and doing LeetCode-style practice builds the same foundations. But at the edges they diverge: hard competitive programming requires techniques (advanced graph algorithms, complex DP optimizations, advanced data structures) that rarely appear in interviews, while interview preparation rewards thorough coverage of a bounded problem set and clear communication of thought process, which competitive programming doesn't specifically train.</p>
+              <p>For your stated goals — <strong>secure a software engineering role at a product company in India as quickly as possible</strong> — this bifurcation matters directly. Indian product companies (and multinational tech companies hiring in India) extensively use DSA interviews in the LeetCode/ICPC style. A focused effort on LeetCode-level mastery (roughly Eras IV–VIII of this timeline, plus the patterns from Era IX, plus standard problem types) is the most direct path to interview readiness. Going deep into advanced CP topics (Era XII's segment trees, advanced graph algorithms, etc.) is valuable for longer-term growth and for the highest-tier roles, but is secondary to a solid foundation for immediate hiring goals.</p>
+            </div>
+
+            <div class="callout slate">
+              <span class="callout-label">The CP → interviews mapping, concretely</span>
+              Problems you'll see in interviews at Indian product companies are roughly at LeetCode Medium to Hard difficulty — equivalent to Codeforces Div 2 problems C through E (roughly rating 1400–2000). The most-tested topics: arrays and strings, hashmaps, two pointers and sliding window, BFS/DFS on graphs and grids, binary search (including "binary search on answer"), trees (traversal, LCA, tree DP), dynamic programming (classic 1D and 2D problems), and basic graph algorithms (shortest path, cycles, topological sort). Everything in this timeline through Era IX covers these topics from their roots. The next era (Era XII) covers the more advanced structures that begin to appear at the highest difficulty tiers.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 6: Modern CP landscape -->
+    <div class="entry sage">
+      <div class="card" id="card-6">
+        <div class="card-header" onclick="toggleCard('card-6')">
+          <div class="meta">
+            <span class="date-tag">2015–present · The modern ecosystem</span>
+            <h3 class="card-title">The Modern Competitive Programming Landscape</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              By the mid-2010s, competitive programming had become a global ecosystem of platforms, communities, resources, and career pathways — with Codeforces alone hosting millions of registered users and hundreds of contests per year, LeetCode serving as the de facto interview preparation tool for the global software industry, and YouTube/Discord/competitive programming blogs creating a rich self-teaching infrastructure that didn't exist a decade earlier.
+            </div>
+
+            <div class="section-label">The Major Platforms Today</div>
+
+            <div class="platform-grid">
+              <div class="platform-card">
+                <div class="platform-year">Founded 2009</div>
+                <div class="platform-name">Codeforces</div>
+                <div class="platform-desc">The dominant competitive programming platform globally. Multiple rounds per week, comprehensive rating system, vast problem archive, strong editorial culture. Primary platform for serious CP practice.</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-year">Founded 2009</div>
+                <div class="platform-name">CodeChef</div>
+                <div class="platform-desc">India-centric platform with long contests, Starters series for beginners, and strong community. Important for Indian competitive programmers and companies that specifically cite CodeChef ratings.</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-year">Founded 2011</div>
+                <div class="platform-name">LeetCode</div>
+                <div class="platform-desc">The dominant interview-prep platform globally. Company-tagged problems, self-paced, discussion forums, and weekly contests. Essential for software engineering interviews at product companies.</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-year">Founded 1970</div>
+                <div class="platform-name">ICPC</div>
+                <div class="platform-desc">The world's most prestigious collegiate team contest. Qualifying through regional contests to World Finals remains a major achievement, especially valued in research and top-tier engineering roles.</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-year">Founded 1999</div>
+                <div class="platform-name">SPOJ / UVa OJ</div>
+                <div class="platform-desc">Older problem archives with thousands of problems. Less active contest-wise but useful for practicing on classic ICPC-style problems and building problem-solving depth.</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-year">Founded 2012</div>
+                <div class="platform-name">HackerRank / HackerEarth</div>
+                <div class="platform-desc">Platforms with both CP and hiring components. Often used by companies to host their own coding challenges as part of application processes, particularly in India.</div>
+              </div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>The modern CP ecosystem has features worth understanding as a new entrant.</p>
+              <p><strong>AI and competitive programming</strong> — since roughly 2022, large language models (LLMs) have become capable of solving a non-trivial fraction of easy and medium competitive programming problems. In 2024, Google DeepMind's AlphaCode 2 reportedly performed at approximately the level of a Codeforces Specialist (~1500 rating) — clearly above average among all participants but well below top competitive programmers. This has created both anxiety (do LLMs make competitive programming obsolete?) and clarity (no: the hard problems, original thinking, and the insight-finding that separates good from great competitive programmers remain well beyond current AI capabilities; furthermore, the skills developed through CP — structured thinking, correctness analysis, complexity reasoning — are more valuable in an AI-augmented world, not less). The consensus in the competitive programming community is that AI tools are useful for practice (debugging, understanding editorials, exploring alternative solutions) but don't replace the work of developing genuine algorithmic thinking.</p>
+              <p><strong>The career relevance of competitive programming</strong> has, if anything, increased in the 2020s. As software engineering roles become more competitive globally, the DSA interview — once mainly a FAANG/US phenomenon — has spread to mid-sized companies, Indian product companies, and global tech hiring everywhere. The LeetCode problem set, which was once seen as a FAANG-specific quirk, is now the shared language of technical hiring across much of the industry. This means the investment in DSA skills compounds: it prepares you for interviews across a much wider range of companies than it would have a decade ago.</p>
+              <p><strong>Learning resources</strong> have also transformed. In the early 2000s, competitive programming was learned primarily through trial and error on ICPC problem archives, or through printed books (notably, the "competitive programming bible" by Steven Halim, <em>Competitive Programming 3</em>). Today: Codeforces editorials provide free, high-quality explanations after every contest; YouTube channels by current and former competitive programmers offer video solutions and tutorials; competitive programming Discord servers create real-time communities for asking questions; and resources like CP-Algorithms (a website with detailed articles on nearly every standard competitive programming technique) make the body of knowledge more accessible than ever. Being a new learner today is, in many ways, significantly easier than it was in 2005 — the infrastructure for self-teaching is vastly better.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Where you stand, and what comes next</span>
+              This timeline has now traced the intellectual history of the field you're entering — from clay tablets to Codeforces — and covered the full context of competitive programming as a culture, ecosystem, and career pathway. The final era (Era XII) covers the advanced data structures and algorithms that begin to appear at Codeforces Div 1 difficulty and above: segment trees, Fenwick trees, union-find, network flow, and more — the toolkit that separates Specialists from Masters and above. Alongside that, the practical path forward for your stated goals is: build a strong LeetCode-level foundation (Eras I–IX material), compete regularly on Codeforces Div 2–3, upsolve aggressively using editorials, and begin applying to product companies as that foundation solidifies — exactly the trajectory the portfolio project (your OS bootloader) is designed to complement.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="era-footer">
+    End of Era XI. Next: Era XII — Advanced Structures for the Modern Competitive Programmer: Segment Trees, Fenwick Trees, Union-Find, Network Flow, and the Frontier (1970s–present).
+  </div>
+
+</div>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const body = card.querySelector('.card-body');
+    const isOpen = card.classList.contains('open');
+
+    if (isOpen) {
+      card.classList.remove('open');
+      body.style.maxHeight = '0px';
+    } else {
+      card.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.card.open').forEach(card => {
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    });
+  });
+</script>
+
+</body>
+</html>

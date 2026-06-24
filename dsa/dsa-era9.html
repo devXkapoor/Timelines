@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story of Algorithms — Era IX: Strings, Patterns, and Text</title>
+<style>
+  :root {
+    --paper: #F7F3E9;
+    --paper-warm: #F1EADA;
+    --ink: #2B3A4A;
+    --ink-soft: #4A5A6A;
+    --terracotta: #C77B58;
+    --pencil: #8B8680;
+    --sage: #7D9471;
+    --sage-bg: #EAEFE6;
+    --gold: #C9A227;
+    --line: #D9CFBB;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(139,134,128,0.045) 39px);
+    color: var(--ink);
+    font-family: "Source Serif Pro", Georgia, "Times New Roman", serif;
+    line-height: 1.7;
+    font-size: 18px;
+    padding: 0 0 120px 0;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 60px 28px 0 28px; }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: "Lora", Georgia, serif;
+    font-weight: 700;
+    font-size: 2.6rem;
+    margin: 0 0 12px 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .intro {
+    background: var(--paper-warm);
+    border-left: 4px solid var(--terracotta);
+    padding: 22px 26px;
+    border-radius: 4px;
+    margin-bottom: 52px;
+    font-size: 0.98rem;
+  }
+  .intro p { margin: 0 0 10px 0; }
+  .intro p:last-child { margin-bottom: 0; }
+
+  .timeline { position: relative; padding-left: 36px; }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--terracotta) 0%, var(--sage) 50%, var(--gold) 100%);
+    opacity: 0.35;
+    border-radius: 2px;
+  }
+
+  .entry { position: relative; margin-bottom: 18px; }
+
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -33px;
+    top: 28px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--terracotta);
+    z-index: 2;
+  }
+
+  .entry.sage::before { border-color: var(--sage); }
+  .entry.gold::before { border-color: var(--gold); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(43,58,74,0.06);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+  }
+
+  .card:hover { box-shadow: 0 4px 16px rgba(43,58,74,0.10); }
+
+  .card-header {
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .card-header:hover { background: var(--paper-warm); }
+
+  .meta { flex: 1; }
+
+  .date-tag {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .entry.sage .date-tag { color: var(--sage); }
+  .entry.gold .date-tag { color: var(--gold); }
+
+  .card-title {
+    font-family: "Lora", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .toggle-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--ink-soft);
+    transition: transform 0.3s ease, background 0.2s ease;
+    font-family: "Atkinson Hyperlegible", sans-serif;
+  }
+
+  .card.open .toggle-icon { transform: rotate(45deg); background: var(--paper-warm); }
+
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+
+  .card-body-inner {
+    padding: 0 24px 28px 24px;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+
+  .section-label {
+    font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pencil);
+    margin: 22px 0 10px 0;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .source-text {
+    background: var(--paper-warm);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+    border: 1px solid var(--line);
+  }
+
+  .vocab-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .vocab-item { display: flex; gap: 10px; font-size: 0.95rem; align-items: baseline; }
+
+  .vocab-term {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    color: var(--terracotta);
+    flex-shrink: 0;
+    min-width: 140px;
+  }
+  .entry.sage .vocab-term { color: var(--sage); }
+  .entry.gold .vocab-term { color: var(--gold); }
+
+  .vocab-def { color: var(--ink-soft); }
+
+  .elaboration { font-size: 0.99rem; }
+  .elaboration p { margin: 0 0 14px 0; }
+  .elaboration p:last-child { margin-bottom: 0; }
+  .elaboration strong { color: var(--ink); }
+
+  .callout {
+    background: var(--sage-bg);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--sage);
+  }
+
+  .callout-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .diagram {
+    margin: 16px 0;
+    padding: 18px;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .graph-svg { display: block; margin: 0 auto; max-width: 100%; }
+
+  .diagram-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .diagram-row:last-child { margin-bottom: 0; }
+
+  .cell {
+    border: 1.5px solid var(--ink-soft);
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 30px;
+    color: var(--ink);
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+  }
+
+  .cell.match { background: var(--sage-bg); border-color: var(--sage); }
+  .cell.mismatch { background: #fce8e0; border-color: var(--terracotta); }
+  .cell.pattern { background: var(--paper-warm); border-color: var(--gold); }
+  .cell.skip { background: #fff; border-color: var(--pencil); color: var(--pencil); }
+
+  .diagram-caption {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .step-label {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-size: 0.78rem;
+    color: var(--pencil);
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+
+  code, .mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    background: var(--paper-warm);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+
+  .era-footer {
+    margin-top: 60px;
+    text-align: center;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    color: var(--pencil);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    h1 { font-size: 1.9rem; }
+    .wrap { padding: 36px 16px 0 16px; }
+    .timeline { padding-left: 28px; }
+    .entry::before { left: -26px; }
+    .vocab-item { flex-direction: column; gap: 2px; }
+    .vocab-term { min-width: 0; }
+    .step-label { min-width: 70px; font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Era IX · Characters, Words, and Patterns</div>
+    <h1>Strings: Pattern Matching, Tries, and the Algorithms That Read Text</h1>
+    <p class="subtitle">Text is everywhere — and "find this word in that document" turns out to be a much more interesting algorithmic problem than it first appears, with connections to automata theory, suffix structures, and one of the most elegant "avoid redoing work" ideas in all of computer science.</p>
+  </header>
+
+  <div class="intro">
+    <p><strong>The shift in this era.</strong> Until now, the building blocks of problems have mostly been <em>numbers</em> — values to sort, distances to minimize, counts to maximize. This era turns to a different kind of data: <strong>strings</strong>, which are sequences of characters (letters, digits, symbols). Text processing is arguably the most universal computing task in existence — every search engine, every text editor, every compiler, every biological sequence database, every spam filter works fundamentally on strings.</p>
+    <p>Strings look simple but create subtle, interesting problems. "Does this document contain the word 'algorithm'?" sounds trivial — but what if the document is a billion characters long and you need to search it millions of times? What if you're searching for all occurrences of a pattern, not just the first? What if you want to find the longest portion two strings have in common? Each question leads to a distinct, carefully-designed algorithm, and together they form one of the richest sub-areas of DSA — and one of the most consistently-tested in competitive programming.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- ENTRY 1: The naive approach and why it's not enough -->
+    <div class="entry">
+      <div class="card" id="card-1">
+        <div class="card-header" onclick="toggleCard('card-1')">
+          <div class="meta">
+            <span class="date-tag">The baseline — and why it falls short</span>
+            <h3 class="card-title">Naïve Pattern Matching — and the O(n·m) Problem</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Setup</div>
+            <div class="source-text">
+              Given a "text" string of length n and a "pattern" string of length m, find all positions in the text where the pattern appears. The naïve approach: try aligning the pattern at every possible position in the text (positions 0, 1, 2, ..., n−m), and at each position, compare the pattern to the text character by character until either a full match is confirmed or a mismatch stops the comparison early.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">String</span><span class="vocab-def">a sequence of characters. "Hello" is a string of length 5. Characters are usually drawn from some "alphabet" — the set of possible characters — which might be just the 26 letters, or all ASCII characters, or the four DNA bases, etc.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Pattern / text</span><span class="vocab-def">in string matching, "text" is the longer string being searched in, "pattern" is the shorter string being searched for. Often written as T (length n) and P (length m), with m ≤ n typically.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Substring</span><span class="vocab-def">a contiguous portion of a string — characters at positions i through j (inclusive), for some i ≤ j. "algo" is a substring of "algorithm" (positions 0–3).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Alignment / shift</span><span class="vocab-def">positioning the pattern at a specific starting offset in the text, to check whether the text matches the pattern starting at that position.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>The naïve algorithm is exactly what most people would write intuitively: try every possible starting position in the text, and at each one, check character by character whether the pattern fits.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">text T:</div>
+                  <div class="cell">A</div><div class="cell">B</div><div class="cell">A</div><div class="cell">B</div><div class="cell">C</div><div class="cell">A</div><div class="cell">B</div><div class="cell">A</div><div class="cell">B</div><div class="cell">A</div><div class="cell">B</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">pattern P:</div>
+                  <div class="cell pattern">A</div><div class="cell pattern">B</div><div class="cell pattern">A</div><div class="cell pattern">B</div><div class="cell pattern">C</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">shift 0 — match<br>A,B,A,B then C≠C? No:<br>ABABC = ABABC ✓</div>
+                  <div class="cell match">A</div><div class="cell match">B</div><div class="cell match">A</div><div class="cell match">B</div><div class="cell match">C</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">shift 1 — A≠B,<br>stop immediately:</div>
+                  <div class="cell skip">·</div><div class="cell mismatch">B</div><div class="cell pattern">A</div><div class="cell pattern">B</div><div class="cell pattern">A</div><div class="cell pattern">B</div><div class="cell pattern">C</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">shift 2 — match<br>A,B,A,B then C≠A,<br>stop at index 4:</div>
+                  <div class="cell skip">·</div><div class="cell skip">·</div><div class="cell match">A</div><div class="cell match">B</div><div class="cell match">A</div><div class="cell match">B</div><div class="cell mismatch">A</div>
+                </div>
+                <div class="diagram-caption">At shift 2, the naïve algorithm matched 4 characters before seeing a mismatch. It then moves to shift 3 — but doesn't use what it just learned (that the text contains "ABAB" starting at position 2). KMP, the next entry, does.</div>
+              </div>
+              <p>The naïve algorithm is correct and perfectly fine for small inputs. Its complexity: at each of the up to (n − m + 1) starting positions, up to m character comparisons in the worst case. Total: O(n × m). For typical inputs, mismatches usually happen early at each position, making the practical behavior much better. But in the worst case — specifically when the text and pattern consist of many repeated characters (e.g., text = "AAAAAAAAAB", pattern = "AAAAB") — <em>every</em> alignment almost fully matches before finally finding the mismatch at the last character. This is the adversarial input for naïve matching, and it makes O(n × m) a real concern: for n = 100,000 and m = 10,000, that's 1 billion comparisons.</p>
+              <p>The deeper observation: <strong>naïve matching throws away information.</strong> After finding that text[2..5] = "ABAB" matches pattern[0..3] = "ABAB" before a mismatch at position 4, the naïve algorithm forgets everything it learned and starts fresh at position 3. But it <em>could</em> have observed: "I just confirmed that text[2..5] = ABAB. I know (from the pattern itself) that ABAB starts with AB — so text[4..5] = AB already, and my next alignment at shift 4 can skip those first two character comparisons." This is the key insight that the next entry formalizes.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters</span>
+              O(n × m) is the baseline to beat. For bioinformatics (searching a human genome of ~3 billion base pairs for a gene sequence of thousands of bases), O(n × m) is completely intractable — you need something better. For competitive programming, text problems with n and m up to 10^5 or 10^6 typically require an O(n + m) or O(n log n) solution — and the algorithms in this era are what provide those.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 2: KMP -->
+    <div class="entry sage">
+      <div class="card" id="card-2">
+        <div class="card-header" onclick="toggleCard('card-2')">
+          <div class="meta">
+            <span class="date-tag">1977 · Donald Knuth, James Morris, Vaughan Pratt · USA</span>
+            <h3 class="card-title">The Knuth-Morris-Pratt Algorithm — Never Re-examine a Character</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              KMP achieves O(n + m) string matching by precomputing a "failure function" (also called the "prefix function") for the pattern alone — a table that, for each position in the pattern where a mismatch might occur, records how far back in the pattern the search can resume without re-examining already-matched text characters.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Prefix</span><span class="vocab-def">a substring starting at position 0 — the beginning of a string. Prefixes of "ABAB" are "", "A", "AB", "ABA", "ABAB".</span></div>
+              <div class="vocab-item"><span class="vocab-term">Suffix</span><span class="vocab-def">a substring ending at the last position — the end of a string. Suffixes of "ABAB" are "", "B", "AB", "BAB", "ABAB".</span></div>
+              <div class="vocab-item"><span class="vocab-term">Proper prefix / suffix</span><span class="vocab-def">a prefix or suffix that is strictly shorter than the whole string (i.e., not the string itself).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Failure function / prefix function</span><span class="vocab-def">for the pattern P, an array where entry π[i] = the length of the longest proper prefix of P[0..i] that is also a suffix of P[0..i]. This encodes, for every position in the pattern, "how much of the pattern have I already confirmed, even if a mismatch occurs here?"</span></div>
+              <div class="vocab-item"><span class="vocab-term">Automaton</span><span class="vocab-def">a mathematical model of a machine with a finite number of "states" and rules for transitioning between states based on input. KMP can be understood as building and running a tiny automaton for the pattern — connecting it directly to Turing's "states" from Era II.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>The KMP algorithm's central question: when a mismatch occurs at position j in the pattern (after successfully matching positions 0 through j−1), instead of naïvely shifting the pattern by just 1 and restarting from the beginning, how far can we safely skip — and where in the pattern can we resume — without risking missing a match?</p>
+              <p>The answer comes from examining the pattern itself, not the text. Here's why: we just confirmed that text[i−j .. i−1] = pattern[0 .. j−1]. If pattern[0..j−1] has a proper prefix that also equals a proper suffix of pattern[0..j−1], say of length k, then text[i−k .. i−1] = pattern[0..k−1] (the last k text characters we already matched also match the first k characters of the pattern). So instead of shifting to position i−j+1 and restarting from j=0, we can shift to position i−k and resume from j=k — we've already "confirmed" those first k characters, without re-reading any text.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">Pattern:</div>
+                  <div class="cell">A</div><div class="cell">B</div><div class="cell">A</div><div class="cell">B</div><div class="cell">C</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">Index:</div>
+                  <div class="cell skip">0</div><div class="cell skip">1</div><div class="cell skip">2</div><div class="cell skip">3</div><div class="cell skip">4</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">π (failure):</div>
+                  <div class="cell">0</div><div class="cell">0</div><div class="cell">1</div><div class="cell">2</div><div class="cell">0</div>
+                </div>
+                <div class="diagram-caption">π[3]=2 means: if a mismatch occurs at pattern position 4 (after matching "ABAB"), the longest prefix of "ABAB" that is also a suffix of "ABAB" has length 2 — "AB". So resume matching from pattern position 2, having already confirmed "AB" in the text. The text pointer never moves backward.</div>
+              </div>
+              <p>The failure function π is computed in O(m) by the same matching logic applied to the pattern matching against itself — an elegant recursion. The matching phase uses this table to skip forward efficiently: the text pointer <em>never moves left</em> — it only ever advances forward, one character at a time. The pattern pointer may jump back (via π), but each jump is strictly smaller than the text pointer's total advancement. This is the key insight for the complexity proof: the text pointer makes exactly n forward steps total, and no step is ever repeated — so the total number of character comparisons across all alignments is O(n), plus O(m) for precomputing π, giving the celebrated <strong>O(n + m)</strong> overall — regardless of input content, including the adversarial cases that destroy naïve matching.</p>
+              <p>There is a beautiful connection to automata theory (Era II). The failure function effectively encodes a finite-state automaton for the pattern — each "state" represents how many characters of the pattern have been matched so far, transitions on matching characters advance the state, and transitions on mismatches jump to the state encoded by π (the "longest matching prefix we can salvage"). Running the text through this automaton, one character at a time, is exactly KMP matching. The state machine connection explains why KMP can't miss matches: it processes every text character exactly once and never backtracks, because the automaton's transition function (computed from π) guarantees correct behavior at every character.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP</span>
+              KMP appears directly in problems asking for occurrences of a pattern in a text. But the <em>failure function / prefix function</em> is arguably even more useful as a standalone tool — it's used in "Z-function" problems (a related, often simpler-to-implement concept), and both appear constantly in string problems that aren't obviously "find this pattern here" but reduce to it. The deeper skill: recognizing that "this string problem involves some repeated prefix/suffix structure" → think KMP or Z-function.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 3: Tries -->
+    <div class="entry gold">
+      <div class="card" id="card-3">
+        <div class="card-header" onclick="toggleCard('card-3')">
+          <div class="meta">
+            <span class="date-tag">1959 · René de la Briandais; popularized 1960s</span>
+            <h3 class="card-title">The Trie — A Tree Shaped Like the Words It Stores</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              A trie (from "re<strong>trie</strong>val") stores a set of strings by representing them as paths through a tree — the root represents the empty string, each edge is labeled with a character, and each node represents the string formed by following edges from the root to that node. Two strings sharing a prefix share the corresponding path from the root.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Trie</span><span class="vocab-def">pronounced "try" (rhymes with "try," not "tree," though people often say "tree" too — both are heard). A tree where the path from root to a node spells out the prefix represented by that node.</span></div>
+              <div class="vocab-item"><span class="vocab-term">Prefix sharing</span><span class="vocab-def">if two strings in a trie share a prefix (e.g., "ant" and "any" share "an"), they share the same path in the trie up to where they diverge. This shared-path property is the trie's defining structural feature.</span></div>
+              <div class="vocab-item"><span class="vocab-term">End-of-word marker</span><span class="vocab-def">a flag or special node indicating that the string formed by the path from root to this node is a complete, stored word — distinguishing a word from a mere prefix of another stored word (e.g., "an" is a prefix of "ant," but if "an" is also a stored word, it needs a marker).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Autocomplete</span><span class="vocab-def">given a prefix typed by a user, finding all words that complete it — a natural trie operation: descend from the root following the prefix's characters, then collect all words in the subtree below that node.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>Suppose you're storing a dictionary of English words and want to support: "does this word exist?", "does any stored word start with this prefix?", and "list all words starting with this prefix." Hash tables (Era VIII) can answer "does this word exist?" in O(1) average, but can't naturally answer prefix-related questions (hashing destroys the prefix structure). Binary search trees (Era IV/VIII) can, but searching a BST for a word of length m requires up to O(log n) comparisons, <em>each</em> of which may require comparing two entire strings (which costs O(m) in the worst case) — so BST lookup is O(m × log n). A trie gives you O(m) for all three queries — proportional only to the length of the word or prefix, completely independent of how many words are stored.</p>
+              <div class="diagram">
+                <svg class="graph-svg" width="310" height="200" viewBox="0 0 310 200">
+                  <!-- Trie storing: ant, any, an, be, by -->
+                  <text x="155" y="18" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif" font-size="12" fill="#8B8680">Storing: "an", "ant", "any", "be", "by"</text>
+                  <!-- Root -->
+                  <circle cx="155" cy="40" r="12" fill="#F1EADA" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="155" y="45" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#2B3A4A">·</text>
+                  <!-- a branch -->
+                  <line x1="155" y1="52" x2="90" y2="85" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="112" y="75" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" fill="#C77B58" font-weight="bold">a</text>
+                  <circle cx="90" cy="95" r="12" fill="#F1EADA" stroke="#7D9471" stroke-width="1.5"/>
+                  <text x="90" y="100" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">a</text>
+                  <!-- an node -->
+                  <line x1="90" y1="107" x2="70" y2="140" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="72" y="130" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" fill="#C77B58" font-weight="bold">n</text>
+                  <circle cx="70" cy="150" r="12" fill="#EAEFE6" stroke="#7D9471" stroke-width="2"/>
+                  <text x="70" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">an✓</text>
+                  <!-- ant -->
+                  <line x1="70" y1="162" x2="42" y2="188" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="46" y="180" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" fill="#C77B58" font-weight="bold">t</text>
+                  <circle cx="42" cy="193" r="10" fill="#EAEFE6" stroke="#7D9471" stroke-width="2"/>
+                  <text x="42" y="197" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#2B3A4A">✓</text>
+                  <!-- any -->
+                  <line x1="70" y1="162" x2="98" y2="188" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="87" y="180" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" fill="#C77B58" font-weight="bold">y</text>
+                  <circle cx="98" cy="193" r="10" fill="#EAEFE6" stroke="#7D9471" stroke-width="2"/>
+                  <text x="98" y="197" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#2B3A4A">✓</text>
+                  <!-- b branch -->
+                  <line x1="155" y1="52" x2="220" y2="85" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="195" y="75" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" fill="#C77B58" font-weight="bold">b</text>
+                  <circle cx="220" cy="95" r="12" fill="#F1EADA" stroke="#7D9471" stroke-width="1.5"/>
+                  <text x="220" y="100" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2B3A4A">b</text>
+                  <!-- be -->
+                  <line x1="220" y1="107" x2="200" y2="140" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="200" y="130" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" fill="#C77B58" font-weight="bold">e</text>
+                  <circle cx="200" cy="150" r="12" fill="#EAEFE6" stroke="#7D9471" stroke-width="2"/>
+                  <text x="200" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#2B3A4A">be✓</text>
+                  <!-- by -->
+                  <line x1="220" y1="107" x2="260" y2="140" stroke="#8B8680" stroke-width="1.5"/>
+                  <text x="248" y="130" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" fill="#C77B58" font-weight="bold">y</text>
+                  <circle cx="260" cy="150" r="12" fill="#EAEFE6" stroke="#7D9471" stroke-width="2"/>
+                  <text x="260" y="155" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#2B3A4A">by✓</text>
+                </svg>
+                <div class="diagram-caption">"ant," "any," and "an" all share the path a→n from the root — their common prefix. Looking up any of these means following edges labeled by each character, one per step. The ✓ marks end-of-word nodes. Finding all words starting with "an" means descending to the "an" node and collecting all ✓ nodes below it.</div>
+              </div>
+              <p>The trie's O(m) lookup doesn't depend on n (the number of stored words) at all, making it ideal for large vocabularies. The cost: memory. A trie node needs space for pointers to each possible child character — for the English alphabet (26 letters), each node holds 26 pointers. If most words are short and share few prefixes, most of these pointers are empty (null), and the memory use is O(total characters across all stored words) but with a potentially large constant. "Compressed tries" (also called Patricia trees or radix trees) address this by collapsing runs of single-child nodes into single edges labeled by the entire substring, reducing memory at the cost of slightly more complex code.</p>
+              <p>A particularly important application in CP: the <strong>XOR trie</strong> (also called "binary trie"). Numbers can be treated as binary strings (sequences of bits), and a trie on these bit-strings can answer "what stored number has the maximum XOR with a given query number?" in O(32) or O(64) steps (one per bit) — much faster than scanning all stored numbers. This technique appears in a notable category of competitive programming problems involving bitwise operations on sets of numbers.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Why this matters for CP</span>
+              Tries appear in CP problems involving prefix matching, autocomplete-style queries, IP routing, and — importantly — as the structure underlying more advanced string algorithms. They're also, in a broader sense, a beautiful example of the "shape of the data encodes the structure of the problem" design principle: the trie's branching structure exactly mirrors the prefix-tree structure of the strings it stores, which is why prefix operations are "free" — they're just tree traversals.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTRY 4: LCS and edit distance via DP -->
+    <div class="entry">
+      <div class="card" id="card-4">
+        <div class="card-header" onclick="toggleCard('card-4')">
+          <div class="meta">
+            <span class="date-tag">1970s · Multiple contributors; edit distance by Levenshtein 1965</span>
+            <h3 class="card-title">Comparing Strings: LCS and Edit Distance via Dynamic Programming</h3>
+          </div>
+          <div class="toggle-icon">+</div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+
+            <div class="section-label">The Source</div>
+            <div class="source-text">
+              Given two strings, the "Longest Common Subsequence" (LCS) problem asks for the longest sequence of characters appearing in both strings in order (but not necessarily contiguously). The "edit distance" (Levenshtein distance) asks for the minimum number of insertions, deletions, or substitutions needed to transform one string into the other. Both are solved via a 2D DP table, each a direct application of Era VII's principles to string data.
+            </div>
+
+            <div class="section-label">Vocabulary</div>
+            <div class="vocab-list">
+              <div class="vocab-item"><span class="vocab-term">Subsequence</span><span class="vocab-def">a sequence derived from another string by deleting some (or no) characters without changing the order of the remaining characters. "ACE" is a subsequence of "ABCDE" — pick characters at positions 0, 2, 4. Note: unlike a <em>substring</em>, a subsequence need not be contiguous.</span></div>
+              <div class="vocab-item"><span class="vocab-term">LCS</span><span class="vocab-def">Longest Common Subsequence — the longest sequence of characters (in order, not necessarily contiguous) that appears in both strings. For "ABCBDAB" and "BDCAB", the LCS is "BCAB" or "BDAB" (both length 4).</span></div>
+              <div class="vocab-item"><span class="vocab-term">Edit distance</span><span class="vocab-def">the minimum number of single-character edits (insert, delete, substitute) to convert one string into another. Also called Levenshtein distance. "kitten" → "sitting" has edit distance 3.</span></div>
+              <div class="vocab-item"><span class="vocab-term">2D DP table</span><span class="vocab-def">a table with one dimension for each string's index, where cell (i, j) stores the answer to the subproblem "considering only the first i characters of string A and the first j characters of string B." Filling this table left-to-right, top-to-bottom, using previously-filled cells, solves the full problem.</span></div>
+            </div>
+
+            <div class="section-label">First Principles</div>
+            <div class="elaboration">
+              <p>These two problems are the canonical examples of DP applied to strings, and they share the same template — a 2D table where both dimensions are string indices — even though they model quite different questions. They're the bridge from "DP on numbers" (Era VII's Fibonacci, paths, counts) to "DP on text," and they demonstrate that the same framework handles both kinds of data naturally.</p>
+              <p>For <strong>LCS</strong>, the recurrence is: <span class="mono">LCS(i, j)</span> = the length of the LCS of the first i characters of string A and the first j characters of string B. If A[i] == B[j] (the current characters match), this common character is part of the LCS: <span class="mono">LCS(i,j) = LCS(i−1, j−1) + 1</span>. If they don't match, we can't use both — we skip one or the other and take whichever gives longer LCS: <span class="mono">LCS(i,j) = max(LCS(i−1,j), LCS(i,j−1))</span>.</p>
+              <div class="diagram">
+                <div class="diagram-row">
+                  <div class="step-label">LCS("ABCB","BCAB")</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label"></div>
+                  <div class="cell pattern">&nbsp;</div><div class="cell pattern">B</div><div class="cell pattern">C</div><div class="cell pattern">A</div><div class="cell pattern">B</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">A:</div>
+                  <div class="cell">0</div><div class="cell">0</div><div class="cell">0</div><div class="cell match">1</div><div class="cell match">1</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">B:</div>
+                  <div class="cell">0</div><div class="cell match">1</div><div class="cell">1</div><div class="cell">1</div><div class="cell match">2</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">C:</div>
+                  <div class="cell">0</div><div class="cell">1</div><div class="cell match">2</div><div class="cell">2</div><div class="cell">2</div>
+                </div>
+                <div class="diagram-row">
+                  <div class="step-label">B:</div>
+                  <div class="cell">0</div><div class="cell match">1</div><div class="cell">2</div><div class="cell">2</div><div class="cell match">3</div>
+                </div>
+                <div class="diagram-caption">Each cell (i,j) is filled using only the cell above, the cell to the left, and the cell diagonally above-left — always already computed. Bottom-right cell = LCS length = 3. (LCS = "BCB".)</div>
+              </div>
+              <p>For <strong>edit distance</strong>, the recurrence is similar but encodes a different kind of "choice." At each cell (i, j): if A[i] == B[j], no edit needed here, so <span class="mono">edit(i,j) = edit(i−1, j−1)</span>. If they differ, we choose the cheapest of three operations: substituting A[i] to match B[j] (<span class="mono">edit(i−1,j−1) + 1</span>), inserting B[j] into A (<span class="mono">edit(i, j−1) + 1</span>), or deleting A[i] (<span class="mono">edit(i−1, j) + 1</span>), and take the minimum.</p>
+              <p>Both problems are O(n × m) in time and space, filling a table of that size — usually manageable for n, m up to a few thousand, but requiring the rolling space optimization from Era VII (keeping only two rows at a time) to handle larger inputs when only the final answer is needed rather than the full table.</p>
+              <p>Beyond competitive programming, edit distance is the core of spell-checkers, DNA sequence alignment, plagiarism detection, and "diff" tools (the program that shows what changed between two versions of a file). LCS underlies the Unix <code>diff</code> command, version control systems, and bioinformatics. These two problems connect Era VII's abstract DP framework to one of the most practically impactful areas of computer science.</p>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">The full picture of Era IX</span>
+              This era introduced strings as a data type with their own rich algorithmic sub-area: the naïve O(n·m) baseline and why it fails on adversarial inputs, KMP's O(n+m) guarantee via the failure function (and its elegant automaton interpretation connecting back to Era II), the trie as a tree structure that makes prefix operations natural and fast, and LCS/edit distance as Era VII's 2D DP applied to text comparison. These four ideas cover the most common "string category" problems in competitive programming and form the foundation for the more advanced string structures (suffix arrays, suffix automata) that appear at higher levels of competition. The next era moves to the question of limits — what's provably hard, what P vs NP actually means, and why some problems remain slow regardless of how clever the algorithm is.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="era-footer">
+    End of Era IX. Next: Era X — Complexity Theory and the Limits of Algorithms: P, NP, Reductions, and the Problems No One Has Solved Efficiently (1971 onward, Cook, Karp, and beyond).
+  </div>
+
+</div>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const body = card.querySelector('.card-body');
+    const isOpen = card.classList.contains('open');
+
+    if (isOpen) {
+      card.classList.remove('open');
+      body.style.maxHeight = '0px';
+    } else {
+      card.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.card.open').forEach(card => {
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    });
+  });
+</script>
+
+</body>
+</html>
