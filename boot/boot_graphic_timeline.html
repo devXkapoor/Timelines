@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Boot Process — From Power to First Instruction</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:        #080808;
+  --surface:   #111111;
+  --surface2:  #181818;
+  --border:    #222222;
+  --wire:      #1a1a1a;
+  --amber:     #e8780a;
+  --amber-dim: #7a3d04;
+  --amber-glow:#ff9a2e;
+  --text:      #c8c0b0;
+  --text-dim:  #555550;
+  --text-mid:  #888880;
+  --white:     #f0ebe0;
+  --stage-a:   #e8780a; /* BIOS/firmware */
+  --stage-b:   #2a9d8f; /* bootloader */
+  --stage-c:   #e9c46a; /* OS handoff */
+  --stage-d:   #e76f51; /* kernel */
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Scanline overlay */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events:none;
+  z-index:1000;
+}
+
+/* ── HEADER ── */
+header {
+  position:relative;
+  text-align:center;
+  padding: 80px 24px 64px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-eyebrow {
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--amber-dim);
+  margin-bottom: 20px;
+}
+
+.header-eyebrow span {
+  color: var(--amber);
+}
+
+h1 {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+h1 .amber { color: var(--amber); }
+
+.header-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 2;
+}
+
+/* Signal meter */
+.signal-meter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 32px;
+}
+
+.signal-bar {
+  width: 3px;
+  background: var(--amber);
+  border-radius: 1px;
+  opacity: 0.3;
+  animation: pulse-bar 1.4s ease-in-out infinite;
+}
+
+.signal-bar:nth-child(1) { height: 8px;  animation-delay: 0s; }
+.signal-bar:nth-child(2) { height: 14px; animation-delay: 0.1s; }
+.signal-bar:nth-child(3) { height: 22px; animation-delay: 0.2s; }
+.signal-bar:nth-child(4) { height: 30px; animation-delay: 0.3s; }
+.signal-bar:nth-child(5) { height: 22px; animation-delay: 0.4s; }
+.signal-bar:nth-child(6) { height: 14px; animation-delay: 0.5s; }
+.signal-bar:nth-child(7) { height: 8px;  animation-delay: 0.6s; }
+
+@keyframes pulse-bar {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+
+/* ── LEGEND ── */
+.legend {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── TIMELINE ── */
+.timeline {
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+/* The vertical wire */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--amber-dim) 5%,
+    var(--amber-dim) 95%,
+    transparent 100%
+  );
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* Travelling pulse on the wire */
+.wire-pulse {
+  position: absolute;
+  left: 50%;
+  top: 60px;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--amber-glow),
+    transparent
+  );
+  transform: translateX(-50%);
+  animation: travel-down 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes travel-down {
+  0%   { top: 60px;  opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { top: calc(100% - 80px); opacity: 0; }
+}
+
+/* ── PHASE DIVIDER ── */
+.phase {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  margin: 56px 0 36px;
+}
+
+.phase-line {
+  height: 1px;
+}
+
+.phase-line-l { background: linear-gradient(to right, transparent, var(--phase-color, var(--amber-dim))); }
+.phase-line-r { background: linear-gradient(to left, transparent, var(--phase-color, var(--amber-dim))); }
+
+.phase-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--phase-color, var(--amber));
+  padding: 5px 14px;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+/* ── ENTRY ── */
+.entry {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  margin-bottom: 44px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.entry.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Node */
+.entry-mid {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 2px;
+  position: relative;
+  z-index: 3;
+}
+
+.node {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--node-color, var(--amber));
+  background: var(--bg);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.node::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: var(--node-color, var(--amber));
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: -1;
+  filter: blur(6px);
+}
+
+.node:hover, .node.active {
+  background: var(--node-color, var(--amber));
+  box-shadow: 0 0 16px var(--node-color, var(--amber));
+  transform: scale(1.3);
+}
+
+.node:hover::after, .node.active::after {
+  opacity: 0.4;
+}
+
+/* Card sides */
+.cell-left {
+  grid-column: 1;
+  padding-right: 28px;
+  text-align: right;
+  cursor: pointer;
+}
+
+.cell-right {
+  grid-column: 3;
+  padding-left: 28px;
+  cursor: pointer;
+}
+
+.entry[data-side="left"] .cell-right { visibility: hidden; }
+.entry[data-side="right"] .cell-left { visibility: hidden; }
+
+.card-inner { display: inline-block; text-align: left; max-width: 330px; }
+.entry[data-side="left"] .card-inner { text-align: right; }
+
+.entry-time {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--node-color, var(--amber));
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.entry-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.entry-teaser {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  grid-column: 1 / -1;
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--node-color, var(--amber));
+  padding: 26px 30px;
+  margin-top: 12px;
+  position: relative;
+}
+
+.detail-panel.open {
+  display: block;
+  animation: panelIn 0.3s ease;
+}
+
+@keyframes panelIn {
+  from { opacity:0; transform: translateY(-6px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.panel-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.panel-close {
+  font-size: 10px;
+  color: var(--text-dim);
+  cursor: pointer;
+  letter-spacing: 1px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+.panel-close:hover { color: var(--amber); }
+
+.detail-panel p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--text-mid);
+  margin-bottom: 10px;
+}
+
+.detail-panel p strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+.detail-panel p em {
+  color: var(--node-color, var(--amber));
+  font-style: normal;
+}
+
+/* Address box */
+.addr-box {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--amber-dim);
+  line-height: 1.8;
+}
+
+.addr-box .addr-label {
+  color: var(--amber);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* OS connection box */
+.os-box {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: rgba(46, 157, 143, 0.06);
+  border: 1px solid rgba(42,157,143,0.3);
+  border-left: 2px solid var(--stage-b);
+  font-size: 11px;
+  color: rgba(42,157,143,0.8);
+  line-height: 1.8;
+}
+.os-box .os-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stage-b);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 40px 20px 60px;
+  border-top: 1px solid var(--border);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  .timeline::before { left: 20px; transform: none; }
+  .wire-pulse { left: 20px; transform: none; }
+  .entry { grid-template-columns: 40px 1fr; }
+  .entry-mid { grid-column: 1; }
+  .cell-left, .cell-right { grid-column: 2; text-align: left; padding: 0 0 0 14px; }
+  .entry[data-side="left"]  .cell-right { display: none; visibility: visible; }
+  .entry[data-side="right"] .cell-left  { display: none; }
+  .entry[data-side="left"]  .cell-left  { display: block; }
+  .entry[data-side="right"] .cell-right { display: block; }
+  .entry[data-side="left"] .card-inner { text-align: left; }
+  .detail-panel { grid-column: 1 / -1; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">x86 Systems · <span>Power → Execution</span> · Every Step</div>
+  <h1>The <span class="amber">Boot</span> Process</h1>
+  <p class="header-sub">
+    // T+0ms: power applied<br>
+    // T+~2000ms: your OS's first instruction<br>
+    // click any node to elaborate
+  </p>
+  <div class="signal-meter">
+    <div class="signal-bar"></div>
+    <div class="signal-bar"></div>
+    <div class="signal-bar"></div>
+    <div class="signal-bar"></div>
+    <div class="signal-bar"></div>
+    <div class="signal-bar"></div>
+    <div class="signal-bar"></div>
+  </div>
+</header>
+
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-dot" style="background:var(--stage-a)"></div>
+    <span>Hardware Init</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#c8a000"></div>
+    <span>Firmware (BIOS/UEFI)</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:var(--stage-b)"></div>
+    <span>Bootloader</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:var(--stage-d)"></div>
+    <span>OS / Kernel</span>
+  </div>
+</div>
+
+<div class="timeline">
+<div class="wire-pulse"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 1 — HARDWARE -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--phase-color: var(--stage-a)">
+  <div class="phase-line phase-line-l"></div>
+  <div class="phase-label">Phase 01 — Hardware Initialization</div>
+  <div class="phase-line phase-line-r"></div>
+</div>
+
+<!-- 1 LEFT -->
+<div class="entry" data-side="left" style="--node-color: var(--stage-a)">
+  <div class="cell-left"><div class="card-inner">
+    <div class="entry-time">T + 0 ms</div>
+    <div class="entry-title">Power Button Pressed — The Signal Chain</div>
+    <div class="entry-teaser">Voltage reaches the motherboard. The Power Supply Unit negotiates with the chipset. Nothing runs until the PSU says it is ready.</div>
+  </div></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">Power Button Pressed — The Signal Chain</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>When you press the power button, you are closing a physical switch on the motherboard. This switch connects a specific motherboard pin — called <strong>PWR_BTN#</strong> (the # means "active low" — the signal is active when the pin is at low voltage) — to ground, pulling it low.</p>
+    <p>The motherboard's <strong>chipset</strong> (a dedicated chip that manages communication between the CPU, RAM, storage, and other components) detects this signal and sends a <strong>PS_ON#</strong> signal to the <strong>PSU (Power Supply Unit)</strong> — the box inside your computer that converts AC mains power (from your wall outlet) to the DC voltages the computer needs.</p>
+    <p>The PSU begins powering up its internal circuits. It does NOT immediately send full power to the motherboard — it first ensures all its output voltages are stable and within specification. When ready, it asserts a signal called <strong>PWR_OK (Power Good)</strong> — a single wire going from the PSU back to the motherboard carrying a high voltage meaning "my outputs are stable, it is safe to proceed."</p>
+    <p>The time between pressing the button and PWR_OK going high: typically <strong>100–500 milliseconds</strong>. During this time, the CPU is held in a <strong>reset state</strong> — a special condition where it is powered but all its internal registers are in defined initial states and it executes nothing. The reset signal is held by the chipset until PWR_OK arrives.</p>
+    <div class="addr-box">
+      <span class="addr-label">DC Voltages the PSU provides</span>
+      +12V — Drives CPU power regulators, PCIe slots, drive motors<br>
+      +5V  — Older logic, USB ports, some storage<br>
+      +3.3V — Modern logic chips, RAM, some CPU rails<br>
+      -12V  — Legacy serial ports<br>
+      +5VSB — Standby rail, always on while plugged in (powers the power button itself)
+    </div>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      The PSU's PWR_OK signal is the physical starting gun. Without it, the CPU never leaves reset. This is why an unstable PSU — one that asserts PWR_OK before its voltages are actually stable — causes mysterious crashes and memory corruption that look like software bugs but are actually hardware failures.
+    </div>
+  </div>
+</div>
+
+<!-- 2 RIGHT -->
+<div class="entry" data-side="right" style="--node-color: var(--stage-a)">
+  <div class="cell-left"></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"><div class="card-inner">
+    <div class="entry-time">T + ~100–500 ms</div>
+    <div class="entry-title">CPU Reset State — All Registers to Known Values</div>
+    <div class="entry-teaser">PWR_OK arrives. The chipset releases the CPU's reset pin. The CPU's internal state snaps to fixed, defined values. It is ready to fetch its first instruction.</div>
+  </div></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">CPU Reset State — All Registers to Known Values</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>When the chipset releases the CPU's <strong>RESET# pin</strong>, the CPU's internal hardware forces every register to a specific, documented initial value. This is not software — it is transistor-level logic inside the CPU that fires when RESET# transitions from low to high. The values are specified in Intel's documentation and have been constant across every x86 CPU for 40 years.</p>
+    <p>The initial register values after reset on an x86 CPU:</p>
+    <div class="addr-box">
+      <span class="addr-label">x86 CPU register values after RESET</span>
+      EIP (Instruction Pointer): 0x0000FFF0<br>
+      CS (Code Segment):  selector=0xF000, base=0xFFFF0000, limit=0xFFFF<br>
+      DS, ES, SS, FS, GS: selector=0x0000, base=0x00000000, limit=0xFFFF<br>
+      EFLAGS: 0x00000002 (only bit 1 set — a reserved bit always 1)<br>
+      CR0:    0x60000010 (PE=0 — real mode; PG=0 — paging off)<br>
+      All general registers (EAX, EBX, ...): 0x00000000
+    </div>
+    <p>The critical entry: <strong>CS base = 0xFFFF0000</strong> and <strong>EIP = 0x0000FFF0</strong>. The first instruction address is CS.base + EIP = <em>0xFFFF0000 + 0xFFF0 = 0xFFFFFFF0</em>. This is the <strong>reset vector</strong> — address 0xFFFFFFF0 in physical memory, 16 bytes below the top of the 4GB address space.</p>
+    <p>Note that CR0's PE bit is 0 — the CPU starts in <strong>real mode</strong>, the 8086-compatible mode. Every x86 CPU ever made, from the original 8086 to a modern Core i9, boots in real mode. This backward compatibility has been maintained for 46 years.</p>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      This is why your OS bootloader begins in real mode — not by choice but because every x86 CPU mandatorily starts there. Your OS project's bootloader, loaded at 0x7C00, runs in real mode and must explicitly perform the protected mode switch. The CPU does not help you — it starts at its mandated reset vector and runs whatever code is there.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 2 — FIRMWARE -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--phase-color: #c8a000">
+  <div class="phase-line phase-line-l"></div>
+  <div class="phase-label">Phase 02 — Firmware (BIOS / UEFI)</div>
+  <div class="phase-line phase-line-r"></div>
+</div>
+
+<!-- 3 LEFT -->
+<div class="entry" data-side="left" style="--node-color: #c8a000">
+  <div class="cell-left"><div class="card-inner">
+    <div class="entry-time">T + ~500 ms · First instruction</div>
+    <div class="entry-title">The Reset Vector — First Instruction Executed</div>
+    <div class="entry-teaser">The CPU fetches from 0xFFFFFFF0. This address is mapped to the firmware ROM chip, not RAM. The firmware's first instruction is here — a jump to its main body.</div>
+  </div></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">The Reset Vector — First Instruction Executed</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>The CPU puts address <strong>0xFFFFFFF0</strong> on the address bus. But RAM has not been initialized yet — the RAM chips contain random, meaningless data. So how does the CPU find valid code to execute?</p>
+    <p>The answer: the motherboard's address decoder (logic in the chipset that decides which hardware component responds to which address range) is configured so that accesses to the very top of the address space (the region around 0xFFFFFFF0) are not routed to RAM chips. Instead, they are routed to the <strong>firmware ROM chip</strong> — a non-volatile storage chip on the motherboard that contains the BIOS or UEFI firmware code.</p>
+    <p>This ROM chip responds to the address bus exactly as RAM would — the CPU cannot tell the difference from an electrical perspective. The ROM's decoder activates the appropriate byte-group and puts the firmware's bytes onto the data bus. The CPU receives them as its first instruction.</p>
+    <p>What is at 0xFFFFFFF0? Almost always: a <strong>far jump instruction</strong> — JMP FAR — to the actual start of the BIOS/UEFI code body, which lives somewhere else in the ROM (typically around 0xF0000 in the legacy 1MB memory map, the region called "BIOS ROM" in the IBM PC memory layout). This jump is necessary because only 16 bytes exist between 0xFFFFFFF0 and the top of the 4GB address space at 0xFFFFFFFF — not enough room for the full firmware.</p>
+    <div class="addr-box">
+      <span class="addr-label">Memory Map at Reset (legacy BIOS layout)</span>
+      0x00000000 – 0x000003FF : Interrupt Vector Table (IVT) — 1KB<br>
+      0x00000400 – 0x000004FF : BIOS Data Area (BDA) — 256 bytes<br>
+      0x00000500 – 0x0009FFFF : Free conventional RAM<br>
+      0x000A0000 – 0x000BFFFF : Video RAM (VGA) — 128KB<br>
+      0x000C0000 – 0x000EFFFF : Expansion ROM space — 192KB<br>
+      0x000F0000 – 0x000FFFFF : BIOS ROM shadow — 64KB<br>
+      0xFFFFFFF0             : Reset vector (ROM, not RAM)
+    </div>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      The BIOS ROM at 0xF0000 is still visible in real mode as segment 0xF000. When your bootloader calls BIOS services (INT 0x10 for video, INT 0x13 for disk), it is calling into code that lives in this region. This is why BIOS services only work in real mode — the BIOS code was written for the real-mode address model.
+    </div>
+  </div>
+</div>
+
+<!-- 4 RIGHT -->
+<div class="entry" data-side="right" style="--node-color: #c8a000">
+  <div class="cell-left"></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"><div class="card-inner">
+    <div class="entry-time">T + ~500–600 ms</div>
+    <div class="entry-title">POST — Power-On Self-Test</div>
+    <div class="entry-teaser">The firmware tests the CPU, counts and tests RAM, identifies installed hardware, and initializes everything that must work before the OS loads. If something fails, POST stops and reports an error.</div>
+  </div></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">POST — Power-On Self-Test</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p><strong>POST (Power-On Self-Test)</strong> is the firmware's hardware verification and initialization sequence. It runs before any OS code is loaded. The firmware is in complete control of the machine during POST.</p>
+    <p><strong>CPU verification:</strong> The firmware executes a sequence of self-test instructions on the CPU, checking that basic arithmetic, register operations, and flag behavior are correct. If the CPU fails, nothing can proceed.</p>
+    <p><strong>RAM initialization and testing:</strong> RAM chips require initialization — sending specific command sequences via the memory controller to configure their operating parameters (timing, voltage, bus width). The firmware negotiates these parameters via a protocol called <strong>SPD (Serial Presence Detect)</strong> — reading a small EEPROM chip on each RAM module that stores its timing specifications. After initialization, the firmware performs a basic memory test — writing known patterns to each address and reading them back to detect faulty cells.</p>
+    <p><strong>Hardware enumeration:</strong> The firmware walks the <strong>PCI/PCIe bus</strong> — the high-speed interconnect that connects the CPU to graphics cards, network cards, storage controllers, and other expansion devices. Each device has a configuration space containing its device ID, vendor ID, and resource requirements. The firmware reads these, assigns memory ranges and IRQ numbers to each device, and initializes basic device operation.</p>
+    <p><strong>Setting up the IVT:</strong> The firmware installs real-mode interrupt handlers in the <strong>Interrupt Vector Table</strong> at address 0x0000–0x03FF. Each of the 256 4-byte IVT entries is a CS:IP pointer to an interrupt service routine in the BIOS ROM. These handlers implement BIOS services (disk I/O, video output, keyboard input) that the bootloader will use.</p>
+    <p><strong>POST error codes:</strong> During POST, the firmware continuously writes diagnostic codes to I/O port 0x80 (a special port with no side effects, readable by external diagnostic cards). If POST fails before video is initialized, the BIOS communicates errors via <strong>beep codes</strong> — patterns of short and long beeps from the motherboard speaker with specific meanings defined by each BIOS vendor.</p>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      The IVT installed by POST is what makes BIOS services available to your bootloader. INT 0x10 (video), INT 0x13 (disk), INT 0x16 (keyboard) — these all work because POST installed their handlers. Once your OS switches to protected mode, the IVT is no longer used (protected mode uses the IDT instead), and BIOS services become inaccessible.
+    </div>
+  </div>
+</div>
+
+<!-- 5 LEFT -->
+<div class="entry" data-side="left" style="--node-color: #c8a000">
+  <div class="cell-left"><div class="card-inner">
+    <div class="entry-time">T + ~600–1500 ms</div>
+    <div class="entry-title">Boot Device Selection — Where Is the OS?</div>
+    <div class="entry-teaser">POST complete. The firmware now finds a bootable device. It checks the boot order — each device in sequence — looking for a valid boot sector signature.</div>
+  </div></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">Boot Device Selection — Where Is the OS?</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>POST complete. The firmware now searches for a bootable device according to the <strong>boot order</strong> — a list stored in CMOS (a small battery-backed RAM chip on the motherboard that stores BIOS settings across power cycles). The boot order might be: USB first, then hard disk, then DVD, then network.</p>
+    <p>For each device in order, the firmware tries to find a valid boot sector:</p>
+    <p><strong>For a hard disk or USB drive:</strong> The firmware reads the very first sector — <strong>sector 0, LBA address 0</strong> — which is 512 bytes (traditional sector size). This sector is called the <strong>MBR (Master Boot Record)</strong>. The firmware checks bytes 510 and 511 of this sector: if they contain the value <em>0x55 0xAA</em> (the "boot signature" or "magic bytes"), this device is considered bootable. If the signature is absent, the firmware moves to the next device in the boot order.</p>
+    <p>The 0x55AA signature is a sanity check, not true security. Any sector with these two bytes at the end will be treated as a valid boot sector, regardless of what the preceding 510 bytes contain. This is how your bootloader announces itself to the firmware.</p>
+    <p><strong>Alternative: UEFI boot entries.</strong> Modern systems using UEFI firmware (the modern replacement for BIOS) work differently — instead of looking for a fixed-position signature, UEFI reads a dedicated <strong>EFI System Partition (ESP)</strong> formatted with the FAT32 file system and looks for bootloader executable files (with a .EFI extension) in specific paths. UEFI provides a much richer environment than legacy BIOS but operates on the same fundamental principle: firmware finds and hands control to a bootloader.</p>
+    <div class="addr-box">
+      <span class="addr-label">MBR Layout (512 bytes)</span>
+      Bytes 0–445   : Bootstrap code (the first-stage bootloader)<br>
+      Bytes 446–461 : Partition entry 1 (16 bytes)<br>
+      Bytes 462–477 : Partition entry 2 (16 bytes)<br>
+      Bytes 478–493 : Partition entry 3 (16 bytes)<br>
+      Bytes 494–509 : Partition entry 4 (16 bytes)<br>
+      Bytes 510–511 : Boot signature: 0x55, 0xAA
+    </div>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      In your OS project, the file you write that gets assembled into a 512-byte binary and placed at the first sector of a disk image IS the MBR. The 0x55AA bytes at the end — which you specify with <code>dw 0xAA55</code> (little-endian) in NASM — are the only reason the BIOS considers your disk bootable. Without these two bytes in exactly the right position, the firmware silently skips your disk.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 3 — BOOTLOADER -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--phase-color: var(--stage-b)">
+  <div class="phase-line phase-line-l"></div>
+  <div class="phase-label">Phase 03 — The Bootloader</div>
+  <div class="phase-line phase-line-r"></div>
+</div>
+
+<!-- 6 RIGHT -->
+<div class="entry" data-side="right" style="--node-color: var(--stage-b)">
+  <div class="cell-left"></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"><div class="card-inner">
+    <div class="entry-time">T + ~1500 ms · Handoff to bootloader</div>
+    <div class="entry-title">BIOS Loads and Jumps to the MBR</div>
+    <div class="entry-teaser">The firmware copies the 512-byte MBR to address 0x7C00 in RAM and jumps to it. Control leaves the firmware permanently. Your code runs.</div>
+  </div></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">BIOS Loads and Jumps to the MBR</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>The firmware has found a device with the 0x55AA signature. It now performs the handoff:</p>
+    <p><strong>Step 1 — Copy:</strong> The firmware uses its own disk I/O routines to read the 512-byte MBR from the device and copy it into RAM at physical address <em>0x7C00</em>. This address is a historical convention established by IBM in 1981 for the original IBM PC. The value 0x7C00 = 32KB - 1KB = 31,744 bytes. IBM chose this address to place the boot sector near the top of the lowest 32KB of RAM, leaving the IVT (0x000–0x3FF) and BDA (0x400–0x4FF) intact below it.</p>
+    <p><strong>Step 2 — Register setup:</strong> Before jumping, the firmware sets certain register values that the bootloader can use: DL (the lower byte of DX) receives the <strong>drive number</strong> of the boot device (0x00 = first floppy, 0x80 = first hard disk, 0x81 = second hard disk, etc.). The bootloader needs this to know which device to read further sectors from.</p>
+    <p><strong>Step 3 — Far jump:</strong> The firmware executes a far jump to 0x0000:0x7C00 (segment 0, offset 0x7C00). CS is set to 0x0000, IP to 0x7C00. The CPU is now executing the first byte of your MBR code.</p>
+    <p>From this moment, <strong>the firmware is no longer in control.</strong> It has surrendered the CPU entirely. The BIOS code remains in memory (the ROM is still mapped at 0xF0000) and its IVT entries still point to working interrupt handlers — so INT instructions that call BIOS services still work. But the CPU's fetch-decode-execute cycle is now running your bootloader's instructions.</p>
+    <div class="addr-box">
+      <span class="addr-label">CPU state when bootloader begins</span>
+      CS  = 0x0000, IP = 0x7C00 (first MBR byte)<br>
+      DL  = boot drive number (0x80 for first HDD)<br>
+      Mode = real mode (16-bit)<br>
+      IVT at 0x0000: BIOS interrupt handlers installed<br>
+      RAM: mostly uninitialized (only MBR at 0x7C00 is valid)
+    </div>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      This is the entry point of your OS project. The first instruction in your bootloader runs at 0x7C00. Your first lines of assembly set up the segment registers (since BIOS might leave them in various states), set up a stack, and begin your bootloader's work. The <code>org 0x7C00</code> directive in NASM tells the assembler to compute all address offsets relative to this starting address.
+    </div>
+  </div>
+</div>
+
+<!-- 7 LEFT -->
+<div class="entry" data-side="left" style="--node-color: var(--stage-b)">
+  <div class="cell-left"><div class="card-inner">
+    <div class="entry-time">T + ~1500 ms · Running in MBR</div>
+    <div class="entry-title">Stage 1 Bootloader — The 510-Byte Problem</div>
+    <div class="entry-teaser">The entire first-stage bootloader must fit in 510 bytes (512 minus the 2-byte signature). Its only job: load a larger second-stage bootloader from disk.</div>
+  </div></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">Stage 1 Bootloader — The 510-Byte Problem</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>510 bytes is a severely constrained environment. The firmware loaded exactly one sector. Your code occupies at most 510 bytes (bytes 0–509 of the MBR; bytes 510–511 are the 0x55AA signature). For a simple OS, this may be sufficient — your kernel and bootloader logic could fit within this space. For a real OS, it is not.</p>
+    <p>In a multi-stage boot, the Stage 1 bootloader's single purpose is to load a larger Stage 2 bootloader from disk. To do this from real mode using BIOS services:</p>
+    <p><strong>Using INT 0x13 (BIOS disk service):</strong> The bootloader populates specific registers with the disk read parameters and executes INT 0x13, function 0x02 (read sectors):</p>
+    <div class="addr-box">
+      <span class="addr-label">INT 0x13 / AH=0x02 — Read Disk Sectors</span>
+      AH = 0x02 (function: read sectors)<br>
+      AL = number of sectors to read<br>
+      CH = cylinder number (low 8 bits)<br>
+      CL = sector number (bits 0–5) + cylinder high (bits 6–7)<br>
+      DH = head number<br>
+      DL = drive number (from register at boot time)<br>
+      ES:BX = destination address in RAM
+    </div>
+    <p>This "CHS" (Cylinder-Head-Sector) addressing is the legacy way to specify disk locations. Modern bootloaders use INT 0x13 extension function 0x42 with "LBA" (Logical Block Address) — a simpler flat sector number — but the principle is identical: ask the BIOS to read N sectors from a specific disk location into a specific RAM address.</p>
+    <p>The Stage 1 bootloader reads the Stage 2 bootloader (which might be several KB to several hundred KB) into a known address in RAM — commonly <em>0x0500</em> (just above the BDA) or <em>0x1000</em> — and then jumps to it.</p>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      In Nick Blundell's OS book, the bootloader is simple enough to fit in one sector, and the "kernel" is small enough to be loaded directly by that bootloader. In production OS bootloaders (GRUB, for instance), the MBR Stage 1 is 446 bytes of code that loads GRUB's Stage 1.5 (embedded after the MBR in the gap before the first partition), which loads Stage 2 (the full GRUB menu and module system) from the filesystem.
+    </div>
+  </div>
+</div>
+
+<!-- 8 RIGHT -->
+<div class="entry" data-side="right" style="--node-color: var(--stage-b)">
+  <div class="cell-left"></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"><div class="card-inner">
+    <div class="entry-time">T + ~1500–1800 ms</div>
+    <div class="entry-title">Stage 2 Bootloader — Setting Up for the OS</div>
+    <div class="entry-teaser">Now with more space. The Stage 2 bootloader loads the OS kernel from disk, switches the CPU to 32-bit protected mode, and jumps to the kernel. This is where your OS project lives.</div>
+  </div></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">Stage 2 Bootloader — Setting Up for the OS</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>The Stage 2 bootloader has more space and more responsibilities. Its complete sequence:</p>
+    <p><strong>1 — Enable the A20 line:</strong> A hardware quirk from the IBM PC era. The original 8086 had only 20 address lines (A0–A19). When a segment:offset address exceeded 1MB (0xFFFFF + 1 = 0x100000), it wrapped around to 0x00000. Programs relied on this wrapping behavior. The 286 introduced a 24th address line (A20), which broke the wrap-around. To maintain backward compatibility, IBM added a circuit to physically disable A20 by default. Your bootloader must explicitly enable A20 (through a keyboard controller register, a BIOS call, or a FAST A20 chipset register) so that physical addresses above 1MB are accessible.</p>
+    <p><strong>2 — Load the kernel from disk:</strong> The bootloader reads the kernel binary from the disk (using INT 0x13 while still in real mode) and places it at a target address in RAM — commonly <em>0x100000</em> (1MB) or higher, since addresses below 1MB are occupied by the IVT, BDA, video memory, and BIOS ROM. This requires A20 to already be enabled.</p>
+    <p><strong>3 — Build the GDT:</strong> In memory (not on disk), the bootloader constructs the Global Descriptor Table — the array of 8-byte descriptors that defines memory segments for protected mode. At minimum: a null descriptor (entry 0, required by x86 spec), a 32-bit code descriptor (base=0, limit=4GB, DPL=0, executable), a 32-bit data descriptor (base=0, limit=4GB, DPL=0, writable). Then executes LGDT to load the GDTR register.</p>
+    <p><strong>4 — Switch to protected mode:</strong> Set PE (bit 0) of CR0 to 1. Immediately execute a far jump to flush the prefetch queue and reload CS with a selector pointing to the 32-bit code descriptor. Now the CPU is in 32-bit protected mode.</p>
+    <p><strong>5 — Set up 32-bit segment registers:</strong> Load DS, ES, FS, GS, SS with the data descriptor selector (typically 0x10). Set up the stack (ESP to a valid address in RAM).</p>
+    <p><strong>6 — Jump to the kernel:</strong> Far jump (or call) to the kernel's entry point address in RAM. The bootloader is done.</p>
+    <div class="addr-box">
+      <span class="addr-label">Typical memory layout after bootloader completes</span>
+      0x00000000 – 0x000003FF : IVT (no longer used in protected mode)<br>
+      0x00000400 – 0x000004FF : BIOS Data Area<br>
+      0x00007C00 – 0x00007DFF : Stage 1 bootloader (512 bytes)<br>
+      0x00008000 – 0x0000FFFF : Stage 2 bootloader / stack area<br>
+      0x00100000 – ...        : Kernel binary loaded here<br>
+      0xFFFF0000 – 0xFFFFFFFF : BIOS ROM (still mapped)
+    </div>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      This entire sequence — A20 enable, disk read, GDT build, LGDT, CR0.PE=1, far jump, segment reload — is exactly what Nick Blundell's OS book walks you through. Each step is now fully explained by the foundational documents we have built. The GDT bytes you write are the descriptor format from the GDT document. The CR0 bit you set is the PE bit from the protected mode document. The far jump is the instruction-queue-flush from the 8086 architecture document.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 4 — KERNEL / OS -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--phase-color: var(--stage-d)">
+  <div class="phase-line phase-line-l"></div>
+  <div class="phase-label">Phase 04 — OS Kernel Takes Control</div>
+  <div class="phase-line phase-line-r"></div>
+</div>
+
+<!-- 9 LEFT -->
+<div class="entry" data-side="left" style="--node-color: var(--stage-d)">
+  <div class="cell-left"><div class="card-inner">
+    <div class="entry-time">T + ~1800 ms · Kernel entry</div>
+    <div class="entry-title">Kernel Entry Point — First Kernel Instruction</div>
+    <div class="entry-teaser">The kernel begins. The CPU is in 32-bit protected mode. The kernel sets up its own GDT, IDT, stack, and prepares the full OS environment before any user process can run.</div>
+  </div></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">Kernel Entry Point — First Kernel Instruction</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>The bootloader's far jump lands at the kernel's entry point — the first instruction of the kernel binary. The kernel is now in control. It runs at CPL=0 (Ring 0), using the flat 32-bit segments the bootloader set up.</p>
+    <p>The kernel's first task is to establish its own environment, more carefully than the bootloader's minimal setup. The typical sequence:</p>
+    <p><strong>1 — Set up a proper kernel stack:</strong> The bootloader may have set up a temporary stack. The kernel establishes its own stack at a permanent, well-known location — large enough for kernel operations and interrupt handling.</p>
+    <p><strong>2 — Remap the PIC:</strong> As covered in the interrupt document, the BIOS configured the 8259 PIC to use interrupt vectors 0x08–0x0F for IRQ0–IRQ7. These overlap with CPU exception vectors (double fault at 0x08, GPF at 0x0D). The kernel must remap IRQ0–IRQ7 to vectors 0x20–0x27 and IRQ8–IRQ15 to 0x28–0x2F to eliminate this conflict.</p>
+    <p><strong>3 — Build and load a proper IDT:</strong> The bootloader's GDT was minimal. The kernel now builds a full IDT — handlers for all CPU exceptions (vectors 0–31), handlers for all remapped IRQs (0x20–0x2F), and a system call gate (0x80 or equivalent). Loads the IDTR via LIDT.</p>
+    <p><strong>4 — Enable interrupts:</strong> Execute STI (Set Interrupt Flag) to enable hardware interrupts. From this moment, hardware events (timer, keyboard) will cause the CPU to jump to the kernel's ISRs.</p>
+    <p><strong>5 — Detect memory:</strong> Query how much RAM the machine has — typically via information the bootloader gathered using BIOS interrupt 0x15 (e15h function E820, which returns a memory map) before switching to protected mode, and passed to the kernel in a known location.</p>
+    <p><strong>6 — Initialize paging:</strong> Build page tables (page directory + page tables), set CR3, set CR0.PG=1. From this moment, all addresses are virtual and go through the MMU.</p>
+    <p><strong>7 — Initialize kernel subsystems:</strong> Memory allocator (for dynamic kernel memory), scheduler data structures, device driver initialization, file system mounting, network stack.</p>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      Steps 1–4 are the scope of a basic OS project. Steps 5–7 are the continuation. Each step is now fully explained by the documents we have built. The IDT format, the PIC remapping sequence, the paging setup — all have been covered in full. This is the complete context for every assembly instruction in Nick Blundell's OS project chapters.
+    </div>
+  </div>
+</div>
+
+<!-- 10 RIGHT -->
+<div class="entry" data-side="right" style="--node-color: var(--stage-d)">
+  <div class="cell-left"></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"><div class="card-inner">
+    <div class="entry-time">T + ~1800–2000 ms</div>
+    <div class="entry-title">First User Process — The OS Hands Control to a Program</div>
+    <div class="entry-teaser">Kernel subsystems ready. The kernel creates the first user process — init on Linux, Session Manager on Windows — dropping from Ring 0 to Ring 3 for the first time.</div>
+  </div></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">First User Process — Ring 0 to Ring 3 for the First Time</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>Kernel initialization complete. Everything needed to run user programs is in place. The OS now creates and launches its first user-space process.</p>
+    <p><strong>On Linux:</strong> The kernel attempts to execute <em>/sbin/init</em> (or <em>/init</em>, or systemd) — the first user-space process, always assigned PID 1. All other processes on the system are descendants of PID 1. Init is responsible for starting all system services (networking, login managers, etc.).</p>
+    <p><strong>On Windows:</strong> The first user-space process is <em>smss.exe</em> (Session Manager Subsystem), which launches the Windows subsystem, the service control manager, and eventually the login screen (winlogon.exe).</p>
+    <p><strong>The Ring 0 → Ring 3 transition:</strong> To run a user process, the kernel: allocates physical frames for the process's code, data, and stack; builds a page directory and page tables for the process with appropriate user/supervisor bits; sets CR3 to the new page directory; pushes the user-mode CS:EIP (code segment with RPL=3 and entry point) and SS:ESP (stack with RPL=3) onto the kernel stack; executes IRET. The IRET pops CS with RPL=3, which sets CPL=3, and the CPU is now executing user code in Ring 3 for the first time.</p>
+    <p>From this moment, the system is "up." Any interaction with hardware (keyboard, disk, network, screen) goes through the kernel via system calls — the only legal crossing point from Ring 3 to Ring 0 that the hardware enforces.</p>
+    <div class="os-box">
+      <span class="os-label">→ OS relevance</span>
+      The IRET that first drops to Ring 3 is the culmination of the entire CPU-architecture story we have built. The privilege levels, the CPL in CS, the TSS providing the kernel stack, the page tables with user/supervisor bits — all of it converges in that single IRET instruction. Every subsequent user process creation follows the same pattern, scaled up with process management infrastructure.
+    </div>
+  </div>
+</div>
+
+<!-- 11 LEFT — SPECIAL: YOUR PROJECT -->
+<div class="entry" data-side="left" style="--node-color: #7a3d04">
+  <div class="cell-left"><div class="card-inner">
+    <div class="entry-time">Your OS project</div>
+    <div class="entry-title">Where Your Project Lives in This Map</div>
+    <div class="entry-teaser">MBR → Stage 1 bootloader → GDT → protected mode switch → 32-bit kernel stub. This is the milestone. Every step is now fully understood.</div>
+  </div></div>
+  <div class="entry-mid"><div class="node"></div></div>
+  <div class="cell-right"></div>
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="panel-title">Where Your Project Lives in This Map</div>
+      <div class="panel-close">[close]</div>
+    </div>
+    <p>Your OS project, following Nick Blundell's curriculum, covers the following nodes in this boot process timeline:</p>
+    <p><strong>Phase 3 — Stage 1 Bootloader (MBR):</strong> You write a 512-byte boot sector in x86 assembly. It begins at 0x7C00 in real mode, sets up segment registers, sets up a stack, loads additional sectors from disk, and jumps to them. The 0xAA55 signature at bytes 510–511 makes the disk bootable.</p>
+    <p><strong>Phase 3 — Stage 2 / Transition:</strong> Your bootloader enables A20, builds a minimal GDT in memory, executes LGDT, sets CR0.PE=1, performs the far jump to 32-bit code, reloads segment registers with 32-bit flat descriptors.</p>
+    <p><strong>Phase 4 — Kernel Entry:</strong> Your kernel (initially a C function called from assembly) sets up the IDT, remaps the PIC, enables interrupts, and implements basic handlers. A timer interrupt handler that increments a counter and a keyboard handler that prints characters are typical early milestones.</p>
+    <p>The portfolio milestone: a bootloader that boots on real hardware (or QEMU), switches to protected mode, sets up interrupt handling, and runs a kernel that responds to keyboard input and timer ticks. This is demonstrably real systems work.</p>
+    <div class="addr-box">
+      <span class="addr-label">Key addresses in your project</span>
+      0x7C00  : Your bootloader's first instruction<br>
+      0x7E00  : Just after MBR (where Stage 2 can be loaded)<br>
+      0x0500  : Safe area for Stage 2 or kernel (above BDA)<br>
+      0x1000  : Another common Stage 2 load address<br>
+      0x100000: Common kernel load address (1MB, above real-mode map)
+    </div>
+  </div>
+</div>
+
+</div><!-- end timeline -->
+
+<footer>
+  Click any node to elaborate &nbsp;·&nbsp;
+  T+0 to T+2000ms &nbsp;·&nbsp;
+  Power button to first user process
+</footer>
+
+<script>
+document.querySelectorAll('.entry').forEach(entry => {
+  const node  = entry.querySelector('.node');
+  const panel = entry.querySelector('.detail-panel');
+  const close = entry.querySelector('.panel-close');
+  const color = getComputedStyle(entry).getPropertyValue('--node-color').trim();
+
+  if (panel) panel.style.setProperty('--node-color', color);
+
+  function open() {
+    document.querySelectorAll('.detail-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.node.active').forEach(n => n.classList.remove('active'));
+    panel.classList.add('open');
+    node.classList.add('active');
+    setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
+  }
+
+  function closePanel() {
+    panel.classList.remove('open');
+    node.classList.remove('active');
+  }
+
+  function toggle() {
+    panel.classList.contains('open') ? closePanel() : open();
+  }
+
+  node.addEventListener('click', toggle);
+  entry.querySelectorAll('.card-inner').forEach(c => c.addEventListener('click', toggle));
+  if (close) close.addEventListener('click', e => { e.stopPropagation(); closePanel(); });
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.entry').forEach(e => obs.observe(e));
+</script>
+</body>
+</html>
