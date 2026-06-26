@@ -330,7 +330,8 @@
     /* ═══════════════════════════════ DETAIL PANEL */
     .detail {
       grid-column: 1 / -1;
-      display: none;
+      /* display: none; */
+      display: block;
       background: var(--surface);
       border: 1px solid var(--border);
       border-left: 2px solid var(--node-color, #888);
@@ -936,7 +937,8 @@
           boot), <strong>software interrupt services</strong> (INT 0x10 for video, INT 0x13 for disk, INT 0x16 for
           keyboard — a standardized API that programs could call without knowing hardware specifics), <strong>Option ROM
             scanning</strong> (checking 0xC0000–0xEFFFF for expansion card ROMs with the 0x55AA signature), and the
-          <strong>boot device search</strong> (scanning drives in order for a sector ending in 0x55 0xAA).</p>
+          <strong>boot device search</strong> (scanning drives in order for a sector ending in 0x55 0xAA).
+        </p>
         <p>The <strong>0x7C00 load address</strong> was chosen by IBM's engineers based on the PC's minimum 16KB RAM
           configuration and the need to leave the IVT (0x0000–0x03FF) and BDA (0x0400–0x04FF) intact below the boot
           sector. The <strong>0x55AA boot signature</strong> was a practical sanity check: any disk sector ending in
@@ -1036,7 +1038,8 @@
           <strong>partition table</strong> of four 16-byte entries. Each entry described one partition: its type (FAT12,
           FAT16, Extended, etc.), its starting and ending CHS addresses, its LBA start address, and its size in sectors.
           One entry had a "bootable" or "active" flag — a byte set to 0x80 to mark the partition the user wanted to boot
-          from.</p>
+          from.
+        </p>
         <p>The MBR's 446-byte bootstrap code gained a new job: parse the partition table, find the entry marked active
           (0x80), read that partition's first sector (the <strong>Volume Boot Record</strong> or <strong>Partition Boot
             Record</strong>), verify its 0x55AA signature, and jump to it. Only then would the partition's bootloader
@@ -1075,7 +1078,8 @@
         <p>The BIOS's most consequential design decision was also its most limiting: it operated entirely in
           <strong>real mode</strong>. All INT services (INT 0x10, 0x13, 0x16) were real-mode code. DOS loaded in real
           mode. Everything assumed real mode. The maximum addressable memory was 1MB, with only 640KB available to
-          programs.</p>
+          programs.
+        </p>
         <p>The 80286 (1982) could access 16MB in protected mode. The 80386 (1985) could access 4GB in 32-bit protected
           mode. But using this memory meant leaving real mode — which meant losing access to BIOS services and DOS.
           Programs that needed large memory (scientific computing, professional graphics, large databases) were stuck.
@@ -1429,7 +1433,8 @@
         <p>The chain: <strong>Secure Enclave</strong> (a separate security processor built into the M1 chip, with its
           own ROM and operating system) → verifies the <strong>Boot ROM</strong> → Boot ROM verifies
           <strong>iBoot</strong> (Apple's bootloader, stored in flash) → iBoot verifies the <strong>OS kernel</strong>
-          and <strong>system volume</strong> (using a cryptographic hash tree of the entire OS read-only volume).</p>
+          and <strong>system volume</strong> (using a cryptographic hash tree of the entire OS read-only volume).
+        </p>
         <p>If any stage's signature fails verification, boot stops. If any file on the signed system volume is modified,
           the hash tree breaks and boot stops. The system is in a constant state of cryptographic self-verification.</p>
         <p>The practical implications: installing Linux on Apple Silicon requires Apple's authorization (Apple allows it
@@ -1519,11 +1524,6 @@
       }
       function closeP() { panel.classList.remove('open'); node.classList.remove('active'); }
       function toggle() { panel.classList.contains('open') ? closeP() : openP(); }
-
-      if (panel && node) {
-        panel.classList.add('open');
-        node.classList.add('active');
-      }
 
       node.addEventListener('click', toggle);
       entry.querySelectorAll('.card-inner').forEach(c => c.addEventListener('click', toggle));
