@@ -1,1004 +1,1541 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Boot Process — Origin, History & Evolution</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Boot Process — Origin, History & Evolution</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
 
-:root {
-  --bg:       #070709;
-  --surface:  #0e0e12;
-  --surface2: #141418;
-  --border:   #1e1e26;
-  --text:     #b8b8c8;
-  --text-dim: #484858;
-  --text-mid: #787890;
-  --white:    #e8e8f0;
+    :root {
+      --bg: #070709;
+      --surface: #0e0e12;
+      --surface2: #141418;
+      --border: #1e1e26;
+      --text: #b8b8c8;
+      --text-dim: #484858;
+      --text-mid: #787890;
+      --white: #e8e8f0;
 
-  /* Era colors */
-  --c1: #c0785a; /* 1940s vacuum tubes — warm copper */
-  --c2: #8a7a5a; /* 1950s tape/cards — aged brass */
-  --c3: #5a8a7a; /* 1960s disk — teal */
-  --c4: #6a7aaa; /* 1970s minicomputer — slate blue */
-  --c5: #aa6a8a; /* 1980s IBM PC BIOS — mauve */
-  --c6: #7aaa6a; /* 1985-1995 DOS/extenders — fern */
-  --c7: #aa8a3a; /* 1993-2005 NT era — gold */
-  --c8: #3a8aaa; /* 1998-2010 EFI birth — cyan */
-  --c9: #8a3aaa; /* 2010s UEFI/Secure Boot — violet */
-  --c10:#aa3a5a; /* 2020s post-BIOS — crimson */
-}
+      /* Era colors */
+      --c1: #c0785a;
+      /* 1940s vacuum tubes — warm copper */
+      --c2: #8a7a5a;
+      /* 1950s tape/cards — aged brass */
+      --c3: #5a8a7a;
+      /* 1960s disk — teal */
+      --c4: #6a7aaa;
+      /* 1970s minicomputer — slate blue */
+      --c5: #aa6a8a;
+      /* 1980s IBM PC BIOS — mauve */
+      --c6: #7aaa6a;
+      /* 1985-1995 DOS/extenders — fern */
+      --c7: #aa8a3a;
+      /* 1993-2005 NT era — gold */
+      --c8: #3a8aaa;
+      /* 1998-2010 EFI birth — cyan */
+      --c9: #8a3aaa;
+      /* 2010s UEFI/Secure Boot — violet */
+      --c10: #aa3a5a;
+      /* 2020s post-BIOS — crimson */
+    }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  line-height: 1.65;
-  overflow-x: hidden;
-  min-height: 100vh;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
 
-/* Subtle noise */
-body::before {
-  content:'';
-  position:fixed; inset:0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent, transparent 3px,
-    rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px
-  );
-  pointer-events:none;
-  z-index:999;
-}
+    /* Subtle noise */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,
+          transparent, transparent 3px,
+          rgba(0, 0, 0, 0.06) 3px, rgba(0, 0, 0, 0.06) 4px);
+      pointer-events: none;
+      z-index: 999;
+    }
 
-/* ═══════════════════════════════ HEADER */
-header {
-  text-align: center;
-  padding: 72px 24px 56px;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
+    /* ═══════════════════════════════ HEADER */
+    header {
+      text-align: center;
+      padding: 72px 24px 56px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
 
-.eyebrow {
-  font-size: 9px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: 22px;
-}
-.eyebrow b { color: #c0785a; font-weight: 500; }
+    .eyebrow {
+      font-size: 9px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 22px;
+    }
 
-h1 {
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(2rem, 5.5vw, 3.8rem);
-  font-weight: 700;
-  color: var(--white);
-  letter-spacing: -1.5px;
-  line-height: 1.08;
-  margin-bottom: 18px;
-}
-h1 .sub { display:block; font-size: 0.45em; font-weight:300; color:var(--text-mid); letter-spacing:2px; margin-top:10px; }
+    .eyebrow b {
+      color: #c0785a;
+      font-weight: 500;
+    }
 
-.header-desc {
-  font-size: 11px;
-  color: var(--text-dim);
-  max-width: 480px;
-  margin: 0 auto;
-  line-height: 2;
-  letter-spacing: 0.5px;
-}
+    h1 {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2rem, 5.5vw, 3.8rem);
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -1.5px;
+      line-height: 1.08;
+      margin-bottom: 18px;
+    }
 
-/* Era stripe bar */
-.era-bar {
-  display: flex;
-  height: 4px;
-  margin-top: 40px;
-  overflow: hidden;
-}
-.era-bar-seg {
-  flex: 1;
-  transition: flex 0.3s;
-}
+    h1 .sub {
+      display: block;
+      font-size: 0.45em;
+      font-weight: 300;
+      color: var(--text-mid);
+      letter-spacing: 2px;
+      margin-top: 10px;
+    }
 
-/* ═══════════════════════════════ GENERATION NAV */
-.gen-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
+    .header-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 2;
+      letter-spacing: 0.5px;
+    }
 
-.gen-pill {
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border: 1px solid currentColor;
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: color 0.2s, background 0.2s, opacity 0.2s;
-  text-decoration: none;
-  opacity: 0.6;
-}
-.gen-pill:hover { opacity: 1; }
+    /* Era stripe bar */
+    .era-bar {
+      display: flex;
+      height: 4px;
+      margin-top: 40px;
+      overflow: hidden;
+    }
 
-/* ═══════════════════════════════ TIMELINE */
-.timeline {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 60px 24px 80px;
-  position: relative;
-}
+    .era-bar-seg {
+      flex: 1;
+      transition: flex 0.3s;
+    }
 
-/* Vertical wire */
-.timeline::before {
-  content:'';
-  position: absolute;
-  left: 50%;
-  top: 0; bottom: 0;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--border) 3%,
-    var(--border) 97%,
-    transparent 100%
-  );
-  transform: translateX(-50%);
-  z-index: 0;
-}
+    /* ═══════════════════════════════ GENERATION NAV */
+    .gen-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-/* ═══════════════════════════════ ERA DIVIDER */
-.era-div {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 14px;
-  margin: 68px 0 40px;
-}
-.era-line-l { height:1px; background: linear-gradient(to right, transparent, var(--era-color, #888)); }
-.era-line-r { height:1px; background: linear-gradient(to left, transparent, var(--era-color, #888)); }
-.era-badge {
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--bg);
-  background: var(--era-color, #888);
-  padding: 6px 16px;
-  white-space: nowrap;
-}
+    .gen-pill {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid currentColor;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s, opacity 0.2s;
+      text-decoration: none;
+      opacity: 0.6;
+    }
 
-/* ═══════════════════════════════ ENTRY */
-.entry {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr 56px 1fr;
-  margin-bottom: 46px;
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-.entry.visible { opacity:1; transform:translateY(0); }
+    .gen-pill:hover {
+      opacity: 1;
+    }
 
-/* Node */
-.entry-mid {
-  grid-column: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 3px;
-  z-index: 3;
-  position: relative;
-}
+    /* ═══════════════════════════════ TIMELINE */
+    .timeline {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+      position: relative;
+    }
 
-.node {
-  width: 14px; height: 14px;
-  border: 1.5px solid var(--node-color, #888);
-  background: var(--bg);
-  border-radius: 2px;
-  transform: rotate(45deg);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-  position: relative;
-  z-index: 3;
-}
-.node:hover, .node.active {
-  background: var(--node-color, #888);
-  box-shadow: 0 0 18px var(--node-color, #888);
-  transform: rotate(45deg) scale(1.35);
-}
+    /* Vertical wire */
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom,
+          transparent 0%,
+          var(--border) 3%,
+          var(--border) 97%,
+          transparent 100%);
+      transform: translateX(-50%);
+      z-index: 0;
+    }
 
-/* Card sides */
-.cell-l { grid-column:1; padding-right:26px; text-align:right; cursor:pointer; }
-.cell-r { grid-column:3; padding-left:26px; cursor:pointer; }
-.entry[data-side="left"]  .cell-r { visibility:hidden; }
-.entry[data-side="right"] .cell-l { visibility:hidden; }
-.card-inner { display:inline-block; text-align:left; max-width:340px; }
-.entry[data-side="left"] .card-inner { text-align:right; }
+    /* ═══════════════════════════════ ERA DIVIDER */
+    .era-div {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 14px;
+      margin: 68px 0 40px;
+    }
 
-.e-date {
-  font-size: 9px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--node-color, #888);
-  margin-bottom: 5px;
-}
-.e-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--white);
-  line-height: 1.3;
-  margin-bottom: 6px;
-}
-.e-teaser {
-  font-size: 11px;
-  color: var(--text-dim);
-  line-height: 1.7;
-}
+    .era-line-l {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--era-color, #888));
+    }
 
-/* ═══════════════════════════════ DETAIL PANEL */
-.detail {
-  grid-column: 1 / -1;
-  display: none;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--node-color, #888);
-  padding: 26px 28px;
-  margin-top: 12px;
-  position: relative;
-}
-.detail.open {
-  display: block;
-  animation: panelIn 0.28s ease;
-}
-@keyframes panelIn {
-  from { opacity:0; transform:translateY(-6px); }
-  to   { opacity:1; transform:translateY(0); }
-}
+    .era-line-r {
+      height: 1px;
+      background: linear-gradient(to left, transparent, var(--era-color, #888));
+    }
 
-.detail-hdr {
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  margin-bottom:14px;
-}
-.detail-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--white);
-  line-height: 1.3;
-}
-.detail-close {
-  font-size: 9px;
-  letter-spacing:1px;
-  color:var(--text-dim);
-  cursor:pointer;
-  padding-top:3px;
-  flex-shrink:0;
-}
-.detail-close:hover { color:var(--node-color, #888); }
+    .era-badge {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--bg);
+      background: var(--era-color, #888);
+      padding: 6px 16px;
+      white-space: nowrap;
+    }
 
-.detail p {
-  font-size: 12px;
-  line-height: 1.9;
-  color: var(--text-mid);
-  margin-bottom: 10px;
-}
-.detail p strong { color:var(--white); font-weight:500; }
-.detail p em {
-  color: var(--node-color, #888);
-  font-style: normal;
-  font-size: 11px;
-}
+    /* ═══════════════════════════════ ENTRY */
+    .entry {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 56px 1fr;
+      margin-bottom: 46px;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
 
-/* Significance box */
-.sig {
-  margin-top: 14px;
-  padding: 12px 16px;
-  background: rgba(255,255,255,0.025);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--node-color, #888);
-  font-size: 11px;
-  color: var(--text-dim);
-  line-height: 1.8;
-}
-.sig-label {
-  font-size: 8px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--node-color, #888);
-  display: block;
-  margin-bottom: 6px;
-}
+    .entry.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-/* ═══════════════════════════════ FOOTER */
-footer {
-  text-align: center;
-  padding: 40px 20px 60px;
-  border-top: 1px solid var(--border);
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
+    /* Node */
+    .entry-mid {
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 3px;
+      z-index: 3;
+      position: relative;
+    }
 
-/* ═══════════════════════════════ MOBILE */
-@media (max-width:600px) {
-  .timeline::before { left:20px; transform:none; }
-  .entry { grid-template-columns: 36px 1fr; }
-  .entry-mid { grid-column:1; }
-  .cell-l,.cell-r { grid-column:2; text-align:left; padding:0 0 0 12px; }
-  .entry[data-side="left"]  .cell-r { display:none; visibility:visible; }
-  .entry[data-side="right"] .cell-l { display:none; }
-  .entry[data-side="left"]  .cell-l { display:block; }
-  .entry[data-side="right"] .cell-r { display:block; }
-  .entry[data-side="left"] .card-inner { text-align:left; }
-  .gen-nav { display:none; }
-}
-</style>
+    .node {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--node-color, #888);
+      background: var(--bg);
+      border-radius: 2px;
+      transform: rotate(45deg);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+      position: relative;
+      z-index: 3;
+    }
+
+    .node:hover,
+    .node.active {
+      background: var(--node-color, #888);
+      box-shadow: 0 0 18px var(--node-color, #888);
+      transform: rotate(45deg) scale(1.35);
+    }
+
+    /* Card sides */
+    .cell-l {
+      grid-column: 1;
+      padding-right: 26px;
+      text-align: right;
+      cursor: pointer;
+    }
+
+    .cell-r {
+      grid-column: 3;
+      padding-left: 26px;
+      cursor: pointer;
+    }
+
+    .entry[data-side="left"] .cell-r {
+      visibility: hidden;
+    }
+
+    .entry[data-side="right"] .cell-l {
+      visibility: hidden;
+    }
+
+    .card-inner {
+      display: inline-block;
+      text-align: left;
+      max-width: 340px;
+    }
+
+    .entry[data-side="left"] .card-inner {
+      text-align: right;
+    }
+
+    .e-date {
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--node-color, #888);
+      margin-bottom: 5px;
+    }
+
+    .e-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .e-teaser {
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ═══════════════════════════════ DETAIL PANEL */
+    .detail {
+      grid-column: 1 / -1;
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--node-color, #888);
+      padding: 26px 28px;
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .detail.open {
+      display: block;
+      animation: panelIn 0.28s ease;
+    }
+
+    @keyframes panelIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .detail-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .detail-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .detail-close {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .detail-close:hover {
+      color: var(--node-color, #888);
+    }
+
+    .detail p {
+      font-size: 12px;
+      line-height: 1.9;
+      color: var(--text-mid);
+      margin-bottom: 10px;
+    }
+
+    .detail p strong {
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .detail p em {
+      color: var(--node-color, #888);
+      font-style: normal;
+      font-size: 11px;
+    }
+
+    /* Significance box */
+    .sig {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--node-color, #888);
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .sig-label {
+      font-size: 8px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--node-color, #888);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* ═══════════════════════════════ FOOTER */
+    footer {
+      text-align: center;
+      padding: 40px 20px 60px;
+      border-top: 1px solid var(--border);
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* ═══════════════════════════════ MOBILE */
+    @media (max-width:600px) {
+      .timeline::before {
+        left: 20px;
+        transform: none;
+      }
+
+      .entry {
+        grid-template-columns: 36px 1fr;
+      }
+
+      .entry-mid {
+        grid-column: 1;
+      }
+
+      .cell-l,
+      .cell-r {
+        grid-column: 2;
+        text-align: left;
+        padding: 0 0 0 12px;
+      }
+
+      .entry[data-side="left"] .cell-r {
+        display: none;
+        visibility: visible;
+      }
+
+      .entry[data-side="right"] .cell-l {
+        display: none;
+      }
+
+      .entry[data-side="left"] .cell-l {
+        display: block;
+      }
+
+      .entry[data-side="right"] .cell-r {
+        display: block;
+      }
+
+      .entry[data-side="left"] .card-inner {
+        text-align: left;
+      }
+
+      .gen-nav {
+        display: none;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="eyebrow"><b>75 years</b> · 1948 → present · From toggle switches to Secure Boot</div>
-  <h1>The Boot Process
-    <span class="sub">Origin · History · Evolution</span>
-  </h1>
-  <p class="header-desc">
-    // How computers learned to start themselves.<br>
-    // Each era solved one problem and created the next.<br>
-    // Click any node to elaborate.
-  </p>
-  <div class="era-bar">
-    <div class="era-bar-seg" style="background:var(--c1)"></div>
-    <div class="era-bar-seg" style="background:var(--c2)"></div>
-    <div class="era-bar-seg" style="background:var(--c3)"></div>
-    <div class="era-bar-seg" style="background:var(--c4)"></div>
-    <div class="era-bar-seg" style="background:var(--c5)"></div>
-    <div class="era-bar-seg" style="background:var(--c6)"></div>
-    <div class="era-bar-seg" style="background:var(--c7)"></div>
-    <div class="era-bar-seg" style="background:var(--c8)"></div>
-    <div class="era-bar-seg" style="background:var(--c9)"></div>
-    <div class="era-bar-seg" style="background:var(--c10)"></div>
-  </div>
-</header>
+  <header>
+    <div class="eyebrow"><b>75 years</b> · 1948 → present · From toggle switches to Secure Boot</div>
+    <h1>The Boot Process
+      <span class="sub">Origin · History · Evolution</span>
+    </h1>
+    <p class="header-desc">
+      // How computers learned to start themselves.<br>
+      // Each era solved one problem and created the next.<br>
+      // Click any node to elaborate.
+    </p>
+    <div class="era-bar">
+      <div class="era-bar-seg" style="background:var(--c1)"></div>
+      <div class="era-bar-seg" style="background:var(--c2)"></div>
+      <div class="era-bar-seg" style="background:var(--c3)"></div>
+      <div class="era-bar-seg" style="background:var(--c4)"></div>
+      <div class="era-bar-seg" style="background:var(--c5)"></div>
+      <div class="era-bar-seg" style="background:var(--c6)"></div>
+      <div class="era-bar-seg" style="background:var(--c7)"></div>
+      <div class="era-bar-seg" style="background:var(--c8)"></div>
+      <div class="era-bar-seg" style="background:var(--c9)"></div>
+      <div class="era-bar-seg" style="background:var(--c10)"></div>
+    </div>
+  </header>
 
-<nav class="gen-nav">
-  <a class="gen-pill" href="#era1" style="color:var(--c1)">1940s Vacuum Tubes</a>
-  <a class="gen-pill" href="#era2" style="color:var(--c2)">1950s Cards & Tape</a>
-  <a class="gen-pill" href="#era3" style="color:var(--c3)">1960s Disk & OS</a>
-  <a class="gen-pill" href="#era4" style="color:var(--c4)">1970s Minicomputer & ROM</a>
-  <a class="gen-pill" href="#era5" style="color:var(--c5)">1981 IBM PC & BIOS</a>
-  <a class="gen-pill" href="#era6" style="color:var(--c6)">1983–95 DOS & Hard Disk</a>
-  <a class="gen-pill" href="#era7" style="color:var(--c7)">1993–05 Windows NT</a>
-  <a class="gen-pill" href="#era8" style="color:var(--c8)">1998–10 EFI Born</a>
-  <a class="gen-pill" href="#era9" style="color:var(--c9)">2010s UEFI Matures</a>
-  <a class="gen-pill" href="#era10" style="color:var(--c10)">2020s Post-BIOS</a>
-</nav>
+  <nav class="gen-nav">
+    <a class="gen-pill" href="#era1" style="color:var(--c1)">1940s Vacuum Tubes</a>
+    <a class="gen-pill" href="#era2" style="color:var(--c2)">1950s Cards & Tape</a>
+    <a class="gen-pill" href="#era3" style="color:var(--c3)">1960s Disk & OS</a>
+    <a class="gen-pill" href="#era4" style="color:var(--c4)">1970s Minicomputer & ROM</a>
+    <a class="gen-pill" href="#era5" style="color:var(--c5)">1981 IBM PC & BIOS</a>
+    <a class="gen-pill" href="#era6" style="color:var(--c6)">1983–95 DOS & Hard Disk</a>
+    <a class="gen-pill" href="#era7" style="color:var(--c7)">1993–05 Windows NT</a>
+    <a class="gen-pill" href="#era8" style="color:var(--c8)">1998–10 EFI Born</a>
+    <a class="gen-pill" href="#era9" style="color:var(--c9)">2010s UEFI Matures</a>
+    <a class="gen-pill" href="#era10" style="color:var(--c10)">2020s Post-BIOS</a>
+  </nav>
 
-<div class="timeline">
+  <div class="timeline">
 
-<!-- ═══════════════════════════════════════════════════════ ERA 1 -->
-<div class="era-div" id="era1" style="--era-color:var(--c1)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 01 · 1940s · Vacuum Tubes & The Bootstrap Problem</div>
-  <div class="era-line-r"></div>
-</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 1 -->
+    <div class="era-div" id="era1" style="--era-color:var(--c1)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 01 · 1940s · Vacuum Tubes & The Bootstrap Problem</div>
+      <div class="era-line-r"></div>
+    </div>
 
-<div class="entry" data-side="left" style="--node-color:var(--c1)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">1948</div>
-    <div class="e-title">The Bootstrap Problem Is Discovered</div>
-    <div class="e-teaser">The Manchester Baby runs the world's first stored program. But at power-on, memory holds garbage. Someone must enter code manually before the machine can do anything.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">The Bootstrap Problem Is Discovered</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c1)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">1948</div>
+          <div class="e-title">The Bootstrap Problem Is Discovered</div>
+          <div class="e-teaser">The Manchester Baby runs the world's first stored program. But at power-on, memory holds
+            garbage. Someone must enter code manually before the machine can do anything.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">The Bootstrap Problem Is Discovered</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>The <strong>Manchester Baby</strong> (Small-Scale Experimental Machine), built at the University of
+          Manchester, England, in 1948, was the first computer to run a stored program — instructions held in memory
+          rather than hardwired into circuits. It used <strong>Williams tube memory</strong>: cathode ray tubes (the
+          same technology as early television screens) where bits were stored as electric charges on the glass surface.
+          The tubes were volatile — all contents vanished at power-off.</p>
+        <p>The fundamental problem: when power was applied, the Williams tubes held random garbage charges. The CPU,
+          beginning its fetch-decode-execute cycle from address 0, would fetch those random bits and try to execute them
+          as instructions. The result was unpredictable garbage execution.</p>
+        <p>The solution in practice: a human operator sat at the machine's front panel — a physical board covered with
+          toggle switches, one per bit of memory width — and manually entered a bootstrap program by flipping switches
+          one bit at a time. A short program of perhaps 20 instructions might require setting 640 individual bits
+          correctly. One mistake meant a wrong program. The process took minutes to hours. This was the state of the art
+          in 1948.</p>
+        <p>The circular dependency the bootstrap problem represents was recognized immediately: <em>you need a program
+            running to load a program</em>. Every generation of computer since has had to solve this, and every solution
+          has involved some form of permanently-stored minimal code that can begin the chain.</p>
+        <div class="sig">
+          <span class="sig-label">→ The problem that defined everything</span>
+          Every concept in modern booting — ROM, firmware, BIOS, UEFI, boot loaders — is a solution to this one problem.
+          The specific form of the solution changed every decade. The underlying problem never did.
+        </div>
+      </div>
     </div>
-    <p>The <strong>Manchester Baby</strong> (Small-Scale Experimental Machine), built at the University of Manchester, England, in 1948, was the first computer to run a stored program — instructions held in memory rather than hardwired into circuits. It used <strong>Williams tube memory</strong>: cathode ray tubes (the same technology as early television screens) where bits were stored as electric charges on the glass surface. The tubes were volatile — all contents vanished at power-off.</p>
-    <p>The fundamental problem: when power was applied, the Williams tubes held random garbage charges. The CPU, beginning its fetch-decode-execute cycle from address 0, would fetch those random bits and try to execute them as instructions. The result was unpredictable garbage execution.</p>
-    <p>The solution in practice: a human operator sat at the machine's front panel — a physical board covered with toggle switches, one per bit of memory width — and manually entered a bootstrap program by flipping switches one bit at a time. A short program of perhaps 20 instructions might require setting 640 individual bits correctly. One mistake meant a wrong program. The process took minutes to hours. This was the state of the art in 1948.</p>
-    <p>The circular dependency the bootstrap problem represents was recognized immediately: <em>you need a program running to load a program</em>. Every generation of computer since has had to solve this, and every solution has involved some form of permanently-stored minimal code that can begin the chain.</p>
-    <div class="sig">
-      <span class="sig-label">→ The problem that defined everything</span>
-      Every concept in modern booting — ROM, firmware, BIOS, UEFI, boot loaders — is a solution to this one problem. The specific form of the solution changed every decade. The underlying problem never did.
-    </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c1)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">1952</div>
-    <div class="e-title">IBM 701 — First Bootstrap ROM</div>
-    <div class="e-teaser">IBM's first scientific computer permanently wires a tiny bootstrap program into read-only core memory. It reads one punched card and jumps to the code on it. The two-stage boot pattern is born.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">IBM 701 — First Bootstrap ROM</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="right" style="--node-color:var(--c1)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">1952</div>
+          <div class="e-title">IBM 701 — First Bootstrap ROM</div>
+          <div class="e-teaser">IBM's first scientific computer permanently wires a tiny bootstrap program into
+            read-only core memory. It reads one punched card and jumps to the code on it. The two-stage boot pattern is
+            born.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">IBM 701 — First Bootstrap ROM</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>The <strong>IBM 701</strong>, released in 1952 as IBM's first commercial scientific computer, introduced a
+          concept that would persist unchanged in principle for the next 70 years: a small program permanently stored in
+          read-only memory that ran automatically at power-on.</p>
+        <p>The 701's bootstrap loader was hardwired into a small section of <strong>core memory</strong> configured as
+          read-only — the physical structure of the core array made specific bits permanently 0 or 1, regardless of what
+          any program might try to write. This was not reprogrammable. It was a fixed circuit that happened to implement
+          a specific program.</p>
+        <p>What the bootstrap did: it sent control signals to the <strong>card reader</strong> to read exactly one
+          punched card. Whatever 80-column data was on that card was copied into standard memory. Then the bootstrap
+          jumped to address 0, executing whatever was just loaded. This gave the card complete control of the machine.
+        </p>
+        <p>The card typically contained a <strong>second-stage loader</strong> — a slightly larger program that could
+          read an entire deck of cards (a full program might be dozens or hundreds of cards). The first card loaded the
+          second stage; the second stage loaded the real program. <em>Two stages</em>: permanent tiny loader →
+          card-loaded larger loader → application.</p>
+        <div class="sig">
+          <span class="sig-label">→ The pattern that never died</span>
+          Two-stage (and later three-stage) booting — permanent minimal code loads a slightly larger loader which loads
+          the OS — is the exact structure of every x86 boot process today. BIOS → MBR → bootloader → OS is this same
+          pattern, scaled up and formalized over 70 years.
+        </div>
+      </div>
     </div>
-    <p>The <strong>IBM 701</strong>, released in 1952 as IBM's first commercial scientific computer, introduced a concept that would persist unchanged in principle for the next 70 years: a small program permanently stored in read-only memory that ran automatically at power-on.</p>
-    <p>The 701's bootstrap loader was hardwired into a small section of <strong>core memory</strong> configured as read-only — the physical structure of the core array made specific bits permanently 0 or 1, regardless of what any program might try to write. This was not reprogrammable. It was a fixed circuit that happened to implement a specific program.</p>
-    <p>What the bootstrap did: it sent control signals to the <strong>card reader</strong> to read exactly one punched card. Whatever 80-column data was on that card was copied into standard memory. Then the bootstrap jumped to address 0, executing whatever was just loaded. This gave the card complete control of the machine.</p>
-    <p>The card typically contained a <strong>second-stage loader</strong> — a slightly larger program that could read an entire deck of cards (a full program might be dozens or hundreds of cards). The first card loaded the second stage; the second stage loaded the real program. <em>Two stages</em>: permanent tiny loader → card-loaded larger loader → application.</p>
-    <div class="sig">
-      <span class="sig-label">→ The pattern that never died</span>
-      Two-stage (and later three-stage) booting — permanent minimal code loads a slightly larger loader which loads the OS — is the exact structure of every x86 boot process today. BIOS → MBR → bootloader → OS is this same pattern, scaled up and formalized over 70 years.
-    </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 2 -->
-<div class="era-div" id="era2" style="--era-color:var(--c2)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 02 · 1950s · Paper Tape, Core Memory & Multiple Media</div>
-  <div class="era-line-r"></div>
-</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 2 -->
+    <div class="era-div" id="era2" style="--era-color:var(--c2)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 02 · 1950s · Paper Tape, Core Memory & Multiple Media</div>
+      <div class="era-line-r"></div>
+    </div>
 
-<div class="entry" data-side="left" style="--node-color:var(--c2)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">Mid-1950s</div>
-    <div class="e-title">Paper Tape Bootstraps — The Operator as Interface</div>
-    <div class="e-teaser">Most minicomputers of the 1950s boot from paper tape. The operator loads the tape reel, presses start. The hardware reads the tape beginning and jumps to the loaded code. Manual toggle entry begins disappearing.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Paper Tape Bootstraps</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c2)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">Mid-1950s</div>
+          <div class="e-title">Paper Tape Bootstraps — The Operator as Interface</div>
+          <div class="e-teaser">Most minicomputers of the 1950s boot from paper tape. The operator loads the tape reel,
+            presses start. The hardware reads the tape beginning and jumps to the loaded code. Manual toggle entry
+            begins disappearing.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Paper Tape Bootstraps</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p><strong>Paper tape</strong> was a long, narrow strip of paper with holes punched across its width in patterns
+          encoding binary data. Unlike punched cards (which encoded one 80-column record per card), paper tape was a
+          continuous medium — programs of any length could be stored on a single reel.</p>
+        <p>Paper tape readers worked by pulling the tape past a row of sensors — initially small metal pins dipping
+          through holes into mercury contacts (the same mechanism Hollerith used for census tabulation), later optical
+          sensors. Reading was fast: hundreds to thousands of characters per second.</p>
+        <p>The 1950s paper tape bootstrap pattern: the computer had a small hardwired read-only program that, on
+          power-up or reset, activated the paper tape reader, read a fixed number of bytes from the tape's beginning,
+          stored them at a fixed memory address, and jumped there. The tape's beginning contained a larger loader; the
+          loader read the rest of the tape; the rest of the tape contained the program.</p>
+        <p>The operator's role became: mount the correct tape, press start, wait. No more bit-flipping. The operator was
+          still essential — someone had to prepare the tape and load it — but the cognitive and physical labor of
+          entering code had shifted from the computer room to the tape preparation room. <em>Abstraction layers had
+            begun appearing between human and machine.</em></p>
+        <div class="sig">
+          <span class="sig-label">→ The operator as intermediary</span>
+          The paper tape era established a pattern that persisted for decades: a human selects what to boot (choosing a
+          tape, later a disk, later clicking an icon) but does not participate in the boot process itself. The machine
+          does the work; the human makes the choice.
+        </div>
+      </div>
     </div>
-    <p><strong>Paper tape</strong> was a long, narrow strip of paper with holes punched across its width in patterns encoding binary data. Unlike punched cards (which encoded one 80-column record per card), paper tape was a continuous medium — programs of any length could be stored on a single reel.</p>
-    <p>Paper tape readers worked by pulling the tape past a row of sensors — initially small metal pins dipping through holes into mercury contacts (the same mechanism Hollerith used for census tabulation), later optical sensors. Reading was fast: hundreds to thousands of characters per second.</p>
-    <p>The 1950s paper tape bootstrap pattern: the computer had a small hardwired read-only program that, on power-up or reset, activated the paper tape reader, read a fixed number of bytes from the tape's beginning, stored them at a fixed memory address, and jumped there. The tape's beginning contained a larger loader; the loader read the rest of the tape; the rest of the tape contained the program.</p>
-    <p>The operator's role became: mount the correct tape, press start, wait. No more bit-flipping. The operator was still essential — someone had to prepare the tape and load it — but the cognitive and physical labor of entering code had shifted from the computer room to the tape preparation room. <em>Abstraction layers had begun appearing between human and machine.</em></p>
-    <div class="sig">
-      <span class="sig-label">→ The operator as intermediary</span>
-      The paper tape era established a pattern that persisted for decades: a human selects what to boot (choosing a tape, later a disk, later clicking an icon) but does not participate in the boot process itself. The machine does the work; the human makes the choice.
-    </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c2)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">Late 1950s</div>
-    <div class="e-title">Reliability Crisis — Tubes Fail, Bootstraps Must Be Durable</div>
-    <div class="e-teaser">Vacuum tube computers fail constantly — sometimes hourly. Every failure destroys volatile memory. The bootstrap must survive or be quickly re-entered. This drives demand for truly permanent, reliable boot code.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Reliability Crisis</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="right" style="--node-color:var(--c2)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">Late 1950s</div>
+          <div class="e-title">Reliability Crisis — Tubes Fail, Bootstraps Must Be Durable</div>
+          <div class="e-teaser">Vacuum tube computers fail constantly — sometimes hourly. Every failure destroys
+            volatile memory. The bootstrap must survive or be quickly re-entered. This drives demand for truly
+            permanent, reliable boot code.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Reliability Crisis</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>Vacuum tubes — the transistors of the 1950s — had a typical failure rate of one tube per few hundred hours of
+          operation. A computer with thousands of tubes might fail several times per day. Each failure meant: the CPU
+          was now computing incorrect results (a failed tube produces wrong logic output), and all volatile memory
+          contents were lost or corrupted.</p>
+        <p>Recovery from a failure: technicians diagnosed and replaced the tube (requiring testing each of thousands of
+          tubes with external test equipment), then the operator re-entered the bootstrap (if it was in volatile memory
+          and had been lost), then re-ran the program from the beginning — no checkpointing existed.</p>
+        <p>This made <strong>permanent, non-volatile bootstrap storage</strong> extremely valuable. If the bootstrap was
+          in volatile core memory, a crash meant re-entering it before anything else could happen — adding many minutes
+          to recovery time. If the bootstrap was in permanent read-only storage, recovery was instant: the technician
+          replaced the tube, and the operator pressed start — the bootstrap was already there, always there, unaffected
+          by the failure.</p>
+        <p>The 1950s reliability crisis drove the engineering community toward permanent ROM-like storage for bootstrap
+          code more urgently than any performance consideration. Reliability shaped the architecture.</p>
+        <div class="sig">
+          <span class="sig-label">→ Reliability drove permanence</span>
+          The requirement that bootstrap code must survive hardware failures — that it must be available immediately
+          after any repair, without operator re-entry — is the reason firmware ROM became a hardware standard. This
+          requirement has never gone away.
+        </div>
+      </div>
     </div>
-    <p>Vacuum tubes — the transistors of the 1950s — had a typical failure rate of one tube per few hundred hours of operation. A computer with thousands of tubes might fail several times per day. Each failure meant: the CPU was now computing incorrect results (a failed tube produces wrong logic output), and all volatile memory contents were lost or corrupted.</p>
-    <p>Recovery from a failure: technicians diagnosed and replaced the tube (requiring testing each of thousands of tubes with external test equipment), then the operator re-entered the bootstrap (if it was in volatile memory and had been lost), then re-ran the program from the beginning — no checkpointing existed.</p>
-    <p>This made <strong>permanent, non-volatile bootstrap storage</strong> extremely valuable. If the bootstrap was in volatile core memory, a crash meant re-entering it before anything else could happen — adding many minutes to recovery time. If the bootstrap was in permanent read-only storage, recovery was instant: the technician replaced the tube, and the operator pressed start — the bootstrap was already there, always there, unaffected by the failure.</p>
-    <p>The 1950s reliability crisis drove the engineering community toward permanent ROM-like storage for bootstrap code more urgently than any performance consideration. Reliability shaped the architecture.</p>
-    <div class="sig">
-      <span class="sig-label">→ Reliability drove permanence</span>
-      The requirement that bootstrap code must survive hardware failures — that it must be available immediately after any repair, without operator re-entry — is the reason firmware ROM became a hardware standard. This requirement has never gone away.
-    </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 3 -->
-<div class="era-div" id="era3" style="--era-color:var(--c3)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 03 · 1960s · Disks, Operating Systems & Sector Zero</div>
-  <div class="era-line-r"></div>
-</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 3 -->
+    <div class="era-div" id="era3" style="--era-color:var(--c3)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 03 · 1960s · Disks, Operating Systems & Sector Zero</div>
+      <div class="era-line-r"></div>
+    </div>
 
-<div class="entry" data-side="left" style="--node-color:var(--c3)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">Early 1960s</div>
-    <div class="e-title">Magnetic Disk Arrives — Random Access Changes Booting Forever</div>
-    <div class="e-teaser">Disk storage allows seeking to any location in milliseconds. Sequential tape reading is no longer necessary. A new convention emerges: the bootstrap lives at a fixed, known location — the very first sector.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Magnetic Disk Arrives — Random Access Changes Booting</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c3)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">Early 1960s</div>
+          <div class="e-title">Magnetic Disk Arrives — Random Access Changes Booting Forever</div>
+          <div class="e-teaser">Disk storage allows seeking to any location in milliseconds. Sequential tape reading is
+            no longer necessary. A new convention emerges: the bootstrap lives at a fixed, known location — the very
+            first sector.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Magnetic Disk Arrives — Random Access Changes Booting</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>Magnetic tape, while revolutionizing storage capacity, imposed a fundamental constraint: <strong>sequential
+            access</strong>. To read something in the middle of a tape, you had to wind past everything before it. This
+          meant the bootstrap program had to be at the very beginning of the tape — the only location immediately
+          accessible after mounting.</p>
+        <p><strong>Magnetic disk drives</strong> (first appearing commercially in the early 1960s, pioneered by IBM's
+          RAMAC 305 in 1956) provided random access: the read head could position itself to any track on the disk within
+          milliseconds. Any location on the disk was equally accessible — there was no inherent "beginning" that must
+          hold the bootstrap.</p>
+        <p>But random access created a new question: where on the disk is the bootstrap? Without a fixed convention, the
+          firmware would not know where to look. The convention that emerged was natural and elegant: <em>the bootstrap
+            always lives in the very first sector of the disk</em> — sector 1, track 0, head 0 in the CHS geometry of
+          early disk drives.</p>
+        <p>Why the first sector? It was always at a defined location (the outermost track, first sector) regardless of
+          how the rest of the disk was organized. The firmware could seek there reliably without knowing anything about
+          the disk's content or format. This convention — boot code at disk sector zero — became universal and has never
+          changed.</p>
+        <div class="sig">
+          <span class="sig-label">→ Sector zero: the convention that lasted forever</span>
+          Every x86 MBR, every IBM PC boot sector, every disk format that followed placed the bootstrap at the disk's
+          first sector. The IBM PC in 1981 did not invent this — it inherited a convention that was already 20 years
+          old.
+        </div>
+      </div>
     </div>
-    <p>Magnetic tape, while revolutionizing storage capacity, imposed a fundamental constraint: <strong>sequential access</strong>. To read something in the middle of a tape, you had to wind past everything before it. This meant the bootstrap program had to be at the very beginning of the tape — the only location immediately accessible after mounting.</p>
-    <p><strong>Magnetic disk drives</strong> (first appearing commercially in the early 1960s, pioneered by IBM's RAMAC 305 in 1956) provided random access: the read head could position itself to any track on the disk within milliseconds. Any location on the disk was equally accessible — there was no inherent "beginning" that must hold the bootstrap.</p>
-    <p>But random access created a new question: where on the disk is the bootstrap? Without a fixed convention, the firmware would not know where to look. The convention that emerged was natural and elegant: <em>the bootstrap always lives in the very first sector of the disk</em> — sector 1, track 0, head 0 in the CHS geometry of early disk drives.</p>
-    <p>Why the first sector? It was always at a defined location (the outermost track, first sector) regardless of how the rest of the disk was organized. The firmware could seek there reliably without knowing anything about the disk's content or format. This convention — boot code at disk sector zero — became universal and has never changed.</p>
-    <div class="sig">
-      <span class="sig-label">→ Sector zero: the convention that lasted forever</span>
-      Every x86 MBR, every IBM PC boot sector, every disk format that followed placed the bootstrap at the disk's first sector. The IBM PC in 1981 did not invent this — it inherited a convention that was already 20 years old.
-    </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c3)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">1964</div>
-    <div class="e-title">IBM System/360 — IPL and the Standardized Boot Interface</div>
-    <div class="e-teaser">The most influential computer in history introduces IPL (Initial Program Load) — a standardized boot mechanism. The operator types a device address; the hardware reads 24 bytes from that device and executes them. Standardization across a product family, for the first time.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">IBM System/360 — IPL and Standardization</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="right" style="--node-color:var(--c3)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">1964</div>
+          <div class="e-title">IBM System/360 — IPL and the Standardized Boot Interface</div>
+          <div class="e-teaser">The most influential computer in history introduces IPL (Initial Program Load) — a
+            standardized boot mechanism. The operator types a device address; the hardware reads 24 bytes from that
+            device and executes them. Standardization across a product family, for the first time.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">IBM System/360 — IPL and Standardization</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>The <strong>IBM System/360</strong> (1964) was arguably the most important product in computing history. It
+          was a family of compatible computers — the same software ran on the cheapest model and the most expensive,
+          something that had never been true before. This compatibility was achieved through rigorous standardization of
+          the instruction set and I/O interfaces.</p>
+        <p>The System/360's boot mechanism was called <strong>IPL — Initial Program Load</strong> (IBM's term for
+          "booting," still used in IBM mainframe documentation today). The IPL mechanism: the operator typed an IPL
+          command at the operator console, specifying a <em>device address</em> — a number identifying which I/O device
+          to load from. The hardware read a fixed, documented number of bytes (24 bytes on early System/360 models) from
+          the beginning of that device into a fixed memory location, then transferred control to that memory location.
+        </p>
+        <p>Those 24 bytes were the bootstrap — enough to read more from the device. The bootstrap typically read the
+          OS's loader; the loader read the OS; the OS took over. The same three-stage structure as the IBM 701 twelve
+          years earlier, but now standardized across an entire product family.</p>
+        <p>The significance: for the first time, a single boot mechanism worked for an entire range of machines from
+          different manufacturing facilities, running different software written by different teams. The standardized
+          IPL interface decoupled the firmware (hardware-level boot) from the operating system (software-level boot). OS
+          vendors wrote to the IPL interface; hardware vendors implemented the IPL interface. Neither needed to know the
+          other's details.</p>
+        <div class="sig">
+          <span class="sig-label">→ The ancestor of BIOS and UEFI</span>
+          IBM's IPL — a standardized hardware interface between firmware and OS bootstrap — is precisely what the IBM PC
+          BIOS was for x86 PCs in 1981, and precisely what UEFI is today. The System/360 established that a computer
+          product family needed a standardized boot interface 17 years before the PC.
+        </div>
+      </div>
     </div>
-    <p>The <strong>IBM System/360</strong> (1964) was arguably the most important product in computing history. It was a family of compatible computers — the same software ran on the cheapest model and the most expensive, something that had never been true before. This compatibility was achieved through rigorous standardization of the instruction set and I/O interfaces.</p>
-    <p>The System/360's boot mechanism was called <strong>IPL — Initial Program Load</strong> (IBM's term for "booting," still used in IBM mainframe documentation today). The IPL mechanism: the operator typed an IPL command at the operator console, specifying a <em>device address</em> — a number identifying which I/O device to load from. The hardware read a fixed, documented number of bytes (24 bytes on early System/360 models) from the beginning of that device into a fixed memory location, then transferred control to that memory location.</p>
-    <p>Those 24 bytes were the bootstrap — enough to read more from the device. The bootstrap typically read the OS's loader; the loader read the OS; the OS took over. The same three-stage structure as the IBM 701 twelve years earlier, but now standardized across an entire product family.</p>
-    <p>The significance: for the first time, a single boot mechanism worked for an entire range of machines from different manufacturing facilities, running different software written by different teams. The standardized IPL interface decoupled the firmware (hardware-level boot) from the operating system (software-level boot). OS vendors wrote to the IPL interface; hardware vendors implemented the IPL interface. Neither needed to know the other's details.</p>
-    <div class="sig">
-      <span class="sig-label">→ The ancestor of BIOS and UEFI</span>
-      IBM's IPL — a standardized hardware interface between firmware and OS bootstrap — is precisely what the IBM PC BIOS was for x86 PCs in 1981, and precisely what UEFI is today. The System/360 established that a computer product family needed a standardized boot interface 17 years before the PC.
-    </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 4 -->
-<div class="era-div" id="era4" style="--era-color:var(--c4)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 04 · 1970s · Minicomputers, ROM & The Front Panel Disappears</div>
-  <div class="era-line-r"></div>
-</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 4 -->
+    <div class="era-div" id="era4" style="--era-color:var(--c4)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 04 · 1970s · Minicomputers, ROM & The Front Panel Disappears</div>
+      <div class="era-line-r"></div>
+    </div>
 
-<div class="entry" data-side="left" style="--node-color:var(--c4)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">1965–1975</div>
-    <div class="e-title">ROM Enters Computing — Permanent Bootstrap Without Wires</div>
-    <div class="e-teaser">Semiconductor ROM chips appear. The bootstrap program is baked into silicon during manufacture. Power on, CPU fetches from ROM address, bootstrap runs. Toggle switches become optional, then disappear entirely.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">ROM Enters Computing</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c4)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">1965–1975</div>
+          <div class="e-title">ROM Enters Computing — Permanent Bootstrap Without Wires</div>
+          <div class="e-teaser">Semiconductor ROM chips appear. The bootstrap program is baked into silicon during
+            manufacture. Power on, CPU fetches from ROM address, bootstrap runs. Toggle switches become optional, then
+            disappear entirely.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">ROM Enters Computing</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p><strong>ROM (Read-Only Memory)</strong> in its earliest semiconductor form used diode matrices — arrays of
+          diodes on a circuit board where each diode's presence or absence encoded one bit. By the late 1960s, this had
+          evolved into integrated circuit mask ROM — a chip where data was encoded in the silicon structure during
+          manufacturing, impossible to change afterward without replacing the chip.</p>
+        <p>ROM solved the bootstrap problem definitively: the bootstrap program was physically part of the computer, on
+          a chip soldered to the circuit board, readable from the moment power was applied, indestructible by software,
+          immune to the loss-of-volatile-memory problem that had plagued every previous generation. A computer with ROM
+          bootstrap simply worked — from the first time it was powered on to the ten-thousandth time, the bootstrap was
+          always there, always the same, always correct.</p>
+        <p>The <strong>DEC PDP-8</strong> (1965) and <strong>PDP-11</strong> (1970) used small ROMs for their bootstrap
+          routines. The ROM bootstrap could read from a disk or tape to load the OS. The operator's job became: mount
+          the correct disk or tape, power on. No more toggle switches required (though toggle switches often remained as
+          a diagnostic fallback).</p>
+        <p>The key technical step: the CPU's address decoder was wired so that the first address the CPU tried to read
+          from after power-on (typically address 0, or the highest address, depending on architecture) was mapped to the
+          ROM chip rather than to RAM. The CPU could not tell the difference — it simply fetched bytes and executed
+          them, and those bytes happened to come from permanent ROM.</p>
+        <div class="sig">
+          <span class="sig-label">→ ROM bootstrap = modern firmware</span>
+          The BIOS ROM chip in an IBM PC, the UEFI flash chip in a modern motherboard, the Boot ROM in a smartphone —
+          all are descendants of this concept. The address mapping trick (CPU's first fetch goes to ROM, not RAM) is
+          exactly how all of these work.
+        </div>
+      </div>
     </div>
-    <p><strong>ROM (Read-Only Memory)</strong> in its earliest semiconductor form used diode matrices — arrays of diodes on a circuit board where each diode's presence or absence encoded one bit. By the late 1960s, this had evolved into integrated circuit mask ROM — a chip where data was encoded in the silicon structure during manufacturing, impossible to change afterward without replacing the chip.</p>
-    <p>ROM solved the bootstrap problem definitively: the bootstrap program was physically part of the computer, on a chip soldered to the circuit board, readable from the moment power was applied, indestructible by software, immune to the loss-of-volatile-memory problem that had plagued every previous generation. A computer with ROM bootstrap simply worked — from the first time it was powered on to the ten-thousandth time, the bootstrap was always there, always the same, always correct.</p>
-    <p>The <strong>DEC PDP-8</strong> (1965) and <strong>PDP-11</strong> (1970) used small ROMs for their bootstrap routines. The ROM bootstrap could read from a disk or tape to load the OS. The operator's job became: mount the correct disk or tape, power on. No more toggle switches required (though toggle switches often remained as a diagnostic fallback).</p>
-    <p>The key technical step: the CPU's address decoder was wired so that the first address the CPU tried to read from after power-on (typically address 0, or the highest address, depending on architecture) was mapped to the ROM chip rather than to RAM. The CPU could not tell the difference — it simply fetched bytes and executed them, and those bytes happened to come from permanent ROM.</p>
-    <div class="sig">
-      <span class="sig-label">→ ROM bootstrap = modern firmware</span>
-      The BIOS ROM chip in an IBM PC, the UEFI flash chip in a modern motherboard, the Boot ROM in a smartphone — all are descendants of this concept. The address mapping trick (CPU's first fetch goes to ROM, not RAM) is exactly how all of these work.
-    </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c4)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">1975–1977</div>
-    <div class="e-title">Altair 8800 & Apple I/II — Personal Computers Split on Bootstrap</div>
-    <div class="e-teaser">The Altair has no ROM bootstrap — users enter code by toggle switches, 1975-style. The Apple I adds a Monitor ROM. The Apple II adds slot ROMs for expansion cards. Two philosophies emerge: cheap-but-painful vs. expensive-but-usable.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Personal Computers Split on Bootstrap Philosophy</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="right" style="--node-color:var(--c4)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">1975–1977</div>
+          <div class="e-title">Altair 8800 & Apple I/II — Personal Computers Split on Bootstrap</div>
+          <div class="e-teaser">The Altair has no ROM bootstrap — users enter code by toggle switches, 1975-style. The
+            Apple I adds a Monitor ROM. The Apple II adds slot ROMs for expansion cards. Two philosophies emerge:
+            cheap-but-painful vs. expensive-but-usable.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Personal Computers Split on Bootstrap Philosophy</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>The <strong>MITS Altair 8800</strong> (1975), built around the Intel 8080 processor, had no ROM bootstrap
+          whatsoever. To run a program, you flipped toggle switches on the front panel to enter a bootstrap routine bit
+          by bit — exactly the same process used on mainframes 25 years earlier. This was the cheapest possible design:
+          no ROM chip, no extra cost. It was also an extraordinarily difficult user experience that effectively limited
+          the Altair to dedicated hobbyists.</p>
+        <p>The <strong>Apple I</strong> (1976), designed by Steve Wozniak, included a small <strong>Monitor ROM</strong>
+          — a program permanently in ROM that ran at power-on. The Monitor provided a command interface (via a serial
+          terminal), memory display and modification, and tape-based program loading. Power on → type commands → load
+          program. No toggle switches required.</p>
+        <p>The <strong>Apple II</strong> (1977) extended this with <strong>slot ROMs</strong>: expansion cards plugged
+          into the Apple II's expansion slots could contain their own ROM chips. At startup, the Apple II's main ROM
+          scanned all slots looking for slot ROMs. A Disk II controller card in slot 6 had a ROM that contained a disk
+          bootstrap. The main ROM jumped to this slot ROM, which loaded DOS from the floppy disk. The Apple II's main
+          ROM did not need to know how floppy disks worked — the Disk II's ROM knew.</p>
+        <p>This slot ROM mechanism — each peripheral device bringing its own ROM bootstrap code, discovered and executed
+          by the main ROM — directly inspired the IBM PC's Option ROM mechanism, which remains part of x86 firmware
+          today.</p>
+        <div class="sig">
+          <span class="sig-label">→ The Option ROM concept is born</span>
+          The Apple II's slot ROMs are the direct ancestor of the IBM PC's Option ROMs, which are the direct ancestor of
+          UEFI drivers loaded from disk. The idea — peripheral devices carry their own firmware that the main firmware
+          discovers and runs — is 48 years old and still active.
+        </div>
+      </div>
     </div>
-    <p>The <strong>MITS Altair 8800</strong> (1975), built around the Intel 8080 processor, had no ROM bootstrap whatsoever. To run a program, you flipped toggle switches on the front panel to enter a bootstrap routine bit by bit — exactly the same process used on mainframes 25 years earlier. This was the cheapest possible design: no ROM chip, no extra cost. It was also an extraordinarily difficult user experience that effectively limited the Altair to dedicated hobbyists.</p>
-    <p>The <strong>Apple I</strong> (1976), designed by Steve Wozniak, included a small <strong>Monitor ROM</strong> — a program permanently in ROM that ran at power-on. The Monitor provided a command interface (via a serial terminal), memory display and modification, and tape-based program loading. Power on → type commands → load program. No toggle switches required.</p>
-    <p>The <strong>Apple II</strong> (1977) extended this with <strong>slot ROMs</strong>: expansion cards plugged into the Apple II's expansion slots could contain their own ROM chips. At startup, the Apple II's main ROM scanned all slots looking for slot ROMs. A Disk II controller card in slot 6 had a ROM that contained a disk bootstrap. The main ROM jumped to this slot ROM, which loaded DOS from the floppy disk. The Apple II's main ROM did not need to know how floppy disks worked — the Disk II's ROM knew.</p>
-    <p>This slot ROM mechanism — each peripheral device bringing its own ROM bootstrap code, discovered and executed by the main ROM — directly inspired the IBM PC's Option ROM mechanism, which remains part of x86 firmware today.</p>
-    <div class="sig">
-      <span class="sig-label">→ The Option ROM concept is born</span>
-      The Apple II's slot ROMs are the direct ancestor of the IBM PC's Option ROMs, which are the direct ancestor of UEFI drivers loaded from disk. The idea — peripheral devices carry their own firmware that the main firmware discovers and runs — is 48 years old and still active.
-    </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 5 -->
-<div class="era-div" id="era5" style="--era-color:var(--c5)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 05 · 1981 · IBM PC, BIOS & The Architecture That Defined Everything</div>
-  <div class="era-line-r"></div>
-</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 5 -->
+    <div class="era-div" id="era5" style="--era-color:var(--c5)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 05 · 1981 · IBM PC, BIOS & The Architecture That Defined Everything</div>
+      <div class="era-line-r"></div>
+    </div>
 
-<div class="entry" data-side="left" style="--node-color:var(--c5)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">August 1981</div>
-    <div class="e-title">The IBM PC BIOS — A Standard Interface Crystallizes</div>
-    <div class="e-teaser">IBM's PC team builds the BIOS in roughly a year. POST, INT services, MBR loading, Option ROM scanning — all defined. The 0x55AA signature, the 0x7C00 load address, the INT 0x10/0x13 interface: decisions made in 1981 that persist today.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">The IBM PC BIOS</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c5)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">August 1981</div>
+          <div class="e-title">The IBM PC BIOS — A Standard Interface Crystallizes</div>
+          <div class="e-teaser">IBM's PC team builds the BIOS in roughly a year. POST, INT services, MBR loading, Option
+            ROM scanning — all defined. The 0x55AA signature, the 0x7C00 load address, the INT 0x10/0x13 interface:
+            decisions made in 1981 that persist today.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">The IBM PC BIOS</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>The <strong>IBM PC BIOS</strong> was written primarily by David Bradley and a small team of IBM engineers
+          over roughly a year (1980–1981). It occupied 8KB of ROM on the original IBM PC, later expanded to 64KB as more
+          code was needed. It lived at the top of the 8088's 1MB address space — the region 0xF0000–0xFFFFF.</p>
+        <p>The BIOS defined: <strong>POST</strong> (Power-On Self-Test — a hardware verification sequence that ran every
+          boot), <strong>software interrupt services</strong> (INT 0x10 for video, INT 0x13 for disk, INT 0x16 for
+          keyboard — a standardized API that programs could call without knowing hardware specifics), <strong>Option ROM
+            scanning</strong> (checking 0xC0000–0xEFFFF for expansion card ROMs with the 0x55AA signature), and the
+          <strong>boot device search</strong> (scanning drives in order for a sector ending in 0x55 0xAA).</p>
+        <p>The <strong>0x7C00 load address</strong> was chosen by IBM's engineers based on the PC's minimum 16KB RAM
+          configuration and the need to leave the IVT (0x0000–0x03FF) and BDA (0x0400–0x04FF) intact below the boot
+          sector. The <strong>0x55AA boot signature</strong> was a practical sanity check: any disk sector ending in
+          these two bytes would be treated as bootable.</p>
+        <p>The BIOS's INT service architecture was its most consequential design. Programs — including DOS and all the
+          bootloaders and applications of the DOS era — called INT 0x10, 0x13, 0x16 for hardware access. As long as a PC
+          clone's BIOS correctly implemented these interrupt services, software written for IBM's BIOS ran on the clone.
+          This created an enormous software ecosystem locked to the BIOS interface.</p>
+        <div class="sig">
+          <span class="sig-label">→ Decisions locked in for 43 years</span>
+          The 0x7C00 address, the 0x55AA signature, the INT 0x10/0x13/0x16 services, the Option ROM mechanism, the boot
+          order search — all defined in 1981, all still present (in CSM/legacy mode) on modern UEFI firmware today. No
+          technical standard in computing has persisted longer in active use.
+        </div>
+      </div>
     </div>
-    <p>The <strong>IBM PC BIOS</strong> was written primarily by David Bradley and a small team of IBM engineers over roughly a year (1980–1981). It occupied 8KB of ROM on the original IBM PC, later expanded to 64KB as more code was needed. It lived at the top of the 8088's 1MB address space — the region 0xF0000–0xFFFFF.</p>
-    <p>The BIOS defined: <strong>POST</strong> (Power-On Self-Test — a hardware verification sequence that ran every boot), <strong>software interrupt services</strong> (INT 0x10 for video, INT 0x13 for disk, INT 0x16 for keyboard — a standardized API that programs could call without knowing hardware specifics), <strong>Option ROM scanning</strong> (checking 0xC0000–0xEFFFF for expansion card ROMs with the 0x55AA signature), and the <strong>boot device search</strong> (scanning drives in order for a sector ending in 0x55 0xAA).</p>
-    <p>The <strong>0x7C00 load address</strong> was chosen by IBM's engineers based on the PC's minimum 16KB RAM configuration and the need to leave the IVT (0x0000–0x03FF) and BDA (0x0400–0x04FF) intact below the boot sector. The <strong>0x55AA boot signature</strong> was a practical sanity check: any disk sector ending in these two bytes would be treated as bootable.</p>
-    <p>The BIOS's INT service architecture was its most consequential design. Programs — including DOS and all the bootloaders and applications of the DOS era — called INT 0x10, 0x13, 0x16 for hardware access. As long as a PC clone's BIOS correctly implemented these interrupt services, software written for IBM's BIOS ran on the clone. This created an enormous software ecosystem locked to the BIOS interface.</p>
-    <div class="sig">
-      <span class="sig-label">→ Decisions locked in for 43 years</span>
-      The 0x7C00 address, the 0x55AA signature, the INT 0x10/0x13/0x16 services, the Option ROM mechanism, the boot order search — all defined in 1981, all still present (in CSM/legacy mode) on modern UEFI firmware today. No technical standard in computing has persisted longer in active use.
-    </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c5)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">1981–1984</div>
-    <div class="e-title">PC Clones — BIOS Compatibility Becomes the Standard</div>
-    <div class="e-teaser">Compaq, Phoenix, Award, AMI reverse-engineer the IBM BIOS interface. Any machine whose BIOS correctly implements IBM's INT services runs IBM PC software. A de facto hardware standard emerges from copyright law, not collaboration.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">PC Clones — BIOS Compatibility Becomes the Standard</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="right" style="--node-color:var(--c5)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">1981–1984</div>
+          <div class="e-title">PC Clones — BIOS Compatibility Becomes the Standard</div>
+          <div class="e-teaser">Compaq, Phoenix, Award, AMI reverse-engineer the IBM BIOS interface. Any machine whose
+            BIOS correctly implements IBM's INT services runs IBM PC software. A de facto hardware standard emerges from
+            copyright law, not collaboration.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">PC Clones — BIOS Compatibility Becomes the Standard</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>IBM, in a decision they later regretted, built the IBM PC from off-the-shelf components (Intel 8088,
+          Microsoft DOS, standard RAM chips) and published the full hardware schematics in the Technical Reference
+          Manual. This made cloning trivially easy for the hardware — the challenge was the BIOS, which was IBM's
+          proprietary copyrighted code.</p>
+        <p><strong>Compaq</strong> (1982) produced the first successful IBM PC clone. Their strategy for the BIOS:
+          clean-room reverse engineering. Compaq's engineers documented exactly what the IBM BIOS did — what inputs it
+          took, what it returned, what side effects it produced — without reading the actual IBM code. A separate team,
+          who had never seen the IBM code, wrote new code that produced the same documented behavior. This was legally
+          defensible (the behavior was not copyrightable; only the specific code was) and technically successful.</p>
+        <p>Companies like <strong>Phoenix Technologies</strong>, <strong>Award Software</strong>, and <strong>AMI
+            (American Megatrends Inc.)</strong> entered the business of writing and licensing BIOS code to motherboard
+          manufacturers. Their BIOSes had to correctly implement IBM's INT service interface — if they did, all IBM PC
+          software ran. The BIOS interface became a <em>de facto standard</em> enforced not by any standards body but by
+          the market: any BIOS that couldn't run DOS and DOS applications was commercially worthless.</p>
+        <p>This market-driven standardization was more powerful than any formal standard. By the mid-1980s, hundreds of
+          manufacturers were building IBM-compatible PCs, all running the same BIOS interface, all running the same DOS
+          and DOS applications. The "PC compatible" ecosystem was the largest software ecosystem in computing history.
+        </p>
+        <div class="sig">
+          <span class="sig-label">→ Market compatibility > formal standards</span>
+          The BIOS standard was never formally specified by a standards body. It was defined by IBM's implementation,
+          enforced by clones' need for compatibility, and maintained by commercial BIOS vendors. UEFI, by contrast, is a
+          formal industry consortium standard — a reaction to the chaos of the unstandard BIOS era.
+        </div>
+      </div>
     </div>
-    <p>IBM, in a decision they later regretted, built the IBM PC from off-the-shelf components (Intel 8088, Microsoft DOS, standard RAM chips) and published the full hardware schematics in the Technical Reference Manual. This made cloning trivially easy for the hardware — the challenge was the BIOS, which was IBM's proprietary copyrighted code.</p>
-    <p><strong>Compaq</strong> (1982) produced the first successful IBM PC clone. Their strategy for the BIOS: clean-room reverse engineering. Compaq's engineers documented exactly what the IBM BIOS did — what inputs it took, what it returned, what side effects it produced — without reading the actual IBM code. A separate team, who had never seen the IBM code, wrote new code that produced the same documented behavior. This was legally defensible (the behavior was not copyrightable; only the specific code was) and technically successful.</p>
-    <p>Companies like <strong>Phoenix Technologies</strong>, <strong>Award Software</strong>, and <strong>AMI (American Megatrends Inc.)</strong> entered the business of writing and licensing BIOS code to motherboard manufacturers. Their BIOSes had to correctly implement IBM's INT service interface — if they did, all IBM PC software ran. The BIOS interface became a <em>de facto standard</em> enforced not by any standards body but by the market: any BIOS that couldn't run DOS and DOS applications was commercially worthless.</p>
-    <p>This market-driven standardization was more powerful than any formal standard. By the mid-1980s, hundreds of manufacturers were building IBM-compatible PCs, all running the same BIOS interface, all running the same DOS and DOS applications. The "PC compatible" ecosystem was the largest software ecosystem in computing history.</p>
-    <div class="sig">
-      <span class="sig-label">→ Market compatibility > formal standards</span>
-      The BIOS standard was never formally specified by a standards body. It was defined by IBM's implementation, enforced by clones' need for compatibility, and maintained by commercial BIOS vendors. UEFI, by contrast, is a formal industry consortium standard — a reaction to the chaos of the unstandard BIOS era.
-    </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 6 -->
-<div class="era-div" id="era6" style="--era-color:var(--c6)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 06 · 1983–1995 · Hard Disks, DOS, MBR & The 640KB Wall</div>
-  <div class="era-line-r"></div>
-</div>
-
-<div class="entry" data-side="left" style="--node-color:var(--c6)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">1983</div>
-    <div class="e-title">IBM PC XT — The MBR Partition Table Is Born</div>
-    <div class="e-teaser">The XT adds a 10MB hard disk. Multiple partitions on one disk require a partition table. 64 bytes are carved from the MBR's 512 bytes. Four partition entries, one marked active. The bootloader finds the active partition and chains to its boot record.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">IBM PC XT — The MBR Partition Table Is Born</div>
-      <div class="detail-close">[close]</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 6 -->
+    <div class="era-div" id="era6" style="--era-color:var(--c6)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 06 · 1983–1995 · Hard Disks, DOS, MBR & The 640KB Wall</div>
+      <div class="era-line-r"></div>
     </div>
-    <p>The <strong>IBM PC XT</strong> (eXtended Technology, 1983) was the first IBM PC model to include a hard disk drive — a Seagate ST-412 with 10MB of storage. This seems tiny today but was enormous in 1983: it could store more data than over a hundred floppy disks.</p>
-    <p>Hard disks introduced a new problem: a single physical disk could be divided into multiple logical partitions, each formatted with its own file system, potentially running a different operating system. The boot sector needed to locate the correct partition to boot from.</p>
-    <p>The solution: 64 bytes were carved out of the MBR's 512 bytes (occupying bytes 446–509) to hold a <strong>partition table</strong> of four 16-byte entries. Each entry described one partition: its type (FAT12, FAT16, Extended, etc.), its starting and ending CHS addresses, its LBA start address, and its size in sectors. One entry had a "bootable" or "active" flag — a byte set to 0x80 to mark the partition the user wanted to boot from.</p>
-    <p>The MBR's 446-byte bootstrap code gained a new job: parse the partition table, find the entry marked active (0x80), read that partition's first sector (the <strong>Volume Boot Record</strong> or <strong>Partition Boot Record</strong>), verify its 0x55AA signature, and jump to it. Only then would the partition's bootloader run.</p>
-    <p>This created the chain: <em>BIOS → MBR bootstrap code → finds active partition → reads Partition Boot Record → PBR loads DOS → DOS loads COMMAND.COM</em>. Each stage was specific to its role, with the MBR providing the partition routing logic.</p>
-    <div class="sig">
-      <span class="sig-label">→ The MBR format locked in for 40 years</span>
-      The MBR format — 446 bytes of code, 64 bytes of partition table, 2-byte signature — was defined in 1983 and has been the standard for x86 disk booting ever since. Its 32-bit LBA fields limit it to 2TB disks, which is why GPT (UEFI's replacement) exists.
-    </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c6)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">1985–1995</div>
-    <div class="e-title">DOS Extenders — Working Around the BIOS's Real-Mode Prison</div>
-    <div class="e-teaser">Programs need more than 640KB. The 286 and 386 can address megabytes — but only in protected mode. DOS runs in real mode. DOS extenders switch to protected mode for work, back to real mode for DOS/BIOS calls. A decade of painful workarounds.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">DOS Extenders — The Real-Mode Prison</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c6)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">1983</div>
+          <div class="e-title">IBM PC XT — The MBR Partition Table Is Born</div>
+          <div class="e-teaser">The XT adds a 10MB hard disk. Multiple partitions on one disk require a partition table.
+            64 bytes are carved from the MBR's 512 bytes. Four partition entries, one marked active. The bootloader
+            finds the active partition and chains to its boot record.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">IBM PC XT — The MBR Partition Table Is Born</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>The <strong>IBM PC XT</strong> (eXtended Technology, 1983) was the first IBM PC model to include a hard disk
+          drive — a Seagate ST-412 with 10MB of storage. This seems tiny today but was enormous in 1983: it could store
+          more data than over a hundred floppy disks.</p>
+        <p>Hard disks introduced a new problem: a single physical disk could be divided into multiple logical
+          partitions, each formatted with its own file system, potentially running a different operating system. The
+          boot sector needed to locate the correct partition to boot from.</p>
+        <p>The solution: 64 bytes were carved out of the MBR's 512 bytes (occupying bytes 446–509) to hold a
+          <strong>partition table</strong> of four 16-byte entries. Each entry described one partition: its type (FAT12,
+          FAT16, Extended, etc.), its starting and ending CHS addresses, its LBA start address, and its size in sectors.
+          One entry had a "bootable" or "active" flag — a byte set to 0x80 to mark the partition the user wanted to boot
+          from.</p>
+        <p>The MBR's 446-byte bootstrap code gained a new job: parse the partition table, find the entry marked active
+          (0x80), read that partition's first sector (the <strong>Volume Boot Record</strong> or <strong>Partition Boot
+            Record</strong>), verify its 0x55AA signature, and jump to it. Only then would the partition's bootloader
+          run.</p>
+        <p>This created the chain: <em>BIOS → MBR bootstrap code → finds active partition → reads Partition Boot Record
+            → PBR loads DOS → DOS loads COMMAND.COM</em>. Each stage was specific to its role, with the MBR providing
+          the partition routing logic.</p>
+        <div class="sig">
+          <span class="sig-label">→ The MBR format locked in for 40 years</span>
+          The MBR format — 446 bytes of code, 64 bytes of partition table, 2-byte signature — was defined in 1983 and
+          has been the standard for x86 disk booting ever since. Its 32-bit LBA fields limit it to 2TB disks, which is
+          why GPT (UEFI's replacement) exists.
+        </div>
+      </div>
     </div>
-    <p>The BIOS's most consequential design decision was also its most limiting: it operated entirely in <strong>real mode</strong>. All INT services (INT 0x10, 0x13, 0x16) were real-mode code. DOS loaded in real mode. Everything assumed real mode. The maximum addressable memory was 1MB, with only 640KB available to programs.</p>
-    <p>The 80286 (1982) could access 16MB in protected mode. The 80386 (1985) could access 4GB in 32-bit protected mode. But using this memory meant leaving real mode — which meant losing access to BIOS services and DOS. Programs that needed large memory (scientific computing, professional graphics, large databases) were stuck.</p>
-    <p>The solution was <strong>DOS extenders</strong>: specialized programs bundled with applications that managed the mode switching. A DOS extender: loaded before the application, switched the CPU to protected mode, ran the application in protected mode with access to extended memory, and — when the application needed to call DOS or the BIOS — switched back to real mode, made the call, and returned to protected mode.</p>
-    <p>On the 286, switching back to real mode required a hardware reset (a genuine CPU reset, handled by specially programmed chipset circuitry). On the 386, Intel finally allowed clean protected-to-real-mode switching without a reset — making DOS extenders practical.</p>
-    <p>Notable DOS extenders: <strong>DOS/4GW</strong> (free with Watcom C, used by Doom, Quake, and hundreds of commercial programs), <strong>DPMI</strong> (DOS Protected Mode Interface — a standard API for DOS extenders that allowed multiple extenders to coexist), <strong>Rational Systems' DOS/4G</strong>.</p>
-    <div class="sig">
-      <span class="sig-label">→ The cost of backward compatibility</span>
-      DOS extenders existed entirely because the BIOS and DOS were locked to real mode, and changing either would break the enormous existing software ecosystem. This is a recurring theme: backward compatibility protects existing investment but creates accumulated technical debt that eventually forces a painful transition.
+
+    <div class="entry" data-side="right" style="--node-color:var(--c6)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">1985–1995</div>
+          <div class="e-title">DOS Extenders — Working Around the BIOS's Real-Mode Prison</div>
+          <div class="e-teaser">Programs need more than 640KB. The 286 and 386 can address megabytes — but only in
+            protected mode. DOS runs in real mode. DOS extenders switch to protected mode for work, back to real mode
+            for DOS/BIOS calls. A decade of painful workarounds.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">DOS Extenders — The Real-Mode Prison</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>The BIOS's most consequential design decision was also its most limiting: it operated entirely in
+          <strong>real mode</strong>. All INT services (INT 0x10, 0x13, 0x16) were real-mode code. DOS loaded in real
+          mode. Everything assumed real mode. The maximum addressable memory was 1MB, with only 640KB available to
+          programs.</p>
+        <p>The 80286 (1982) could access 16MB in protected mode. The 80386 (1985) could access 4GB in 32-bit protected
+          mode. But using this memory meant leaving real mode — which meant losing access to BIOS services and DOS.
+          Programs that needed large memory (scientific computing, professional graphics, large databases) were stuck.
+        </p>
+        <p>The solution was <strong>DOS extenders</strong>: specialized programs bundled with applications that managed
+          the mode switching. A DOS extender: loaded before the application, switched the CPU to protected mode, ran the
+          application in protected mode with access to extended memory, and — when the application needed to call DOS or
+          the BIOS — switched back to real mode, made the call, and returned to protected mode.</p>
+        <p>On the 286, switching back to real mode required a hardware reset (a genuine CPU reset, handled by specially
+          programmed chipset circuitry). On the 386, Intel finally allowed clean protected-to-real-mode switching
+          without a reset — making DOS extenders practical.</p>
+        <p>Notable DOS extenders: <strong>DOS/4GW</strong> (free with Watcom C, used by Doom, Quake, and hundreds of
+          commercial programs), <strong>DPMI</strong> (DOS Protected Mode Interface — a standard API for DOS extenders
+          that allowed multiple extenders to coexist), <strong>Rational Systems' DOS/4G</strong>.</p>
+        <div class="sig">
+          <span class="sig-label">→ The cost of backward compatibility</span>
+          DOS extenders existed entirely because the BIOS and DOS were locked to real mode, and changing either would
+          break the enormous existing software ecosystem. This is a recurring theme: backward compatibility protects
+          existing investment but creates accumulated technical debt that eventually forces a painful transition.
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 7 -->
-<div class="era-div" id="era7" style="--era-color:var(--c7)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 07 · 1993–2005 · Windows NT, NTLDR & The Protected-Mode OS</div>
-  <div class="era-line-r"></div>
-</div>
-
-<div class="entry" data-side="left" style="--node-color:var(--c7)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">1993</div>
-    <div class="e-title">Windows NT — Using BIOS Only to Boot, Then Abandoning It</div>
-    <div class="e-teaser">NT uses BIOS for its earliest boot stages, then discards it completely. NTLDR switches to 32-bit protected mode; the NT kernel uses hardware abstraction and its own drivers. The BIOS becomes a launch platform, not a runtime service.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Windows NT — BIOS as Launch Pad Only</div>
-      <div class="detail-close">[close]</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 7 -->
+    <div class="era-div" id="era7" style="--era-color:var(--c7)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 07 · 1993–2005 · Windows NT, NTLDR & The Protected-Mode OS</div>
+      <div class="era-line-r"></div>
     </div>
-    <p><strong>Windows NT</strong> (1993) was designed by Dave Cutler's team, many of whom came from DEC and had designed the VMS operating system. NT was architecturally clean: it ran entirely in 32-bit protected mode, was multi-user, multi-threaded, and used a <strong>HAL (Hardware Abstraction Layer)</strong> that isolated the OS from specific hardware details.</p>
-    <p>NT's relationship with BIOS was deliberate and limited. The boot process used BIOS services during its earliest stages, then abandoned them completely:</p>
-    <p>Stage 1: <strong>NTLDR</strong> (NT Loader) was loaded by the MBR/VBR mechanism. NTLDR began executing in real mode — using BIOS INT 0x13 to read additional sectors from disk (because INT 0x13 was the only standardized way to read from disk in real mode).</p>
-    <p>Stage 2: NTLDR switched the CPU to 32-bit protected mode. From this point, no BIOS service was ever called again. NTLDR loaded its own minimal disk driver (ARC — Advanced RISC Computing path format) to read the NT boot directory from the disk without using BIOS.</p>
-    <p>Stage 3: NTLDR read BOOT.INI (listing available Windows installations), showed a menu if needed, loaded NTDETECT.COM (hardware detection), then loaded NTOSKRNL.EXE (the NT kernel) and the HAL.</p>
-    <p>Stage 4: The NT kernel initialized in protected mode with paging, using its own device drivers for all hardware access. The BIOS was never touched again for the remainder of the session.</p>
-    <div class="sig">
-      <span class="sig-label">→ The template for modern OS booting</span>
-      NT's approach — use BIOS/firmware for the minimum necessary (find and load the bootloader), then immediately establish an independent OS environment that uses the firmware for nothing — is exactly how Linux, Windows Vista+, and macOS work. The firmware is a launch platform, not a runtime dependency.
+
+    <div class="entry" data-side="left" style="--node-color:var(--c7)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">1993</div>
+          <div class="e-title">Windows NT — Using BIOS Only to Boot, Then Abandoning It</div>
+          <div class="e-teaser">NT uses BIOS for its earliest boot stages, then discards it completely. NTLDR switches
+            to 32-bit protected mode; the NT kernel uses hardware abstraction and its own drivers. The BIOS becomes a
+            launch platform, not a runtime service.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Windows NT — BIOS as Launch Pad Only</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p><strong>Windows NT</strong> (1993) was designed by Dave Cutler's team, many of whom came from DEC and had
+          designed the VMS operating system. NT was architecturally clean: it ran entirely in 32-bit protected mode, was
+          multi-user, multi-threaded, and used a <strong>HAL (Hardware Abstraction Layer)</strong> that isolated the OS
+          from specific hardware details.</p>
+        <p>NT's relationship with BIOS was deliberate and limited. The boot process used BIOS services during its
+          earliest stages, then abandoned them completely:</p>
+        <p>Stage 1: <strong>NTLDR</strong> (NT Loader) was loaded by the MBR/VBR mechanism. NTLDR began executing in
+          real mode — using BIOS INT 0x13 to read additional sectors from disk (because INT 0x13 was the only
+          standardized way to read from disk in real mode).</p>
+        <p>Stage 2: NTLDR switched the CPU to 32-bit protected mode. From this point, no BIOS service was ever called
+          again. NTLDR loaded its own minimal disk driver (ARC — Advanced RISC Computing path format) to read the NT
+          boot directory from the disk without using BIOS.</p>
+        <p>Stage 3: NTLDR read BOOT.INI (listing available Windows installations), showed a menu if needed, loaded
+          NTDETECT.COM (hardware detection), then loaded NTOSKRNL.EXE (the NT kernel) and the HAL.</p>
+        <p>Stage 4: The NT kernel initialized in protected mode with paging, using its own device drivers for all
+          hardware access. The BIOS was never touched again for the remainder of the session.</p>
+        <div class="sig">
+          <span class="sig-label">→ The template for modern OS booting</span>
+          NT's approach — use BIOS/firmware for the minimum necessary (find and load the bootloader), then immediately
+          establish an independent OS environment that uses the firmware for nothing — is exactly how Linux, Windows
+          Vista+, and macOS work. The firmware is a launch platform, not a runtime dependency.
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c7)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">1995–2001</div>
-    <div class="e-title">Windows 9x — The Cost of DOS Compatibility</div>
-    <div class="e-teaser">Windows 95/98/ME maintain real-mode DOS compatibility. Their boot mixes real mode and protected mode in brittle ways. The system is notoriously unstable. Backward compatibility extracted a steep price in reliability.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Windows 9x — The Cost of DOS Compatibility</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="right" style="--node-color:var(--c7)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">1995–2001</div>
+          <div class="e-title">Windows 9x — The Cost of DOS Compatibility</div>
+          <div class="e-teaser">Windows 95/98/ME maintain real-mode DOS compatibility. Their boot mixes real mode and
+            protected mode in brittle ways. The system is notoriously unstable. Backward compatibility extracted a steep
+            price in reliability.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Windows 9x — The Cost of DOS Compatibility</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>While Windows NT made a clean break from DOS, <strong>Windows 95</strong> (1995), <strong>Windows 98</strong>
+          (1998), and <strong>Windows ME</strong> (2000) — the consumer versions of Windows — maintained deep
+          compatibility with DOS programs and the DOS/BIOS real-mode environment.</p>
+        <p>The Windows 9x boot sequence was a complicated layering: DOS boot in real mode → Windows kernel switched CPU
+          to protected mode → but maintained a real-mode DOS environment accessible via Virtual 8086 mode → DOS programs
+          ran in this virtual real mode → Windows ran in protected mode alongside them.</p>
+        <p>The problems this caused: programs running in Virtual 8086 mode could interfere with Windows's protected-mode
+          operation (imperfect isolation). Device drivers written for real-mode DOS could conflict with Windows's own
+          drivers. The boot process itself was complex — CONFIG.SYS loaded real-mode drivers, AUTOEXEC.BAT ran startup
+          programs, then WIN.COM launched Windows, all in a carefully ordered sequence where any mistake caused
+          failures.</p>
+        <p>Windows ME (Millennium Edition, 2000) attempted to remove real-mode DOS support but implemented the removal
+          incompletely — it was still present but hidden. The result was broadly considered the worst version of
+          Windows: it removed DOS compatibility that power users needed while not actually achieving the clean break
+          that NT had made.</p>
+        <div class="sig">
+          <span class="sig-label">→ The lesson of Windows 9x</span>
+          Maintaining backward compatibility while simultaneously trying to advance the architecture is extraordinarily
+          difficult. Windows 9x's instability was largely a consequence of trying to be both a modern protected-mode OS
+          and a real-mode DOS compatibility environment simultaneously. Microsoft's eventual answer was to discontinue
+          the 9x line entirely in 2001, pushing all consumers to the NT-based Windows XP.
+        </div>
+      </div>
     </div>
-    <p>While Windows NT made a clean break from DOS, <strong>Windows 95</strong> (1995), <strong>Windows 98</strong> (1998), and <strong>Windows ME</strong> (2000) — the consumer versions of Windows — maintained deep compatibility with DOS programs and the DOS/BIOS real-mode environment.</p>
-    <p>The Windows 9x boot sequence was a complicated layering: DOS boot in real mode → Windows kernel switched CPU to protected mode → but maintained a real-mode DOS environment accessible via Virtual 8086 mode → DOS programs ran in this virtual real mode → Windows ran in protected mode alongside them.</p>
-    <p>The problems this caused: programs running in Virtual 8086 mode could interfere with Windows's protected-mode operation (imperfect isolation). Device drivers written for real-mode DOS could conflict with Windows's own drivers. The boot process itself was complex — CONFIG.SYS loaded real-mode drivers, AUTOEXEC.BAT ran startup programs, then WIN.COM launched Windows, all in a carefully ordered sequence where any mistake caused failures.</p>
-    <p>Windows ME (Millennium Edition, 2000) attempted to remove real-mode DOS support but implemented the removal incompletely — it was still present but hidden. The result was broadly considered the worst version of Windows: it removed DOS compatibility that power users needed while not actually achieving the clean break that NT had made.</p>
-    <div class="sig">
-      <span class="sig-label">→ The lesson of Windows 9x</span>
-      Maintaining backward compatibility while simultaneously trying to advance the architecture is extraordinarily difficult. Windows 9x's instability was largely a consequence of trying to be both a modern protected-mode OS and a real-mode DOS compatibility environment simultaneously. Microsoft's eventual answer was to discontinue the 9x line entirely in 2001, pushing all consumers to the NT-based Windows XP.
+
+    <!-- ═══════════════════════════════════════════════════════ ERA 8 -->
+    <div class="era-div" id="era8" style="--era-color:var(--c8)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 08 · 1998–2010 · Intel EFI, Itanium & UEFI Is Born</div>
+      <div class="era-line-r"></div>
     </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 8 -->
-<div class="era-div" id="era8" style="--era-color:var(--c8)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 08 · 1998–2010 · Intel EFI, Itanium & UEFI Is Born</div>
-  <div class="era-line-r"></div>
-</div>
-
-<div class="entry" data-side="left" style="--node-color:var(--c8)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">1998–2000</div>
-    <div class="e-title">Itanium Forces a Clean Break — EFI Is Designed from Scratch</div>
-    <div class="e-teaser">Intel's 64-bit Itanium processor cannot run x86 BIOS. Intel designs EFI (Extensible Firmware Interface) from zero: architecture-neutral, 64-bit from startup, modular driver model, file-based bootloader discovery. A new paradigm.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Itanium Forces EFI</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c8)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">1998–2000</div>
+          <div class="e-title">Itanium Forces a Clean Break — EFI Is Designed from Scratch</div>
+          <div class="e-teaser">Intel's 64-bit Itanium processor cannot run x86 BIOS. Intel designs EFI (Extensible
+            Firmware Interface) from zero: architecture-neutral, 64-bit from startup, modular driver model, file-based
+            bootloader discovery. A new paradigm.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Itanium Forces EFI</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>In the late 1990s, Intel developed the <strong>Itanium</strong> processor (codenamed Merced) — a 64-bit
+          architecture with a radically different instruction set called EPIC (Explicitly Parallel Instruction
+          Computing). Itanium was designed for high-end servers and had no x86 compatibility in hardware.</p>
+        <p>This created an immediate problem: BIOS was fundamentally x86-specific. It ran 16-bit real-mode x86 code. It
+          used x86 segment registers, x86 real-mode addressing, x86 interrupt mechanisms. None of this existed on
+          Itanium. Itanium could not run BIOS at all.</p>
+        <p>Intel needed a new firmware standard. The specification they designed was called <strong>EFI (Extensible
+            Firmware Interface)</strong>. Its design principles deliberately addressed BIOS's limitations:</p>
+        <p><strong>Architecture-neutral</strong>: EFI defined a firmware API that was independent of any specific CPU
+          instruction set. The same EFI interface worked on Itanium, on x86, on ARM — any CPU that could implement the
+          EFI runtime services.</p>
+        <p><strong>64-bit from the start</strong>: On Itanium, EFI ran in 64-bit mode from the first instruction. No
+          real-mode stage. No mode switching. A clean 64-bit environment.</p>
+        <p><strong>Modular driver model</strong>: Unlike BIOS (where all hardware support had to be compiled into the
+          firmware ROM), EFI allowed drivers to be stored on disk and loaded at runtime. EFI included a file system
+          driver (FAT32) so it could read drivers from the EFI System Partition.</p>
+        <p><strong>File-based boot discovery</strong>: Instead of reading a fixed 512-byte sector and checking for
+          0x55AA, EFI looked for .EFI executable files at standardized paths on a FAT32 partition. The bootloader was a
+          regular file, not a magic sector.</p>
+        <div class="sig">
+          <span class="sig-label">→ A new paradigm, not just a better BIOS</span>
+          EFI was not "BIOS but better." It was a completely different model: firmware as an extensible runtime
+          environment, with drivers, file system access, and a standardized application model. This is why the
+          transition to UEFI took 20 years — it required rewriting everything.
+        </div>
+      </div>
     </div>
-    <p>In the late 1990s, Intel developed the <strong>Itanium</strong> processor (codenamed Merced) — a 64-bit architecture with a radically different instruction set called EPIC (Explicitly Parallel Instruction Computing). Itanium was designed for high-end servers and had no x86 compatibility in hardware.</p>
-    <p>This created an immediate problem: BIOS was fundamentally x86-specific. It ran 16-bit real-mode x86 code. It used x86 segment registers, x86 real-mode addressing, x86 interrupt mechanisms. None of this existed on Itanium. Itanium could not run BIOS at all.</p>
-    <p>Intel needed a new firmware standard. The specification they designed was called <strong>EFI (Extensible Firmware Interface)</strong>. Its design principles deliberately addressed BIOS's limitations:</p>
-    <p><strong>Architecture-neutral</strong>: EFI defined a firmware API that was independent of any specific CPU instruction set. The same EFI interface worked on Itanium, on x86, on ARM — any CPU that could implement the EFI runtime services.</p>
-    <p><strong>64-bit from the start</strong>: On Itanium, EFI ran in 64-bit mode from the first instruction. No real-mode stage. No mode switching. A clean 64-bit environment.</p>
-    <p><strong>Modular driver model</strong>: Unlike BIOS (where all hardware support had to be compiled into the firmware ROM), EFI allowed drivers to be stored on disk and loaded at runtime. EFI included a file system driver (FAT32) so it could read drivers from the EFI System Partition.</p>
-    <p><strong>File-based boot discovery</strong>: Instead of reading a fixed 512-byte sector and checking for 0x55AA, EFI looked for .EFI executable files at standardized paths on a FAT32 partition. The bootloader was a regular file, not a magic sector.</p>
-    <div class="sig">
-      <span class="sig-label">→ A new paradigm, not just a better BIOS</span>
-      EFI was not "BIOS but better." It was a completely different model: firmware as an extensible runtime environment, with drivers, file system access, and a standardized application model. This is why the transition to UEFI took 20 years — it required rewriting everything.
+
+    <div class="entry" data-side="right" style="--node-color:var(--c8)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">2005</div>
+          <div class="e-title">UEFI Forum — EFI Becomes an Industry Standard</div>
+          <div class="e-teaser">Intel transfers EFI to the UEFI Forum consortium. Intel, AMD, Microsoft, Apple, ARM, and
+            hardware vendors collaborate. EFI 1.x becomes UEFI 2.0. GPT replaces MBR. Secure Boot is specified. The
+            standard is no longer one company's property.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">UEFI Forum — EFI Becomes an Industry Standard</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>Intel's EFI specification, while technically sound, remained Intel's proprietary specification. For it to
+          become a true industry standard — required by all hardware vendors, supported by all OS vendors — it needed to
+          transition to a neutral governance body.</p>
+        <p>In 2005, Intel transferred the EFI specification to the <strong>UEFI Forum</strong>, a consortium of
+          companies including Intel, AMD, Microsoft, Apple, ARM, HP, IBM, Dell, Lenovo, and others. The forum renamed
+          the specification <strong>UEFI (Unified Extensible Firmware Interface)</strong> and began a collaborative
+          development process.</p>
+        <p>Key additions made to the specification in the UEFI era:</p>
+        <p><strong>GPT (GUID Partition Table)</strong>: Replaced MBR's 32-bit LBA partition table with a 64-bit format
+          supporting disks up to 9.4 ZB (zettabytes — effectively unlimited) and up to 128 partitions. Each partition
+          and partition type identified by a 128-bit GUID rather than a 1-byte type code.</p>
+        <p><strong>Secure Boot</strong> (added in UEFI 2.2): A cryptographic verification mechanism requiring
+          bootloaders to be signed with trusted keys stored in the firmware. If the bootloader's signature doesn't match
+          a trusted key, the firmware refuses to run it.</p>
+        <p><strong>UEFI Shell</strong>: A command-line interface accessible before any OS loads, with the ability to run
+          EFI applications, modify boot variables, and diagnose firmware issues.</p>
+        <p><strong>Network boot (PXE/HTTP Boot)</strong>: Standardized network booting in the firmware spec rather than
+          relying on Option ROMs from network cards.</p>
+        <div class="sig">
+          <span class="sig-label">→ Standards bodies vs. market standards</span>
+          BIOS was a market standard — it dominated because IBM's implementation won in the market. UEFI is a formal
+          standard — it was designed by committee and ratified by industry consensus. Both approaches have advantages:
+          market standards adopt quickly, formal standards are more consistent and better documented.
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c8)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">2005</div>
-    <div class="e-title">UEFI Forum — EFI Becomes an Industry Standard</div>
-    <div class="e-teaser">Intel transfers EFI to the UEFI Forum consortium. Intel, AMD, Microsoft, Apple, ARM, and hardware vendors collaborate. EFI 1.x becomes UEFI 2.0. GPT replaces MBR. Secure Boot is specified. The standard is no longer one company's property.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">UEFI Forum — EFI Becomes an Industry Standard</div>
-      <div class="detail-close">[close]</div>
+    <!-- ═══════════════════════════════════════════════════════ ERA 9 -->
+    <div class="era-div" id="era9" style="--era-color:var(--c9)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 09 · 2010s · Secure Boot, TPM & The Security-First Boot</div>
+      <div class="era-line-r"></div>
     </div>
-    <p>Intel's EFI specification, while technically sound, remained Intel's proprietary specification. For it to become a true industry standard — required by all hardware vendors, supported by all OS vendors — it needed to transition to a neutral governance body.</p>
-    <p>In 2005, Intel transferred the EFI specification to the <strong>UEFI Forum</strong>, a consortium of companies including Intel, AMD, Microsoft, Apple, ARM, HP, IBM, Dell, Lenovo, and others. The forum renamed the specification <strong>UEFI (Unified Extensible Firmware Interface)</strong> and began a collaborative development process.</p>
-    <p>Key additions made to the specification in the UEFI era:</p>
-    <p><strong>GPT (GUID Partition Table)</strong>: Replaced MBR's 32-bit LBA partition table with a 64-bit format supporting disks up to 9.4 ZB (zettabytes — effectively unlimited) and up to 128 partitions. Each partition and partition type identified by a 128-bit GUID rather than a 1-byte type code.</p>
-    <p><strong>Secure Boot</strong> (added in UEFI 2.2): A cryptographic verification mechanism requiring bootloaders to be signed with trusted keys stored in the firmware. If the bootloader's signature doesn't match a trusted key, the firmware refuses to run it.</p>
-    <p><strong>UEFI Shell</strong>: A command-line interface accessible before any OS loads, with the ability to run EFI applications, modify boot variables, and diagnose firmware issues.</p>
-    <p><strong>Network boot (PXE/HTTP Boot)</strong>: Standardized network booting in the firmware spec rather than relying on Option ROMs from network cards.</p>
-    <div class="sig">
-      <span class="sig-label">→ Standards bodies vs. market standards</span>
-      BIOS was a market standard — it dominated because IBM's implementation won in the market. UEFI is a formal standard — it was designed by committee and ratified by industry consensus. Both approaches have advantages: market standards adopt quickly, formal standards are more consistent and better documented.
+
+    <div class="entry" data-side="left" style="--node-color:var(--c9)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">2012</div>
+          <div class="e-title">Secure Boot Controversy — Security vs. User Freedom</div>
+          <div class="e-teaser">Windows 8 requires UEFI Secure Boot on certified hardware. Unsigned bootloaders —
+            including Linux at the time — cannot run. The Linux community fights back. Microsoft eventually agrees to
+            allow key enrollment and signing of Linux bootloaders.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Secure Boot Controversy</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>When Microsoft announced that Windows 8 hardware certification would require UEFI Secure Boot to be enabled
+          by default, the Linux community raised immediate concerns: on such systems, only bootloaders signed with keys
+          trusted by the firmware could run. Microsoft's key was in the firmware. Linux bootloaders were not signed with
+          Microsoft's key.</p>
+        <p>The concern: a user who bought a Windows 8 laptop might be unable to install Linux. The lock-in would not be
+          through software licensing but through firmware-level enforcement.</p>
+        <p>The resolution came through several paths:</p>
+        <p><strong>UEFI requires key enrollment</strong>: The UEFI specification requires that firmware allow users to
+          enroll their own trusted keys and disable Secure Boot. A user who wanted to install Linux could add the Linux
+          bootloader's signing key to the firmware's trusted key database, or disable Secure Boot entirely.</p>
+        <p><strong>Microsoft signed Linux's shim</strong>: The Linux Foundation worked with Microsoft to sign a small
+          bootloader called <strong>Shim</strong> — a Microsoft-signed EFI executable that then verified and loaded the
+          actual Linux bootloader (GRUB) using a separate key database maintained by the Linux community. The chain:
+          UEFI trusts Microsoft's key → Shim is signed by Microsoft → Shim trusts Linux key → Shim loads GRUB signed by
+          Linux key → GRUB loads Linux kernel.</p>
+        <p>The Secure Boot controversy illuminated a real tension: firmware-level security is genuinely valuable
+          (bootkits are real threats), but firmware-level security mechanisms controlled by one company can be used as
+          market barriers. The resolution — mandatory key enrollment, mandatory Secure Boot disable option — balanced
+          these concerns.</p>
+        <div class="sig">
+          <span class="sig-label">→ Security mechanisms and market power</span>
+          Secure Boot is technically valuable — it prevents malware from installing a bootkit that loads before the OS
+          and is invisible to OS-level security tools. But a security mechanism that only works for software endorsed by
+          the platform vendor is both a security feature and a potential competitive barrier. This tension continues in
+          current discussions about ARM devices and Apple Silicon.
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 9 -->
-<div class="era-div" id="era9" style="--era-color:var(--c9)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 09 · 2010s · Secure Boot, TPM & The Security-First Boot</div>
-  <div class="era-line-r"></div>
-</div>
-
-<div class="entry" data-side="left" style="--node-color:var(--c9)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">2012</div>
-    <div class="e-title">Secure Boot Controversy — Security vs. User Freedom</div>
-    <div class="e-teaser">Windows 8 requires UEFI Secure Boot on certified hardware. Unsigned bootloaders — including Linux at the time — cannot run. The Linux community fights back. Microsoft eventually agrees to allow key enrollment and signing of Linux bootloaders.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Secure Boot Controversy</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="right" style="--node-color:var(--c9)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">2010s</div>
+          <div class="e-title">Measured Boot & TPM — The Boot Chain Becomes Auditable</div>
+          <div class="e-teaser">Each boot stage cryptographically records what it loaded into the TPM's PCR registers.
+            At boot completion, the PCR values attest to exactly what code ran. Remote attestation, BitLocker key
+            sealing, and enterprise security build on this.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Measured Boot & TPM</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>Secure Boot prevents unauthorized code from running. But it does not record what authorized code actually
+          ran. <strong>Measured Boot</strong> adds this recording capability.</p>
+        <p>The <strong>TPM (Trusted Platform Module)</strong> is a dedicated security chip on the motherboard (or
+          integrated into the CPU on modern systems like AMD's fTPM and Intel's PTT). It contains: protected storage
+          (keys stored here cannot be extracted by software), a random number generator, cryptographic accelerators, and
+          most importantly for Measured Boot: <strong>PCR registers (Platform Configuration Registers)</strong>.</p>
+        <p>PCR registers are unusual: they cannot be written directly. They can only be "extended" — a new value is
+          added by computing a hash of (current PCR value concatenated with new data), and this hash replaces the
+          current PCR value. This creates a one-way accumulation: each extension permanently incorporates the new data
+          into the PCR's history.</p>
+        <p>During Measured Boot, each boot stage: computes a hash of the code it is about to execute, extends a PCR with
+          this hash, then executes the code. The chain: firmware measures itself → firmware measures UEFI drivers →
+          firmware measures bootloader → bootloader measures OS kernel → etc.</p>
+        <p>At boot completion, the PCR values are a cryptographic fingerprint of everything that ran during boot.
+          Applications (or remote servers) can query the TPM for these values and verify that the boot chain matched
+          expected values — detecting if any component was replaced by malware.</p>
+        <p><strong>Windows BitLocker</strong> uses Measured Boot: the drive's encryption key is sealed to specific PCR
+          values. If the boot chain changes (malware replaces the bootloader), the PCR values change, the seal breaks,
+          and BitLocker refuses to release the encryption key without a recovery password. The encrypted drive cannot be
+          accessed even if the attacker reboots with different firmware.</p>
+        <div class="sig">
+          <span class="sig-label">→ The boot chain as a security boundary</span>
+          Modern security architectures treat the boot chain as the root of trust — the foundation that everything else
+          builds on. If the boot chain can be trusted (measured and verified), then the OS can be trusted, then
+          applications can be trusted. A compromised boot process undermines all security above it.
+        </div>
+      </div>
     </div>
-    <p>When Microsoft announced that Windows 8 hardware certification would require UEFI Secure Boot to be enabled by default, the Linux community raised immediate concerns: on such systems, only bootloaders signed with keys trusted by the firmware could run. Microsoft's key was in the firmware. Linux bootloaders were not signed with Microsoft's key.</p>
-    <p>The concern: a user who bought a Windows 8 laptop might be unable to install Linux. The lock-in would not be through software licensing but through firmware-level enforcement.</p>
-    <p>The resolution came through several paths:</p>
-    <p><strong>UEFI requires key enrollment</strong>: The UEFI specification requires that firmware allow users to enroll their own trusted keys and disable Secure Boot. A user who wanted to install Linux could add the Linux bootloader's signing key to the firmware's trusted key database, or disable Secure Boot entirely.</p>
-    <p><strong>Microsoft signed Linux's shim</strong>: The Linux Foundation worked with Microsoft to sign a small bootloader called <strong>Shim</strong> — a Microsoft-signed EFI executable that then verified and loaded the actual Linux bootloader (GRUB) using a separate key database maintained by the Linux community. The chain: UEFI trusts Microsoft's key → Shim is signed by Microsoft → Shim trusts Linux key → Shim loads GRUB signed by Linux key → GRUB loads Linux kernel.</p>
-    <p>The Secure Boot controversy illuminated a real tension: firmware-level security is genuinely valuable (bootkits are real threats), but firmware-level security mechanisms controlled by one company can be used as market barriers. The resolution — mandatory key enrollment, mandatory Secure Boot disable option — balanced these concerns.</p>
-    <div class="sig">
-      <span class="sig-label">→ Security mechanisms and market power</span>
-      Secure Boot is technically valuable — it prevents malware from installing a bootkit that loads before the OS and is invisible to OS-level security tools. But a security mechanism that only works for software endorsed by the platform vendor is both a security feature and a potential competitive barrier. This tension continues in current discussions about ARM devices and Apple Silicon.
+
+    <!-- ═══════════════════════════════════════════════════════ ERA 10 -->
+    <div class="era-div" id="era10" style="--era-color:var(--c10)">
+      <div class="era-line-l"></div>
+      <div class="era-badge">Era 10 · 2020s · Post-BIOS, ARM & The Fragmented Future</div>
+      <div class="era-line-r"></div>
     </div>
-  </div>
-</div>
 
-<div class="entry" data-side="right" style="--node-color:var(--c9)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">2010s</div>
-    <div class="e-title">Measured Boot & TPM — The Boot Chain Becomes Auditable</div>
-    <div class="e-teaser">Each boot stage cryptographically records what it loaded into the TPM's PCR registers. At boot completion, the PCR values attest to exactly what code ran. Remote attestation, BitLocker key sealing, and enterprise security build on this.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Measured Boot & TPM</div>
-      <div class="detail-close">[close]</div>
+    <div class="entry" data-side="left" style="--node-color:var(--c10)">
+      <div class="cell-l">
+        <div class="card-inner">
+          <div class="e-date">2020</div>
+          <div class="e-title">Apple Silicon — The Sealed Boot Chain</div>
+          <div class="e-teaser">Apple M1 boots through the Secure Enclave, verifying every stage cryptographically. No
+            alternative OS can boot without Apple's authorization. The most secure consumer boot process ever built is
+            also the most locked-down.</div>
+        </div>
+      </div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r"></div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Apple Silicon — The Sealed Boot Chain</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p>When Apple transitioned to their own ARM-based chips (M1, November 2020), they designed a boot process unlike
+          anything in the x86 world. The Apple Silicon boot chain is completely sealed — every stage is
+          cryptographically verified by the previous stage, with Apple holding the root signing keys.</p>
+        <p>The chain: <strong>Secure Enclave</strong> (a separate security processor built into the M1 chip, with its
+          own ROM and operating system) → verifies the <strong>Boot ROM</strong> → Boot ROM verifies
+          <strong>iBoot</strong> (Apple's bootloader, stored in flash) → iBoot verifies the <strong>OS kernel</strong>
+          and <strong>system volume</strong> (using a cryptographic hash tree of the entire OS read-only volume).</p>
+        <p>If any stage's signature fails verification, boot stops. If any file on the signed system volume is modified,
+          the hash tree breaks and boot stops. The system is in a constant state of cryptographic self-verification.</p>
+        <p>The practical implications: installing Linux on Apple Silicon requires Apple's authorization (Apple allows it
+          via "reduced security" mode but retains control of the process). Malware that modifies the OS files cannot
+          persist — the hash tree verification will detect the modification. But users who want to run unsigned software
+          at the firmware level are dependent on Apple's permission.</p>
+        <div class="sig">
+          <span class="sig-label">→ The endpoint of the security trajectory</span>
+          Apple Silicon represents one possible future: a completely controlled, cryptographically sealed boot process
+          where the device manufacturer has ultimate authority. Maximum security, minimum user freedom at the firmware
+          level. The opposite model — UEFI with user-enrollable keys and optional Secure Boot disable — represents the
+          other possibility. The industry has not yet settled which model will dominate.
+        </div>
+      </div>
     </div>
-    <p>Secure Boot prevents unauthorized code from running. But it does not record what authorized code actually ran. <strong>Measured Boot</strong> adds this recording capability.</p>
-    <p>The <strong>TPM (Trusted Platform Module)</strong> is a dedicated security chip on the motherboard (or integrated into the CPU on modern systems like AMD's fTPM and Intel's PTT). It contains: protected storage (keys stored here cannot be extracted by software), a random number generator, cryptographic accelerators, and most importantly for Measured Boot: <strong>PCR registers (Platform Configuration Registers)</strong>.</p>
-    <p>PCR registers are unusual: they cannot be written directly. They can only be "extended" — a new value is added by computing a hash of (current PCR value concatenated with new data), and this hash replaces the current PCR value. This creates a one-way accumulation: each extension permanently incorporates the new data into the PCR's history.</p>
-    <p>During Measured Boot, each boot stage: computes a hash of the code it is about to execute, extends a PCR with this hash, then executes the code. The chain: firmware measures itself → firmware measures UEFI drivers → firmware measures bootloader → bootloader measures OS kernel → etc.</p>
-    <p>At boot completion, the PCR values are a cryptographic fingerprint of everything that ran during boot. Applications (or remote servers) can query the TPM for these values and verify that the boot chain matched expected values — detecting if any component was replaced by malware.</p>
-    <p><strong>Windows BitLocker</strong> uses Measured Boot: the drive's encryption key is sealed to specific PCR values. If the boot chain changes (malware replaces the bootloader), the PCR values change, the seal breaks, and BitLocker refuses to release the encryption key without a recovery password. The encrypted drive cannot be accessed even if the attacker reboots with different firmware.</p>
-    <div class="sig">
-      <span class="sig-label">→ The boot chain as a security boundary</span>
-      Modern security architectures treat the boot chain as the root of trust — the foundation that everything else builds on. If the boot chain can be trusted (measured and verified), then the OS can be trusted, then applications can be trusted. A compromised boot process undermines all security above it.
+
+    <div class="entry" data-side="right" style="--node-color:var(--c10)">
+      <div class="cell-l"></div>
+      <div class="entry-mid">
+        <div class="node"></div>
+      </div>
+      <div class="cell-r">
+        <div class="card-inner">
+          <div class="e-date">2021–present</div>
+          <div class="e-title">Windows 11, RISC-V & The End of Legacy BIOS</div>
+          <div class="e-teaser">Windows 11 requires UEFI and TPM 2.0. CSM (BIOS compatibility) disappears from new
+            hardware. RISC-V standardizes OpenSBI. The 1981 BIOS architecture finally retires — after 40 years of
+            continuous use.</div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-hdr">
+          <div class="detail-title">Windows 11, RISC-V & The End of Legacy BIOS</div>
+          <div class="detail-close">[close]</div>
+        </div>
+        <p><strong>Windows 11</strong> (2021) made UEFI and TPM 2.0 hard requirements. Not recommended — required.
+          Machines without UEFI firmware or without TPM 2.0 cannot install Windows 11. This effectively ended mainstream
+          use of legacy BIOS for Windows users, since Windows is still installed on the vast majority of new PCs.</p>
+        <p>Around the same time, major motherboard manufacturers began shipping firmware without CSM (Compatibility
+          Support Module) — the emulation layer that made UEFI firmware behave like BIOS for legacy OS support. Without
+          CSM, booting 32-bit operating systems or old bootloaders is impossible. The 40-year-old BIOS compatibility is
+          finally being removed from new hardware.</p>
+        <p><strong>RISC-V</strong> — the open-source CPU architecture growing rapidly in embedded systems and research —
+          standardized its boot infrastructure around <strong>OpenSBI (Open Supervisor Binary Interface)</strong>.
+          OpenSBI plays a role similar to UEFI on x86: it provides a standardized firmware layer between hardware and
+          the OS, implementing the SBI (Supervisor Binary Interface) that RISC-V OS kernels call for privileged
+          operations. Unlike UEFI, OpenSBI is fully open-source and permissively licensed, which suits RISC-V's open
+          architecture philosophy.</p>
+        <p>The result in 2024: the x86 world uses UEFI universally on new hardware. The ARM world (smartphones, tablets,
+          embedded systems) has no standard — each SoC vendor defines their own boot process, with U-Boot as a common
+          portable bootloader. The RISC-V world uses OpenSBI + U-Boot. Three different ecosystems, three different boot
+          architectures, all tracing back to the same fundamental bootstrap problem discovered in 1948.</p>
+        <div class="sig">
+          <span class="sig-label">→ Your OS project in historical context</span>
+          Your OS project uses the BIOS/MBR model — the architecture defined in 1981, which inherited from the 1960s
+          disk sector zero convention, which inherited from the 1952 two-stage bootstrap pattern, which was invented to
+          solve the 1948 bootstrap problem. Every constraint you work within has a 40–75 year history. Every decision
+          made before your bootloader's first instruction was made by someone facing a specific, concrete problem with a
+          specific, concrete set of tools available to them at that moment.
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ ERA 10 -->
-<div class="era-div" id="era10" style="--era-color:var(--c10)">
-  <div class="era-line-l"></div>
-  <div class="era-badge">Era 10 · 2020s · Post-BIOS, ARM & The Fragmented Future</div>
-  <div class="era-line-r"></div>
-</div>
+  </div><!-- end timeline -->
 
-<div class="entry" data-side="left" style="--node-color:var(--c10)">
-  <div class="cell-l"><div class="card-inner">
-    <div class="e-date">2020</div>
-    <div class="e-title">Apple Silicon — The Sealed Boot Chain</div>
-    <div class="e-teaser">Apple M1 boots through the Secure Enclave, verifying every stage cryptographically. No alternative OS can boot without Apple's authorization. The most secure consumer boot process ever built is also the most locked-down.</div>
-  </div></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Apple Silicon — The Sealed Boot Chain</div>
-      <div class="detail-close">[close]</div>
-    </div>
-    <p>When Apple transitioned to their own ARM-based chips (M1, November 2020), they designed a boot process unlike anything in the x86 world. The Apple Silicon boot chain is completely sealed — every stage is cryptographically verified by the previous stage, with Apple holding the root signing keys.</p>
-    <p>The chain: <strong>Secure Enclave</strong> (a separate security processor built into the M1 chip, with its own ROM and operating system) → verifies the <strong>Boot ROM</strong> → Boot ROM verifies <strong>iBoot</strong> (Apple's bootloader, stored in flash) → iBoot verifies the <strong>OS kernel</strong> and <strong>system volume</strong> (using a cryptographic hash tree of the entire OS read-only volume).</p>
-    <p>If any stage's signature fails verification, boot stops. If any file on the signed system volume is modified, the hash tree breaks and boot stops. The system is in a constant state of cryptographic self-verification.</p>
-    <p>The practical implications: installing Linux on Apple Silicon requires Apple's authorization (Apple allows it via "reduced security" mode but retains control of the process). Malware that modifies the OS files cannot persist — the hash tree verification will detect the modification. But users who want to run unsigned software at the firmware level are dependent on Apple's permission.</p>
-    <div class="sig">
-      <span class="sig-label">→ The endpoint of the security trajectory</span>
-      Apple Silicon represents one possible future: a completely controlled, cryptographically sealed boot process where the device manufacturer has ultimate authority. Maximum security, minimum user freedom at the firmware level. The opposite model — UEFI with user-enrollable keys and optional Secure Boot disable — represents the other possibility. The industry has not yet settled which model will dominate.
-    </div>
-  </div>
-</div>
+  <footer>
+    Click any node to elaborate &nbsp;·&nbsp;
+    1948 → 2024 &nbsp;·&nbsp;
+    76 years of pulling the machine up by its bootstraps
+  </footer>
 
-<div class="entry" data-side="right" style="--node-color:var(--c10)">
-  <div class="cell-l"></div>
-  <div class="entry-mid"><div class="node"></div></div>
-  <div class="cell-r"><div class="card-inner">
-    <div class="e-date">2021–present</div>
-    <div class="e-title">Windows 11, RISC-V & The End of Legacy BIOS</div>
-    <div class="e-teaser">Windows 11 requires UEFI and TPM 2.0. CSM (BIOS compatibility) disappears from new hardware. RISC-V standardizes OpenSBI. The 1981 BIOS architecture finally retires — after 40 years of continuous use.</div>
-  </div></div>
-  <div class="detail">
-    <div class="detail-hdr">
-      <div class="detail-title">Windows 11, RISC-V & The End of Legacy BIOS</div>
-      <div class="detail-close">[close]</div>
-    </div>
-    <p><strong>Windows 11</strong> (2021) made UEFI and TPM 2.0 hard requirements. Not recommended — required. Machines without UEFI firmware or without TPM 2.0 cannot install Windows 11. This effectively ended mainstream use of legacy BIOS for Windows users, since Windows is still installed on the vast majority of new PCs.</p>
-    <p>Around the same time, major motherboard manufacturers began shipping firmware without CSM (Compatibility Support Module) — the emulation layer that made UEFI firmware behave like BIOS for legacy OS support. Without CSM, booting 32-bit operating systems or old bootloaders is impossible. The 40-year-old BIOS compatibility is finally being removed from new hardware.</p>
-    <p><strong>RISC-V</strong> — the open-source CPU architecture growing rapidly in embedded systems and research — standardized its boot infrastructure around <strong>OpenSBI (Open Supervisor Binary Interface)</strong>. OpenSBI plays a role similar to UEFI on x86: it provides a standardized firmware layer between hardware and the OS, implementing the SBI (Supervisor Binary Interface) that RISC-V OS kernels call for privileged operations. Unlike UEFI, OpenSBI is fully open-source and permissively licensed, which suits RISC-V's open architecture philosophy.</p>
-    <p>The result in 2024: the x86 world uses UEFI universally on new hardware. The ARM world (smartphones, tablets, embedded systems) has no standard — each SoC vendor defines their own boot process, with U-Boot as a common portable bootloader. The RISC-V world uses OpenSBI + U-Boot. Three different ecosystems, three different boot architectures, all tracing back to the same fundamental bootstrap problem discovered in 1948.</p>
-    <div class="sig">
-      <span class="sig-label">→ Your OS project in historical context</span>
-      Your OS project uses the BIOS/MBR model — the architecture defined in 1981, which inherited from the 1960s disk sector zero convention, which inherited from the 1952 two-stage bootstrap pattern, which was invented to solve the 1948 bootstrap problem. Every constraint you work within has a 40–75 year history. Every decision made before your bootloader's first instruction was made by someone facing a specific, concrete problem with a specific, concrete set of tools available to them at that moment.
-    </div>
-  </div>
-</div>
+  <script>
+    // Toggle panels
+    document.querySelectorAll('.entry').forEach(entry => {
+      const node = entry.querySelector('.node');
+      const panel = entry.querySelector('.detail');
+      const close = entry.querySelector('.detail-close');
+      const color = getComputedStyle(entry).getPropertyValue('--node-color').trim();
+      if (panel) panel.style.setProperty('--node-color', color);
 
-</div><!-- end timeline -->
+      function openP() {
+        document.querySelectorAll('.detail.open').forEach(p => p.classList.remove('open'));
+        document.querySelectorAll('.node.active').forEach(n => n.classList.remove('active'));
+        panel.classList.add('open');
+        node.classList.add('active');
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+      }
+      function closeP() { panel.classList.remove('open'); node.classList.remove('active'); }
+      function toggle() { panel.classList.contains('open') ? closeP() : openP(); }
 
-<footer>
-  Click any node to elaborate &nbsp;·&nbsp;
-  1948 → 2024 &nbsp;·&nbsp;
-  76 years of pulling the machine up by its bootstraps
-</footer>
+      if (panel && node) {
+        panel.classList.add('open');
+        node.classList.add('active');
+      }
 
-<script>
-// Toggle panels
-document.querySelectorAll('.entry').forEach(entry => {
-  const node   = entry.querySelector('.node');
-  const panel  = entry.querySelector('.detail');
-  const close  = entry.querySelector('.detail-close');
-  const color  = getComputedStyle(entry).getPropertyValue('--node-color').trim();
-  if (panel) panel.style.setProperty('--node-color', color);
+      node.addEventListener('click', toggle);
+      entry.querySelectorAll('.card-inner').forEach(c => c.addEventListener('click', toggle));
+      if (close) close.addEventListener('click', e => { e.stopPropagation(); closeP(); });
+    });
 
-  function openP() {
-    document.querySelectorAll('.detail.open').forEach(p => p.classList.remove('open'));
-    document.querySelectorAll('.node.active').forEach(n => n.classList.remove('active'));
-    panel.classList.add('open');
-    node.classList.add('active');
-    setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
-  }
-  function closeP() { panel.classList.remove('open'); node.classList.remove('active'); }
-  function toggle() { panel.classList.contains('open') ? closeP() : openP(); }
-
-  node.addEventListener('click', toggle);
-  entry.querySelectorAll('.card-inner').forEach(c => c.addEventListener('click', toggle));
-  if (close) close.addEventListener('click', e => { e.stopPropagation(); closeP(); });
-});
-
-// Scroll reveal
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.07 });
-document.querySelectorAll('.entry').forEach(e => obs.observe(e));
-</script>
+    // Scroll reveal
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.07 });
+    document.querySelectorAll('.entry').forEach(e => obs.observe(e));
+  </script>
 </body>
+
 </html>
