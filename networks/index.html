@@ -1,0 +1,2283 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Complete History of Computer Networking</title>
+<style>
+
+/* ─── RESET ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── ROOT TOKENS ─────────────────────────────────────── */
+:root {
+  --bg:        #05090f;
+  --bg2:       #090e18;
+  --surface:   #0d1520;
+  --card:      #111d2e;
+  --card2:     #162338;
+  --border:    #1e3050;
+  --border2:   #2a4068;
+
+  --text:      #d8e6f5;
+  --text2:     #8aadcf;
+  --text3:     #4e7498;
+  --muted:     #2e4d6a;
+
+  /* Era accent palette */
+  --c1:  #2dd4bf; /* teal – physical / early */
+  --c2:  #60a5fa; /* blue – ARPANET era */
+  --c3:  #a78bfa; /* purple – protocol wars */
+  --c4:  #34d399; /* green – internet birth */
+  --c5:  #f97316; /* orange – World Wide Web */
+  --c6:  #f59e0b; /* amber – broadband */
+  --c7:  #ec4899; /* pink – wireless */
+  --c8:  #3b82f6; /* blue2 – cloud/SDN */
+  --c9:  #06b6d4; /* cyan – modern/future */
+
+  --radius: 10px;
+  --serif: 'Georgia', 'Times New Roman', serif;
+  --mono:  'Courier New', monospace;
+}
+
+/* ─── BASE ────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ─── HERO ────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  padding: 80px 40px 64px;
+  text-align: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(45,212,191,.09) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 20% 80%, rgba(96,165,250,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(167,139,250,.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--c1);
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 400;
+  line-height: 1.2;
+  color: #eaf4ff;
+  margin-bottom: 20px;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: var(--c1);
+}
+
+.hero-sub {
+  max-width: 640px;
+  margin: 0 auto 32px;
+  color: var(--text2);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat .num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--c1);
+  font-family: var(--mono);
+  display: block;
+}
+
+.hero-stat .lbl {
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ─── NAV / TOC ───────────────────────────────────────── */
+.toc {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(5,9,15,.96);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.toc-inner {
+  display: inline-flex;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.toc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  transition: all .15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.toc-btn:hover {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.toc-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── LAYOUT ──────────────────────────────────────────── */
+.layout {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ─── ERA SECTION ─────────────────────────────────────── */
+.era {
+  margin-top: 72px;
+  scroll-margin-top: 48px;
+}
+
+.era-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.era-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--accent, var(--c1));
+  background: var(--surface);
+  border: 1px solid var(--accent, var(--c1));
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-top: 4px;
+  flex-shrink: 0;
+  opacity: .85;
+}
+
+.era-title-block h2 {
+  font-family: var(--serif);
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 400;
+  color: #e8f4ff;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.era-title-block .era-span {
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: .08em;
+}
+
+/* ─── CONCEPT CARDS ───────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px 14px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: background .15s;
+}
+
+.card-header:hover { background: var(--card2); }
+
+.card.open .card-header {
+  border-bottom-color: var(--border);
+}
+
+.card-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.card-title {
+  flex: 1;
+}
+
+.card-title h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.card-title .sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.card-chevron {
+  color: var(--text3);
+  font-size: 18px;
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+
+.card.open .card-chevron { transform: rotate(180deg); }
+
+.card-body {
+  display: none;
+  padding: 20px 20px 24px;
+}
+
+.card.open .card-body { display: block; }
+
+/* ─── BODY PROSE ──────────────────────────────────────── */
+.card-body p {
+  color: var(--text2);
+  margin-bottom: 14px;
+  line-height: 1.8;
+  font-size: 14.5px;
+}
+
+.card-body p:last-child { margin-bottom: 0; }
+
+.card-body h4 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent, var(--c1));
+  margin: 22px 0 10px;
+}
+
+.card-body h4:first-child { margin-top: 0; }
+
+/* highlighted term */
+.term {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* inline code */
+.card-body code, code {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--c1);
+}
+
+/* block callout */
+.callout {
+  background: var(--surface);
+  border-left: 3px solid var(--accent, var(--c1));
+  border-radius: 0 6px 6px 0;
+  padding: 12px 16px;
+  margin: 14px 0;
+}
+
+.callout p { color: var(--text2); margin: 0; font-size: 14px; }
+
+.callout strong { color: var(--text); }
+
+/* analogy box */
+.analogy {
+  background: #0a1625;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--text3);
+}
+
+.analogy strong { color: var(--text2); font-style: normal; }
+
+/* diagram-like ASCII */
+.diagram {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  margin: 14px 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text2);
+  overflow-x: auto;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* layered / protocol stack */
+.stack {
+  margin: 14px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.stack-row {
+  display: flex;
+  align-items: center;
+  padding: 9px 14px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stack-row:last-child { border-bottom: none; }
+
+.stack-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  width: 20px;
+  text-align: center;
+  color: var(--accent, var(--c1));
+  flex-shrink: 0;
+}
+
+.stack-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.stack-desc {
+  font-size: 12.5px;
+  color: var(--text3);
+}
+
+.stack-ex {
+  font-size: 11.5px;
+  color: var(--accent, var(--c1));
+  margin-left: auto;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+/* timeline inside card */
+.mini-timeline { margin: 14px 0; }
+
+.mini-event {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 0 16px;
+  margin-bottom: 10px;
+  align-items: baseline;
+}
+
+.mini-year {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent, var(--c1));
+  text-align: right;
+}
+
+.mini-desc {
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.6;
+  padding-left: 16px;
+  border-left: 1px solid var(--border2);
+}
+
+/* hardware detail */
+.hw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.hw-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.hw-card .hw-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.hw-card .hw-desc {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* packet diagram */
+.packet {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 14px 0;
+  font-size: 11.5px;
+  font-family: var(--mono);
+}
+
+.packet-field {
+  flex: 1;
+  padding: 8px 6px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.packet-field:last-child { border-right: none; }
+
+.packet-field .pf-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent, var(--c1));
+  letter-spacing: .06em;
+}
+
+.packet-field .pf-bits {
+  font-size: 10px;
+  color: var(--text3);
+}
+
+/* big quote */
+.pull-quote {
+  border-left: 3px solid var(--accent, var(--c1));
+  padding: 10px 18px;
+  margin: 18px 0;
+  font-family: var(--serif);
+  font-size: 17px;
+  font-style: italic;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.pull-quote cite {
+  display: block;
+  font-size: 12px;
+  font-style: normal;
+  color: var(--text3);
+  margin-top: 6px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ─── DIVIDER ─────────────────────────────────────────── */
+.era-divider {
+  height: 1px;
+  background: linear-gradient(to right, var(--accent, var(--c1)) 0%, transparent 60%);
+  margin-top: 60px;
+  opacity: .3;
+}
+
+/* ─── GLOSSARY ────────────────────────────────────────── */
+.glossary {
+  margin-top: 72px;
+  scroll-margin-top: 48px;
+}
+
+.glossary h2 {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 400;
+  color: #e8f4ff;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.glossary-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.glossary-item .g-term {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.glossary-item .g-def {
+  font-size: 12.5px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* ─── SCROLLBAR ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+
+/* ─── FOOTER ──────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 12px;
+  margin-top: 80px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<header class="hero">
+  <p class="hero-eyebrow">From Smoke Signals to the Cloud</p>
+  <h1>The Complete History of<br><em>Computer Networking</em></h1>
+  <p class="hero-sub">
+    Every concept built from the ground up — from the question "what is a signal?" to the internet that connects billions of machines. No prerequisite knowledge assumed.
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">~75</span><span class="lbl">Years of history</span></div>
+    <div class="hero-stat"><span class="num">9</span><span class="lbl">Major Eras</span></div>
+    <div class="hero-stat"><span class="num">50+</span><span class="lbl">Concepts explained</span></div>
+    <div class="hero-stat"><span class="num">100%</span><span class="lbl">From first principles</span></div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     TABLE OF CONTENTS (sticky nav)
+══════════════════════════════════════════════ -->
+<nav class="toc" aria-label="Era navigation">
+  <div class="toc-inner">
+    <a class="toc-btn" href="#era0"><span class="toc-dot" style="background:#a78bfa"></span>Before Computers</a>
+    <a class="toc-btn" href="#era1"><span class="toc-dot" style="background:#2dd4bf"></span>Telegraph Era</a>
+    <a class="toc-btn" href="#era2"><span class="toc-dot" style="background:#60a5fa"></span>Early Computing</a>
+    <a class="toc-btn" href="#era3"><span class="toc-dot" style="background:#a78bfa"></span>ARPANET</a>
+    <a class="toc-btn" href="#era4"><span class="toc-dot" style="background:#34d399"></span>Protocol Wars</a>
+    <a class="toc-btn" href="#era5"><span class="toc-dot" style="background:#f97316"></span>World Wide Web</a>
+    <a class="toc-btn" href="#era6"><span class="toc-dot" style="background:#f59e0b"></span>Broadband Age</a>
+    <a class="toc-btn" href="#era7"><span class="toc-dot" style="background:#ec4899"></span>Wireless Revolution</a>
+    <a class="toc-btn" href="#era8"><span class="toc-dot" style="background:#06b6d4"></span>Cloud &amp; Modern</a>
+    <a class="toc-btn" href="#glossary"><span class="toc-dot" style="background:#888"></span>Glossary</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════ -->
+<main class="layout">
+
+<!-- ──────────────────────────────────────────
+  ERA 0: BEFORE COMPUTERS — THE IDEA OF A NETWORK
+────────────────────────────────────────────── -->
+<section class="era" id="era0" style="--accent: #a78bfa">
+
+  <div class="era-header">
+    <div class="era-num">ERA 0</div>
+    <div class="era-title-block">
+      <h2>Before Computers — The Idea of a Network</h2>
+      <span class="era-span">Antiquity → 1830s</span>
+    </div>
+  </div>
+
+  <!-- CARD: What is communication -->
+  <div class="card open">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#1a1130">📡</div>
+      <div class="card-title">
+        <h3>What is "communication"? Starting from absolute zero</h3>
+        <div class="sub">The concept of transmitting information across distance</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The fundamental problem</h4>
+      <p>
+        Imagine two people standing in a field. Person A wants to tell Person B something — for example, "the enemy army is approaching from the north." Person A can shout. Person B can hear. This works if they are close enough.
+      </p>
+      <p>
+        But what if they are 50 kilometres apart? Shouting does not work. And so, for thousands of years, humans faced one of the most fundamental engineering problems in all of history:
+      </p>
+      <div class="callout">
+        <p><strong>The core problem:</strong> How do you send a piece of information from one place to another, faster than a person can physically travel?</p>
+      </div>
+      <p>
+        Every single concept in computer networking — every wire, every protocol, every router, every cell tower — is an attempt to answer this exact question. The computers are new. The problem is ancient.
+      </p>
+
+      <h4>What is "information"?</h4>
+      <p>
+        Before we can transmit information, we need to understand what information actually is. Here is the simplest possible definition:
+      </p>
+      <p>
+        <span class="term">Information</span> is the difference between two possibilities. If I flip a coin and I already know it will always land heads, telling you "it landed heads" gives you zero information — you already knew. But if it could be heads or tails, and I tell you which one it is, I have given you information: I have reduced your uncertainty.
+      </p>
+      <p>
+        This idea — that information is the reduction of uncertainty — was formalised by Claude Shannon in 1948 (we will get there). But the instinct was always there in human communication: every message we send is meant to tell the receiver something they did not already know.
+      </p>
+
+      <h4>What is a "signal"?</h4>
+      <p>
+        To transmit information, you need to encode it into something physical that can travel. That physical thing is called a <span class="term">signal</span>. A signal is any change in a physical quantity that carries meaning.
+      </p>
+      <p>Examples of signals humans have always used:</p>
+      <div class="hw-grid">
+        <div class="hw-card">
+          <div class="hw-name">Sound (voice, drums)</div>
+          <div class="hw-desc">Variations in air pressure travel as sound waves. Limited range — a few km at most.</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-name">Light (fire, mirrors)</div>
+          <div class="hw-desc">Visible light travels in straight lines. Beacons on hilltops could relay signals hundreds of km.</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-name">Physical (runners, riders)</div>
+          <div class="hw-desc">A human carrying a message. Reliable, but only as fast as a horse.</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-name">Smoke, flags, semaphore</div>
+          <div class="hw-desc">Visual signals that can encode simple messages over long distances in daylight.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD: Relay networks -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#1a1130">🏔️</div>
+      <div class="card-title">
+        <h3>The first networks — relay chains and optical semaphore</h3>
+        <div class="sub">1700s–1830s: the first multi-node communication systems</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The relay principle</h4>
+      <p>
+        Here is a key insight that is still at the heart of modern networking: if you cannot go the full distance in one step, go partway, and hand off to someone who goes the next part.
+      </p>
+      <p>
+        This is called <span class="term">relaying</span>. A relay is an intermediate station that receives a signal and re-transmits it. The chain of relay stations together forms a <span class="term">network</span>.
+      </p>
+      <div class="analogy">
+        <strong>Analogy:</strong> Imagine you want to send a letter from Delhi to Mumbai. Rather than finding a single person who will walk the entire distance, you find someone who goes to Pune, who hands it to someone going to Pune station, who puts it on a train… The letter "hops" from node to node. Each hop is a relay.
+      </div>
+
+      <h4>The optical telegraph — Chappe, 1791</h4>
+      <p>
+        In 1791, a French engineer named Claude Chappe built the first true long-distance communication network: the <span class="term">optical telegraph</span>, also called the Chappe telegraph or "semaphore telegraph."
+      </p>
+      <p>
+        Here is how it worked: a tall tower had two large wooden arms at the top. An operator could move these arms into different positions. Each combination of positions was assigned a meaning — letters, numbers, or military codes. An operator at the next tower, 10–15 km away, watched through a telescope and when he saw a new arm position, he copied it exactly on his own tower. And so on, down the chain.
+      </p>
+      <div class="diagram">
+Tower 1                Tower 2                Tower 3
+(Paris)                (Meudon)               (Chaville)
+  |/   ←arms               |/                     |/
+  |    [encode]         copy |   [relay]        copy |
+  |                         |                       |
+Operator                 Operator               Operator
+  types                   watches                watches
+  message                 + copies               + copies
+  into arms              immediately            immediately
+
+Signal travels: ──────────────────────────────────────►
+                10-15 km per hop, many hops, ~1 word/minute</div>
+      <p>
+        By 1844, France had 556 stations covering 5,000 km. A message could travel from Paris to Bordeaux (600 km) in under 10 minutes. This was the first example of:
+      </p>
+      <p>
+        1. A <span class="term">network topology</span> — a map of how nodes are connected to each other.<br>
+        2. <span class="term">Switching</span> — routing a message through intermediate nodes.<br>
+        3. <span class="term">Encoding</span> — turning a message into a signal that can be transmitted.
+      </p>
+      <p>
+        All three concepts are still central to computer networking today. The hardware changed. The concepts did not.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 1: THE TELEGRAPH — ELECTRICITY AS A SIGNAL
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era1" style="--accent: #2dd4bf">
+
+  <div class="era-header">
+    <div class="era-num">ERA 1</div>
+    <div class="era-title-block">
+      <h2>The Electric Telegraph</h2>
+      <span class="era-span">1830s–1900s — Electricity becomes a medium for information</span>
+    </div>
+  </div>
+
+  <!-- CARD: Electricity as signal -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#071a18">⚡</div>
+      <div class="card-title">
+        <h3>Electricity as a signal medium — why it changed everything</h3>
+        <div class="sub">From visible light to invisible electrons</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>What is electricity? (From absolute zero)</h4>
+      <p>
+        Everything in the universe is made of atoms. Atoms contain a nucleus in the centre, with electrons orbiting around it. <span class="term">Electrons</span> carry a negative electrical charge. In certain materials — metals in particular — some electrons are loosely attached to their atoms and can move freely from atom to atom.
+      </p>
+      <p>
+        When you apply a force (a voltage) at one end of a metal wire, free electrons begin flowing from one atom to the next, all the way along the wire. This flow of electrons is called <span class="term">electric current</span>. It travels at close to the speed of light — roughly 300,000 km per second.
+      </p>
+      <div class="callout">
+        <p><strong>Key insight:</strong> Light takes about 8 minutes to travel from the Sun to Earth. Electricity in a wire crosses a continent in milliseconds. For the first time in history, information could travel faster than any physical object.</p>
+      </div>
+
+      <h4>How electricity becomes a signal</h4>
+      <p>
+        To carry information, you need to vary the electricity in some way. The simplest variation is on/off: current flowing (ON = 1) vs. no current (OFF = 0). This is the foundation of all digital communication.
+      </p>
+      <p>
+        Samuel Morse and Alfred Vail developed a system in the 1830s–1840s where they varied the duration of the current pulse:
+      </p>
+      <div class="diagram">SHORT pulse  =  "dot"  (·)
+LONG pulse   =  "dash" (—)
+
+Letter A  =  ·  —
+Letter B  =  —  ·  ·  ·
+Letter S  =  ·  ·  ·
+Letter O  =  —  —  —
+SOS       =  ·  ·  ·  —  —  —  ·  ·  ·
+
+The operator presses a key (closes the circuit) for
+a short time (dot) or long time (dash).</div>
+      <p>
+        This is called <span class="term">Morse code</span>. It is an <span class="term">encoding scheme</span> — a way of representing letters and numbers using a simple physical signal (current on/off). The receiver at the other end hears clicks or sees marks on paper, and decodes them back into letters.
+      </p>
+
+      <h4>The first telegraph network — 1844 onward</h4>
+      <p>
+        On 24 May 1844, Morse sent the first official telegraph message from Washington DC to Baltimore: <em>"What hath God wrought?"</em> — a 60 km wire. Within 20 years, telegraph wires spanned continents.
+      </p>
+      <div class="mini-timeline">
+        <div class="mini-event"><div class="mini-year">1844</div><div class="mini-desc">First US telegraph line: Washington–Baltimore, 60 km</div></div>
+        <div class="mini-event"><div class="mini-year">1851</div><div class="mini-desc">First undersea cable: Dover to Calais, connecting England to Europe</div></div>
+        <div class="mini-event"><div class="mini-year">1858</div><div class="mini-desc">First Transatlantic cable — failed after 3 weeks</div></div>
+        <div class="mini-event"><div class="mini-year">1866</div><div class="mini-desc">Permanent Transatlantic telegraph cable — a message from London to New York now takes minutes, not 10 days by ship</div></div>
+        <div class="mini-event"><div class="mini-year">1870s</div><div class="mini-desc">Global telegraph network — Europe, America, India, Australia all connected</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD: Telegraph engineering problems -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#071a18">🔧</div>
+      <div class="card-title">
+        <h3>Engineering problems in the telegraph network</h3>
+        <div class="sub">Signal degradation, multiplexing, routing — problems that still exist today</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>Signal degradation — why signals weaken</h4>
+      <p>
+        Wires are not perfect. As electrical current travels through a wire, some energy is lost to heat (resistance) and some leaks out sideways (capacitance). After enough distance, the signal becomes too weak to detect reliably. This is called <span class="term">signal attenuation</span>.
+      </p>
+      <p>
+        The solution was the <span class="term">repeater</span> — an intermediate station that detects the weakened signal, understands it, and re-sends it at full strength. A human operator was the first repeater. Later, electrical amplifiers replaced human operators.
+      </p>
+      <div class="callout">
+        <p><strong>This problem never went away.</strong> Fiber optic cables under the Atlantic Ocean today have repeater stations every 50–80 km to boost the light signal. The principle is identical to what Morse needed.</p>
+      </div>
+
+      <h4>Multiplexing — sharing one wire for many conversations</h4>
+      <p>
+        Building one wire per pair of communicating parties is expensive. Telegraph companies needed a way to send multiple messages on the same wire simultaneously. This challenge is called <span class="term">multiplexing</span> — combining multiple signals on one channel.
+      </p>
+      <p>
+        Emile Baudot (1870s) invented a solution: send signals at slightly different rhythms, and at the receiver, a synchronized mechanism separates them back out. This is called <span class="term">time-division multiplexing</span>: different signals take turns using the wire at different moments in time.
+      </p>
+
+      <h4>Routing — how does a message know where to go?</h4>
+      <p>
+        The telegraph network quickly became a web of wires, not just a single line. When a message arrived at a central office, a human operator had to decide: which outgoing wire should this go on to reach the destination? This human decision is called <span class="term">routing</span>.
+      </p>
+      <p>
+        The telegraph companies built dedicated <span class="term">switching offices</span> — buildings full of operators whose job was to receive incoming messages and re-transmit them on the correct outgoing line toward the destination. This is called <span class="term">store-and-forward</span> switching: receive the whole message, store it briefly, then forward it on.
+      </p>
+      <div class="analogy">
+        <strong>Analogy:</strong> A postal sorting centre does exactly this. The parcel arrives, the sorter reads the address, and sends it to the right outgoing truck. Computer routers do the same thing, but with electronic packets instead of parcels, and in microseconds instead of hours.
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD: Telephone -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#071a18">📞</div>
+      <div class="card-title">
+        <h3>The telephone and circuit switching (1876)</h3>
+        <div class="sub">Continuous signals, dedicated connections, and the first voice network</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>Analog signals vs digital signals</h4>
+      <p>
+        The telegraph used discrete signals — ON or OFF, dot or dash. This is called a <span class="term">digital signal</span>: it can only take specific, distinct values.
+      </p>
+      <p>
+        Human voice is completely different. Sound is continuous vibration in air — pressure that rises and falls smoothly over time. To transmit voice, you need to transmit a signal that also rises and falls continuously. This is called an <span class="term">analog signal</span> — it varies continuously, mirroring (being analogous to) the original sound wave.
+      </p>
+      <p>
+        Alexander Graham Bell's telephone (1876) converted the continuous pressure of sound waves into continuous variations in electrical current, sent that varying current down a wire, and at the other end converted it back to sound using a speaker. The electrical wave was an analog copy of the sound wave.
+      </p>
+
+      <h4>Circuit switching — a new kind of network</h4>
+      <p>
+        The telephone network introduced a fundamentally different model from the telegraph: <span class="term">circuit switching</span>.
+      </p>
+      <p>
+        When you dial a telephone number, a physical electrical path — a <span class="term">circuit</span> — is set up end-to-end between you and the person you are calling. Every switch along the path physically connects your wire to theirs. This path is yours exclusively for the duration of the call. When you hang up, the circuit is torn down and the switches return to their neutral state.
+      </p>
+      <div class="diagram">Circuit switching:
+
+Caller ──[SW1]──[SW2]──[SW3]── Receiver
+         |       |       |
+      dedicated physical path
+      reserved ENTIRELY for this one call
+      even during silence!
+
+SW = telephone exchange switching matrix
+(a mechanical crossbar switch, later electronic)</div>
+      <p>
+        <span class="term">Advantages:</span> Guaranteed bandwidth. No delays. Perfect for voice — continuous, real-time conversation.<br>
+        <span class="term">Disadvantage:</span> Wasteful. If both people are silent, the circuit is still entirely reserved. You are paying for a dedicated road whether you are using it or not.
+      </p>
+      <p>
+        The telephone system, which grew into a global network of billions of calls per day, was built entirely on circuit switching. This will become very important when we explain why the internet chose a completely different approach.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 2: EARLY COMPUTING — ISOLATED MACHINES
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era2" style="--accent: #60a5fa">
+
+  <div class="era-header">
+    <div class="era-num">ERA 2</div>
+    <div class="era-title-block">
+      <h2>Early Computing — Isolated Islands</h2>
+      <span class="era-span">1945–1960s — Computers exist, but do not talk to each other</span>
+    </div>
+  </div>
+
+  <!-- CARD: The isolation problem -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#07111d">🖥️</div>
+      <div class="card-title">
+        <h3>The isolated computer problem</h3>
+        <div class="sub">Why the first computers didn't communicate at all</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>What computers were in the 1940s–1950s</h4>
+      <p>
+        The first computers — ENIAC (1945), the Manchester Baby (1948), the UNIVAC (1951) — were enormous physical machines. ENIAC filled an entire room (167 square metres), weighed 27 tonnes, and consumed 150 kilowatts of electricity. There was exactly one of it.
+      </p>
+      <p>
+        Computers at this stage existed in total isolation. Data went in as punched cards or paper tape. Results came out on a printout. There was no concept of connecting computers to each other, because:
+      </p>
+      <p>
+        1. There were only a handful of computers in the entire world, owned by universities and government agencies.<br>
+        2. The idea of real-time communication between machines had not been conceived yet.<br>
+        3. The existing telephone network used analog signals; computers used discrete digital signals — they were incompatible by default.
+      </p>
+
+      <h4>Batch processing — the first computing model</h4>
+      <p>
+        In early computing, users did not interact with the computer directly in real time. Instead, they wrote a program on punched cards, gave the cards to an <span class="term">operator</span>, and came back hours later to collect the printed output. This is called <span class="term">batch processing</span>: jobs are collected in batches and processed one after another.
+      </p>
+      <p>
+        There was no need for networking in this model — data came in physically, results left physically. The computer was an island.
+      </p>
+
+      <h4>Time-sharing — the first step toward multi-user computing</h4>
+      <p>
+        In the late 1950s and 1960s, a new idea emerged: <span class="term">time-sharing</span>. Instead of one user at a time, the computer rapidly switches its attention between many users — so fast that each user feels they have the computer's full attention.
+      </p>
+      <p>
+        MIT's Compatible Time-Sharing System (CTSS, 1961) allowed multiple users to connect via <span class="term">dumb terminals</span> — keyboards and screens with no computing power of their own, connected to the central computer by wires. This created a very simple "network": one powerful computer, many terminals radiating out from it like spokes on a wheel.
+      </p>
+      <div class="diagram">Time-sharing architecture:
+
+Terminal 1 ──────┐
+Terminal 2 ──────┤
+Terminal 3 ──────┤──── MAINFRAME (does all computing)
+Terminal 4 ──────┤
+Terminal 5 ──────┘
+
+Each terminal: just a keyboard + screen.
+Zero computing power of its own.
+The connection is a simple serial wire.
+All intelligence is at the centre.</div>
+      <p>
+        This is called a <span class="term">star topology</span> — one central node, everything else connected directly to it. It is simple, but brittle: if the mainframe fails, everyone loses everything. This fragility was exactly what would motivate the invention of the internet.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: Shannon and Information Theory -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#07111d">🧮</div>
+      <div class="card-title">
+        <h3>Claude Shannon and information theory (1948)</h3>
+        <div class="sub">The mathematics that underpins all digital communication</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The fundamental questions Shannon asked</h4>
+      <p>
+        In 1948, a Bell Labs mathematician named Claude Shannon published "A Mathematical Theory of Communication" — arguably the most important paper in the history of computing and networking. He asked two questions that nobody had properly formalised before:
+      </p>
+      <p>
+        1. <strong>How much information can a communication channel carry?</strong><br>
+        2. <strong>How efficiently can information be encoded and compressed?</strong>
+      </p>
+
+      <h4>The bit — the atom of information</h4>
+      <p>
+        Shannon gave us the word <span class="term">bit</span> (binary digit). A bit is the smallest possible unit of information: the answer to a yes-or-no question. Either 0 or 1. Either off or on.
+      </p>
+      <p>
+        Every piece of information — a letter, a number, a sound, an image, a video — can be encoded as a sequence of bits. The only question is how many bits you need.
+      </p>
+      <div class="callout">
+        <p><strong>Why bits?</strong> Because the physical medium — electricity in a wire, light in a fiber, radio waves in air — can represent exactly two states reliably: high voltage or low voltage, light on or light off, signal or no signal. Two states = 1 bit. The bit is not arbitrary; it matches the physics of our most reliable signaling technology.</p>
+      </div>
+
+      <h4>Shannon's channel capacity theorem</h4>
+      <p>
+        Shannon proved mathematically that every communication channel has a maximum rate at which information can be transmitted without errors, given the amount of noise (random interference) in the channel. This is called the <span class="term">Shannon limit</span> or Shannon capacity.
+      </p>
+      <p>
+        The formula: <code>C = B × log₂(1 + S/N)</code> where C is capacity in bits per second, B is the bandwidth (range of frequencies available), and S/N is the signal-to-noise ratio.
+      </p>
+      <p>
+        This means: you can always do better by either having more bandwidth (a wider pipe) or less noise. But there is a hard ceiling. No amount of engineering can exceed it. Everything in modern networking — Wi-Fi, 5G, fiber — tries to get as close to this ceiling as possible.
+      </p>
+
+      <h4>Error correction — what to do when bits get corrupted</h4>
+      <p>
+        Real channels are noisy. A bit sent as 0 might be received as 1 due to interference. Shannon proved that you can make errors arbitrarily rare by adding <span class="term">redundancy</span> — extra bits that do not carry new information, but allow the receiver to detect and correct errors.
+      </p>
+      <p>
+        For example: if you repeat every bit 3 times (000 = 0, 111 = 1), a receiver who gets "010" can take a majority vote and correctly decode it as 0. This is the basic idea behind all modern error-correcting codes, which are crucial in every network link in existence.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 3: ARPANET — THE NETWORK IS BORN
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era3" style="--accent: #a78bfa">
+
+  <div class="era-header">
+    <div class="era-num">ERA 3</div>
+    <div class="era-title-block">
+      <h2>ARPANET — The Network Is Born</h2>
+      <span class="era-span">1960s–1970s — Packet switching and the birth of a new paradigm</span>
+    </div>
+  </div>
+
+  <!-- CARD: Cold War context -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#140f2a">🛡️</div>
+      <div class="card-title">
+        <h3>The Cold War context — why the internet was funded</h3>
+        <div class="sub">RAND, nuclear survival, and ARPA</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The strategic problem of 1960</h4>
+      <p>
+        The year is 1960. The United States and Soviet Union are in the Cold War — a tense standoff between two nuclear powers. American military planners faced a terrifying problem: the existing telephone network is a star topology — a small number of central switching offices connect everything. A handful of nuclear bombs on those switching centres would sever all communications.
+      </p>
+      <p>
+        A RAND Corporation analyst named Paul Baran asked: how do you build a communication network that <em>has no single point of failure?</em> One that can route around damage, like water flowing around obstacles?
+      </p>
+
+      <h4>Paul Baran's insight — distributed networks</h4>
+      <p>
+        In a series of papers from 1960–1964, Baran described three possible network topologies:
+      </p>
+      <div class="diagram">Centralised (star):          Decentralised:           Distributed:
+
+     [A]                    [A]─────[B]             [A]─[B]─[C]
+      │                     │       │               │   │   │
+[B]─[C]─[D]             [C]─[D]─[E]─[F]          [D]─[E]─[F]
+      │                     │       │               │   │   │
+     [E]                    [G]─────[H]             [G]─[H]─[I]
+
+If centre fails:         If one node fails:        Many paths exist.
+everything dies          some paths survive        Very hard to destroy.</div>
+      <p>
+        Baran argued that a <span class="term">distributed network</span> — where every node is connected to multiple others, with no single centre — would be nearly impossible to knock out with a nuclear attack. Traffic would simply route around the destroyed nodes.
+      </p>
+      <p>
+        <em>(Note: the popular claim that "the internet was designed to survive nuclear war" is an oversimplification, but Baran's work was genuinely motivated by this concern.)</em>
+      </p>
+
+      <h4>ARPA — the agency that funded it</h4>
+      <p>
+        After the Soviet Sputnik launch shocked the US in 1957, President Eisenhower created the <span class="term">Advanced Research Projects Agency (ARPA)</span> — now DARPA — to ensure American technological superiority. ARPA funded high-risk, high-reward research that private industry would not touch.
+      </p>
+      <p>
+        In 1966, ARPA's Information Processing Techniques Office, under J.C.R. Licklider and later Bob Taylor, decided to fund a network connecting universities and research labs — so that expensive computers could be shared and researchers could collaborate. This network would be called <span class="term">ARPANET</span>.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: Packet switching -->
+  <div class="card open">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#140f2a">📦</div>
+      <div class="card-title">
+        <h3>Packet switching — the revolutionary idea at the heart of the internet</h3>
+        <div class="sub">Why chopping messages into packets changed everything</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The problem with circuit switching for computers</h4>
+      <p>
+        Recall that the telephone network uses circuit switching: a dedicated end-to-end path is established before any communication happens, and it stays reserved for the entire call.
+      </p>
+      <p>
+        This is terrible for computers. Why? Because computers do not communicate continuously. A computer sending a file is sending large bursts of data separated by silence. If you use circuit switching, you are reserving the entire path even during the silences — wasting capacity that other pairs of computers could be using.
+      </p>
+
+      <h4>The packet switching idea — independently invented by two people</h4>
+      <p>
+        Paul Baran (1960s) and Donald Davies at the UK's National Physical Laboratory (1965, independently) both arrived at the same revolutionary idea: <span class="term">packet switching</span>.
+      </p>
+      <p>
+        <em>Donald Davies also coined the word "packet."</em>
+      </p>
+      <p>The idea:</p>
+      <div class="callout">
+        <p><strong>Break each message into small chunks called "packets." Send each packet independently across the network. Let each packet find its own route. Reassemble them at the destination.</strong></p>
+      </div>
+      <div class="diagram">Circuit switching (old):
+Sender ══════════════════════════════ Receiver
+       ↑ ENTIRE PATH RESERVED ↑
+       Even during silence. Very wasteful.
+
+Packet switching (new):
+Message = "Hello, world"
+
+Packet 1: [Header: To: B, Seq: 1] [Data: "Hell"]
+Packet 2: [Header: To: B, Seq: 2] [Data: "o, w"]
+Packet 3: [Header: To: B, Seq: 3] [Data: "orld"]
+
+Each packet routed INDEPENDENTLY.
+May take DIFFERENT paths through network.
+Reassembled at destination.</div>
+
+      <h4>Why this is a revolution</h4>
+      <p>
+        <span class="term">Statistical multiplexing:</span> Because packets from many different conversations are all sharing the same wires, the network can be much more efficiently used. When computer A is silent, the wire can carry packets from computers C, D, and E. No dedicated path is wasted.
+      </p>
+      <p>
+        <span class="term">Resilience:</span> If one router fails, packets can be rerouted around it. No single point of failure.
+      </p>
+      <p>
+        <span class="term">No setup time:</span> Circuit switching requires setting up a path before you can send anything — a process that could take seconds. With packet switching, you just send. The first packet can arrive before the path is even "established" (because there is no path to establish).
+      </p>
+
+      <h4>What a packet looks like</h4>
+      <p>
+        Every packet has two parts: a <span class="term">header</span> and a <span class="term">payload</span> (also called the body).
+      </p>
+      <div class="packet">
+        <div class="packet-field">
+          <div class="pf-name">DEST ADDR</div>
+          <div class="pf-bits">Where it's going</div>
+        </div>
+        <div class="packet-field">
+          <div class="pf-name">SOURCE ADDR</div>
+          <div class="pf-bits">Where it came from</div>
+        </div>
+        <div class="packet-field">
+          <div class="pf-name">SEQ NUM</div>
+          <div class="pf-bits">Packet number</div>
+        </div>
+        <div class="packet-field">
+          <div class="pf-name">CHECKSUM</div>
+          <div class="pf-bits">Error detection</div>
+        </div>
+        <div class="packet-field" style="flex:2">
+          <div class="pf-name">PAYLOAD (DATA)</div>
+          <div class="pf-bits">The actual content</div>
+        </div>
+      </div>
+      <p>
+        The <span class="term">header</span> is like an envelope — it tells the network where the packet came from, where it's going, what sequence it is in, and how to check for errors. The <span class="term">payload</span> is the actual data — the bit of the message contained in this particular packet.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: ARPANET goes live -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#140f2a">🌐</div>
+      <div class="card-title">
+        <h3>ARPANET goes live — 1969</h3>
+        <div class="sub">IMPs, the first login, and the first network crash</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The Interface Message Processor (IMP) — the first router</h4>
+      <p>
+        To build ARPANET, ARPA contracted BBN Technologies (Bolt, Beranek and Newman) in Cambridge, Massachusetts. The key hardware they built was the <span class="term">Interface Message Processor</span>, or IMP.
+      </p>
+      <p>
+        An IMP was a dedicated minicomputer — a Honeywell DDP-516, about the size of a refrigerator — whose only job was to receive incoming packets, look at the destination address, and forward them on the correct outgoing link. This is exactly what modern <span class="term">routers</span> do. The IMP was the first router.
+      </p>
+      <div class="diagram">ARPANET, October 1969:
+
+UCLA ─────[IMP1]───────[IMP2]───── SRI
+ (Los Angeles)              (Stanford Research Institute)
+           │                    │
+           └──────[IMP3]──────[IMP4]
+               UC Santa         U Utah
+                Barbara         (Salt Lake City)
+
+Each IMP connected to its host computer + to other IMPs.
+Host computers did not need to know about routing —
+the IMPs handled that invisibly.</div>
+
+      <h4>The first message — and the first crash</h4>
+      <p>
+        On 29 October 1969, UCLA student Charley Kline attempted to send the word "LOGIN" from UCLA to the Stanford Research Institute across the network. He typed "L" — it arrived. He typed "O" — it arrived. He typed "G" — the remote system crashed.
+      </p>
+      <p>
+        The first message ever sent on what would become the internet was "LO." Accidentally poetic.
+      </p>
+      <p>
+        By December 1969, four nodes were connected. By 1972, there were 37 nodes. By 1981, over 200.
+      </p>
+
+      <h4>What ARPANET introduced</h4>
+      <p>
+        Beyond packet switching, ARPANET established several important precedents:
+      </p>
+      <p>
+        <span class="term">Email (1971):</span> Ray Tomlinson at BBN wrote the first email program. He chose the @ symbol to separate username from host — a convention that survives to this day.
+      </p>
+      <p>
+        <span class="term">FTP (1971):</span> File Transfer Protocol — a way to send files between computers on the network.
+      </p>
+      <p>
+        <span class="term">Telnet (1969):</span> A way to remotely log into another computer over the network and control it as if you were physically there.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 4: PROTOCOL WARS — TCP/IP AND THE OSI MODEL
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era4" style="--accent: #34d399">
+
+  <div class="era-header">
+    <div class="era-num">ERA 4</div>
+    <div class="era-title-block">
+      <h2>Protocol Wars — TCP/IP and the OSI Model</h2>
+      <span class="era-span">1970s–1980s — How networks agree to talk to each other</span>
+    </div>
+  </div>
+
+  <!-- CARD: What is a protocol -->
+  <div class="card open">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#05200f">📋</div>
+      <div class="card-title">
+        <h3>What is a "protocol"? From absolute zero</h3>
+        <div class="sub">Why machines need agreed rules to communicate</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The handshake problem</h4>
+      <p>
+        Imagine two people who want to have a conversation, but one speaks only Tamil and the other only Russian. They cannot communicate — not because they lack a physical channel (they can hear each other fine), but because they have no shared agreement about what sounds mean what.
+      </p>
+      <p>
+        Computers face the exact same problem. When two computers are connected by a wire, they can send electrical signals to each other. But a signal has no inherent meaning. Both computers need to agree in advance:
+      </p>
+      <p>
+        — What does a voltage of 5V mean? (Answer: probably 1, but we have to agree first.)<br>
+        — How long does each bit last? (Answer: we need the same clock speed.)<br>
+        — How do we know when a message starts and ends?<br>
+        — What happens if a packet is lost or corrupted?<br>
+        — How do we identify each computer uniquely?
+      </p>
+      <p>
+        A <span class="term">protocol</span> is a precise, written-down agreement that answers all of these questions. Both sides must implement the protocol identically. If they do, they can communicate reliably, regardless of what hardware they are built from.
+      </p>
+      <div class="analogy">
+        <strong>Analogy:</strong> When you answer the phone, you say "hello." The caller says "hello, is this [name]?" You say "yes, speaking." This is a protocol — a conventional set of actions both sides follow to establish a voice call. If you picked up and immediately started talking without saying hello, or if the caller said nothing, the protocol would break and communication would fail.
+      </div>
+
+      <h4>The problem of the 1970s: incompatible networks</h4>
+      <p>
+        By the mid-1970s, several different packet-switching networks existed: ARPANET, the French CYCLADES, the UK's NPL network, early commercial networks. Each used its own protocols. They could not talk to each other.
+      </p>
+      <p>
+        The challenge was called <span class="term">internetworking</span>: how do you connect networks that use different protocols? This is where the word "internet" comes from — it is short for "internetwork."
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: TCP/IP -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#05200f">🔗</div>
+      <div class="card-title">
+        <h3>TCP/IP — the protocols that run the internet (1974–1983)</h3>
+        <div class="sub">Vint Cerf, Bob Kahn, and the design that beat everything else</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The design challenge</h4>
+      <p>
+        In 1973, Vint Cerf and Bob Kahn set out to design a protocol that could connect any two networks, regardless of their underlying technology. A key design principle was what Cerf later called the <span class="term">end-to-end principle</span>: the network itself should be as simple as possible. Intelligence — error correction, ordering, reliability — should live at the <em>endpoints</em> (the computers), not in the middle of the network.
+      </p>
+      <p>
+        The middle of the network should just do one thing: forward packets. Routers should not need to know what's in the packets. This keeps the network dumb and the applications smart — which makes the network general-purpose.
+      </p>
+
+      <h4>The original NCP → TCP split</h4>
+      <p>
+        ARPANET originally used a protocol called NCP (Network Control Program). Cerf and Kahn's 1974 paper proposed replacing it with TCP — the Transmission Control Protocol. By 1978, TCP was split into two separate protocols with very distinct jobs:
+      </p>
+      <p>
+        <span class="term">IP (Internet Protocol)</span> — handles addressing and routing. Each computer gets a unique IP address. IP is responsible for getting a packet from source to destination, hopping through routers. IP is <em>connectionless</em> and <em>unreliable</em> — it makes no promises that packets will arrive, arrive in order, or arrive at all. It just tries its best.
+      </p>
+      <p>
+        <span class="term">TCP (Transmission Control Protocol)</span> — handles reliability and ordering. TCP runs on top of IP at the endpoints. It numbers all packets, notices when packets are missing, requests retransmission, and reassembles everything in the correct order before handing data to the application. TCP provides the illusion of a reliable, ordered stream even though the underlying IP network is unreliable.
+      </p>
+      <div class="diagram">The TCP/IP collaboration:
+
+APPLICATION ── "Send this file"
+   │
+TCP ─────── breaks into segments, numbers them, handles
+   │         retransmission if any are lost
+   │
+IP ──────── adds source + destination IP address to each
+   │         segment (now called a "datagram"), routes it
+   │         independently through the network
+   │
+PHYSICAL ─── puts bits on the wire</div>
+
+      <h4>IP addresses — giving every machine a unique identity</h4>
+      <p>
+        For a packet to be routed to the right destination, every machine on the network needs a unique address. IP addresses are that address system.
+      </p>
+      <p>
+        <span class="term">IPv4</span> (1981): a 32-bit number, written as four decimal numbers separated by dots. Example: <code>192.168.1.1</code>. A 32-bit address means there are 2³² = 4,294,967,296 (about 4.3 billion) possible addresses.
+      </p>
+      <p>
+        This seemed like enough in 1981. But by the 1990s it was clear that 4 billion addresses would not be enough for the entire world's devices. This eventually led to IPv6 (128-bit addresses, 340 undecillion possibilities — enough to give every atom on Earth's surface its own address).
+      </p>
+
+      <h4>The DNS — giving addresses human-readable names</h4>
+      <p>
+        Remembering that your favourite website is at <code>142.250.180.46</code> is impractical. The <span class="term">Domain Name System (DNS)</span>, created in 1983 by Paul Mockapetris, is a distributed database that maps human-readable names (<code>google.com</code>) to IP addresses (<code>142.250.180.46</code>).
+      </p>
+      <p>
+        When you type <code>google.com</code> in a browser, your computer first asks a DNS server: "What is the IP address of google.com?" The DNS server replies with the IP, and then your computer connects to that IP. DNS is often called the "phone book of the internet."
+      </p>
+
+      <h4>January 1, 1983 — "Flag Day"</h4>
+      <p>
+        On January 1, 1983, ARPANET switched entirely to TCP/IP. This date is sometimes called the internet's "birthday." From that day forward, TCP/IP was the lingua franca of the internet — and it remains so today.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: OSI Model -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#05200f">📚</div>
+      <div class="card-title">
+        <h3>The OSI Model — the conceptual framework for all networking</h3>
+        <div class="sub">Seven layers that explain how any network works</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>Why layers?</h4>
+      <p>
+        Networking is enormously complex. You need to deal with physical signals, hardware addresses, logical addresses, reliable delivery, session management, data formats, and application logic — all at the same time.
+      </p>
+      <p>
+        The solution is to divide this complexity into distinct <span class="term">layers</span>, where each layer handles one specific job and provides a clean service to the layer above it. This is called a <span class="term">layered architecture</span> or a <span class="term">protocol stack</span>.
+      </p>
+      <p>
+        The International Organization for Standardization (ISO) developed the <span class="term">OSI Model</span> (Open Systems Interconnection) in 1984 as a conceptual framework for networking. Even though the internet uses TCP/IP (not OSI protocols), the OSI layers are still the standard way to <em>think about</em> and <em>explain</em> networking.
+      </p>
+
+      <div class="stack">
+        <div class="stack-row" style="background:#1a1130">
+          <div class="stack-num">7</div>
+          <div class="stack-name" style="color:#a78bfa">Application</div>
+          <div class="stack-desc">What the user sees. Data in human-usable form.</div>
+          <div class="stack-ex">HTTP, DNS, FTP, SMTP</div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-num">6</div>
+          <div class="stack-name">Presentation</div>
+          <div class="stack-desc">Encoding, encryption, compression of data.</div>
+          <div class="stack-ex">SSL/TLS, JPEG, ASCII</div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-num">5</div>
+          <div class="stack-name">Session</div>
+          <div class="stack-desc">Opening, maintaining, closing communication sessions.</div>
+          <div class="stack-ex">NetBIOS, RPC</div>
+        </div>
+        <div class="stack-row" style="background:#122210">
+          <div class="stack-num">4</div>
+          <div class="stack-name" style="color:#34d399">Transport</div>
+          <div class="stack-desc">Reliable or unreliable delivery. End-to-end connections.</div>
+          <div class="stack-ex">TCP, UDP</div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-num">3</div>
+          <div class="stack-name" style="color:#34d399">Network</div>
+          <div class="stack-desc">Logical addressing and routing across multiple networks.</div>
+          <div class="stack-ex">IP, ICMP</div>
+        </div>
+        <div class="stack-row" style="background:#0d1e2a">
+          <div class="stack-num">2</div>
+          <div class="stack-name" style="color:#60a5fa">Data Link</div>
+          <div class="stack-desc">Frame delivery on a single physical network. MAC addresses.</div>
+          <div class="stack-ex">Ethernet, Wi-Fi, PPP</div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-num">1</div>
+          <div class="stack-name" style="color:#60a5fa">Physical</div>
+          <div class="stack-desc">Actual bits on the wire. Voltage levels, timing, cable types.</div>
+          <div class="stack-ex">Cables, fiber, radio</div>
+        </div>
+      </div>
+
+      <p>
+        Think of the OSI model like postal mail. The <em>Physical layer</em> is the road the truck drives on. The <em>Data Link layer</em> is the truck itself (knows about local delivery). The <em>Network layer</em> is the postal address system (nationwide routing). The <em>Transport layer</em> is the "registered mail" service (confirms delivery). The <em>Application layer</em> is the letter you actually read.
+      </p>
+
+      <h4>Encapsulation — how layers talk to each other</h4>
+      <p>
+        When you send data, each layer wraps the data from the layer above it with its own header (and sometimes a trailer). This is called <span class="term">encapsulation</span>.
+      </p>
+      <div class="diagram">Sending a webpage:
+
+Application Layer:   [HTTP DATA: "GET /index.html"]
+Transport Layer:     [TCP HEADER][HTTP DATA]
+Network Layer:       [IP HEADER][TCP HEADER][HTTP DATA]
+Data Link Layer:     [ETHERNET HEADER][IP HEADER][TCP HEADER][HTTP DATA][ETHERNET TRAILER]
+Physical Layer:      0110100101100... (bits on wire)
+
+At the receiver, each layer STRIPS its header and
+passes the inner data up to the next layer.</div>
+    </div>
+  </div>
+
+  <!-- CARD: LAN Hardware -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#05200f">🔌</div>
+      <div class="card-title">
+        <h3>LAN hardware — Ethernet, hubs, switches, and routers</h3>
+        <div class="sub">The physical devices that build networks</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>Ethernet — the protocol that won the LAN</h4>
+      <p>
+        In 1973, Bob Metcalfe at Xerox PARC invented <span class="term">Ethernet</span> — a protocol for connecting computers in a local area (a building or campus). His insight was to use a shared coaxial cable as a "bus" — all machines connected to the same wire.
+      </p>
+      <p>
+        The problem: if two machines transmit at the same time, their signals collide and are destroyed. Metcalfe's solution was <span class="term">CSMA/CD</span> (Carrier Sense Multiple Access with Collision Detection):
+      </p>
+      <p>
+        1. Before transmitting, <em>listen</em> (carrier sense) — is anyone else transmitting?<br>
+        2. If the channel is clear, transmit.<br>
+        3. While transmitting, keep listening. If a collision is detected, stop immediately.<br>
+        4. Wait a random amount of time (to avoid both machines retrying at the same instant), then try again.
+      </p>
+      <p>
+        This is essentially a protocol for taking turns politely on a shared resource. Ethernet (IEEE 802.3) became the dominant LAN technology worldwide.
+      </p>
+
+      <h4>MAC addresses — hardware identity</h4>
+      <p>
+        IP addresses identify computers logically (they can change). But hardware needs a permanent physical identity too. Every network interface card (NIC) — the hardware component that connects a computer to a network — has a hard-coded <span class="term">MAC address</span> (Media Access Control address): a 48-bit number written in hexadecimal, like <code>00:1A:2B:3C:4D:5E</code>.
+      </p>
+      <p>
+        MAC addresses are used for communication within a single local network. IP addresses are used for communication across the internet (between networks). When your packet needs to move from your computer to your router (local), it uses MAC addresses. When it moves from router to router across the world, it uses IP addresses.
+      </p>
+
+      <h4>Hub vs. Switch vs. Router — three different devices, three different jobs</h4>
+      <div class="hw-grid">
+        <div class="hw-card">
+          <div class="hw-name">Hub (Layer 1)</div>
+          <div class="hw-desc">A simple repeater. Receives a signal on one port and broadcasts it out ALL other ports. Every device sees every packet. No intelligence. Obsolete.</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-name">Switch (Layer 2)</div>
+          <div class="hw-desc">Learns which MAC address is on which port. Forwards packets ONLY to the port where the destination device lives. Much more efficient than a hub. The standard today for LANs.</div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-name">Router (Layer 3)</div>
+          <div class="hw-desc">Connects different networks. Reads IP addresses, looks up routing tables, and forwards packets toward the destination. The basic node of the internet. Your home router connects your LAN to your ISP's network.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 5: THE WORLD WIDE WEB
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era5" style="--accent: #f97316">
+
+  <div class="era-header">
+    <div class="era-num">ERA 5</div>
+    <div class="era-title-block">
+      <h2>The World Wide Web — The Internet Becomes Usable</h2>
+      <span class="era-span">1989–1999 — HTML, HTTP, browsers, and the dot-com era</span>
+    </div>
+  </div>
+
+  <!-- CARD: Web vs Internet -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#211208">🌍</div>
+      <div class="card-title">
+        <h3>The internet vs. the World Wide Web — they are not the same thing</h3>
+        <div class="sub">The web is an application that runs on top of the internet</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The confusion</h4>
+      <p>
+        People often use "the internet" and "the web" interchangeably. They are different things.
+      </p>
+      <p>
+        <span class="term">The internet</span> is the physical and logical infrastructure — the cables, routers, and TCP/IP protocols that allow computers worldwide to exchange packets of data. It has existed since the 1970s.
+      </p>
+      <p>
+        <span class="term">The World Wide Web (WWW)</span> is one specific application that runs on top of the internet. It consists of web pages linked together by hyperlinks, delivered using the HTTP protocol, and displayed using web browsers. It was invented by Tim Berners-Lee in 1989–1991.
+      </p>
+      <p>
+        Other applications also run on the internet — email (SMTP), file transfer (FTP), video calls (WebRTC), online games — none of these are "the web." The web is just the most visible application.
+      </p>
+
+      <h4>Tim Berners-Lee at CERN — 1989</h4>
+      <p>
+        Tim Berners-Lee was a British physicist working at CERN (the European nuclear research centre in Geneva). CERN had thousands of researchers who needed to share documents, papers, and results. Each computer used different software and stored documents in different formats. Finding information was a nightmare.
+      </p>
+      <p>
+        In March 1989, Berners-Lee submitted a proposal titled "Information Management: A Proposal." His boss, Mike Sendall, wrote on it: "Vague but exciting." Berners-Lee proposed a system where documents could be linked to each other by <span class="term">hyperlinks</span> — clickable connections between documents, stored on different computers around the network.
+      </p>
+
+      <h4>The three inventions that created the web</h4>
+      <p>
+        Berners-Lee invented three things simultaneously:
+      </p>
+      <p>
+        1. <span class="term">HTML (HyperText Markup Language)</span> — a language for writing web pages. Tags like <code>&lt;b&gt;</code>, <code>&lt;img&gt;</code>, and <code>&lt;a href="..."&gt;</code> describe the structure and links in a document.
+      </p>
+      <p>
+        2. <span class="term">HTTP (HyperText Transfer Protocol)</span> — a protocol for requesting and receiving web pages. When you click a link, your browser sends an HTTP GET request to a web server, and the server responds with the HTML of the page.
+      </p>
+      <p>
+        3. <span class="term">URL (Uniform Resource Locator)</span> — a standard address format for every document on the web. <code>https://www.example.com/page.html</code> consists of the protocol (https), the domain name (www.example.com), and the path (/page.html).
+      </p>
+      <p>
+        On 6 August 1991, Berners-Lee published the first website at <code>info.cern.ch</code>. It described the World Wide Web project itself.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: HTTP and the request-response model -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#211208">↔️</div>
+      <div class="card-title">
+        <h3>HTTP — how web pages are requested and delivered</h3>
+        <div class="sub">The request-response cycle, methods, and status codes</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The client-server model</h4>
+      <p>
+        HTTP is built on the <span class="term">client-server model</span>. There are two kinds of participants:
+      </p>
+      <p>
+        A <span class="term">client</span> (your web browser) <em>requests</em> resources.<br>
+        A <span class="term">server</span> (a computer at Google, Amazon, etc.) <em>serves</em> those resources.
+      </p>
+      <p>
+        The client always initiates. The server always responds. This is called the <span class="term">request-response cycle</span>.
+      </p>
+
+      <h4>What an HTTP request looks like</h4>
+      <div class="diagram">GET /index.html HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (Chrome, etc.)
+Accept: text/html
+
+← method   ← path  ← version
+   GET = "please give me this resource"
+   Other methods: POST (send data), PUT (replace), DELETE</div>
+
+      <h4>What an HTTP response looks like</h4>
+      <div class="diagram">HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1234
+
+&lt;html&gt;
+  &lt;body&gt;Hello, world!&lt;/body&gt;
+&lt;/html&gt;
+
+Status codes:
+200 = OK (success)
+301 = Moved Permanently (redirected)
+404 = Not Found (page doesn't exist)
+500 = Internal Server Error (server broke)</div>
+
+      <h4>Ports — how one computer runs many services simultaneously</h4>
+      <p>
+        A server computer might be running a web server, an email server, and an FTP server simultaneously. How does an incoming packet know which service it is for?
+      </p>
+      <p>
+        The answer is <span class="term">ports</span>. A port is a 16-bit number (0–65535) that identifies a specific service on a computer. Each packet's TCP header contains a destination port number. Well-known port assignments:
+      </p>
+      <p>
+        Port <code>80</code> = HTTP (unencrypted web)<br>
+        Port <code>443</code> = HTTPS (encrypted web)<br>
+        Port <code>25</code> = SMTP (email sending)<br>
+        Port <code>22</code> = SSH (secure remote terminal)<br>
+        Port <code>53</code> = DNS (domain name lookup)
+      </p>
+
+      <h4>The browser wars and the explosion of the web</h4>
+      <p>
+        In 1993, NCSA Mosaic became the first web browser with a graphical interface that could display images inline with text. By 1994, Marc Andreessen (one of Mosaic's creators) founded Netscape. By 1995, Microsoft released Internet Explorer and the "browser wars" began.
+      </p>
+      <p>
+        The web grew exponentially: 1 website in 1991 → 10,000 in 1994 → 1 million in 1997 → 17 million in 2000.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: Security and HTTPS -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#211208">🔐</div>
+      <div class="card-title">
+        <h3>Security and HTTPS — encrypting the web</h3>
+        <div class="sub">SSL, TLS, certificates, and why the padlock matters</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The eavesdropping problem</h4>
+      <p>
+        HTTP sends everything in plain text. If you buy something online with a credit card, and HTTP is used, anyone who can observe the packets between you and the server — your ISP, anyone on your Wi-Fi network, any router along the path — can read your credit card number.
+      </p>
+      <p>
+        The solution is <span class="term">encryption</span> — transforming the data into a form that can only be read by the intended recipient.
+      </p>
+
+      <h4>SSL and TLS — the encryption layer for the web</h4>
+      <p>
+        Netscape developed <span class="term">SSL (Secure Sockets Layer)</span> in 1994–1995. Its successor, <span class="term">TLS (Transport Layer Security)</span>, is the current standard. HTTPS = HTTP running on top of TLS.
+      </p>
+      <p>
+        TLS uses a technique called <span class="term">public-key cryptography</span>:
+      </p>
+      <p>
+        Each participant has two mathematically related keys: a <span class="term">public key</span> (shared with everyone) and a <span class="term">private key</span> (kept secret). Anything encrypted with the public key can only be decrypted with the private key.
+      </p>
+      <p>
+        When you connect to a website using HTTPS:<br>
+        1. The server sends you its public key (wrapped in a <span class="term">certificate</span> signed by a trusted authority).<br>
+        2. Your browser verifies the certificate is legitimate.<br>
+        3. Your browser uses the server's public key to encrypt a shared secret.<br>
+        4. Both sides now share a secret that nobody intercepting the traffic knows.<br>
+        5. All subsequent communication is encrypted with that shared secret.
+      </p>
+      <p>
+        The padlock icon in your browser means TLS is active and the connection is encrypted.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 6: BROADBAND AGE
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era6" style="--accent: #f59e0b">
+
+  <div class="era-header">
+    <div class="era-num">ERA 6</div>
+    <div class="era-title-block">
+      <h2>The Broadband Age</h2>
+      <span class="era-span">1990s–2000s — From dial-up to always-on, faster and faster</span>
+    </div>
+  </div>
+
+  <!-- CARD: Dial-up modem -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#201508">📻</div>
+      <div class="card-title">
+        <h3>Dial-up modems — connecting digital computers to analog phone lines</h3>
+        <div class="sub">The modem: modulator-demodulator</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The incompatibility problem</h4>
+      <p>
+        By the 1980s and early 1990s, most homes had one thing connecting them to the outside world: a telephone line. Telephone lines carried <em>analog</em> voice signals — continuously varying voltages.
+      </p>
+      <p>
+        But computers produce <em>digital</em> signals — discrete 0s and 1s. These two types of signals are fundamentally incompatible. You cannot put a digital 0-or-1 signal directly onto an analog telephone line and expect it to survive.
+      </p>
+
+      <h4>The modem — modulator + demodulator</h4>
+      <p>
+        The solution was the <span class="term">modem</span> — a device that <em>modulates</em> (converts) digital signals into analog signals that can travel over telephone lines, and at the other end <em>demodulates</em> (converts back) the analog signal to digital. MOdulator-DEModulator = MODEM.
+      </p>
+      <p>
+        The modulation technique: the modem generates audio tones at different frequencies to represent 0s and 1s. These tones are in the audible range — which is why dial-up connections made that distinctive screeching sound. The telephone line was designed for voice (300–3400 Hz), and that's exactly what the modem used.
+      </p>
+      <div class="diagram">Computer  →  [Modem]  →  Phone line  →  [Modem]  →  ISP Computer
+   0101...    analog tones   ~~~~wave~~~~   0101...      to internet
+
+Typical speeds:
+  1970s-80s:  300 baud (bits/sec)
+  1991:       9,600 bps (9.6 kbps)
+  1994:       28,800 bps (28.8 kbps)
+  1998:       56,000 bps (56 kbps)  ← physical limit of phone line</div>
+      <p>
+        56 kbps was essentially the physical limit of what could be sent through the analog telephone network without distortion. Loading a 5 MB image at 56 kbps would take over 11 minutes.
+      </p>
+
+      <h4>Broadband — getting off the analog phone network</h4>
+      <p>
+        <span class="term">Broadband</span> refers to any connection that is always-on (no dialing required), much faster than dial-up, and carries data simultaneously with voice (or replaces voice entirely).
+      </p>
+      <p>
+        Two main technologies won the early broadband race:
+      </p>
+      <p>
+        <span class="term">DSL (Digital Subscriber Line)</span> — uses the existing copper telephone wire, but at much higher frequencies than voice. The phone line can carry many frequency bands simultaneously; voice uses 0–4 kHz, DSL uses higher frequencies (up to 2.2 MHz for ADSL). Speeds: 512 kbps to 24 Mbps. The 'A' in ADSL stands for Asymmetric — download is much faster than upload, because most people download far more than they upload.
+      </p>
+      <p>
+        <span class="term">Cable internet</span> — uses the existing coaxial cable infrastructure built for cable television. Cable is a wider channel than telephone wire, allowing much higher data rates. Speeds: 1 Mbps to hundreds of Mbps.
+      </p>
+
+      <h4>Fiber optic cables — light as the medium</h4>
+      <p>
+        <span class="term">Fiber optic</span> cables carry data as pulses of light through a thin glass or plastic fiber. Because light travels faster than electrical signals in copper and experiences far less attenuation, fiber optic cables can carry vastly more data over much longer distances.
+      </p>
+      <p>
+        A single fiber strand can carry terabits per second using <span class="term">wavelength-division multiplexing</span> — sending many different colours (wavelengths) of light simultaneously, each carrying a separate stream of data.
+      </p>
+      <p>
+        The Transatlantic cables today are fiber optic, each carrying ~160 Tbps (terabits per second). Compare that to the first Transatlantic telegraph cable's 0.001 bps effective throughput in 1858.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: BGP and the internet backbone -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#201508">🗺️</div>
+      <div class="card-title">
+        <h3>BGP and the internet's backbone — how routing works at scale</h3>
+        <div class="sub">Autonomous Systems, BGP, and the structure of the global internet</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The internet is not one network — it is thousands</h4>
+      <p>
+        The internet is not a single unified network. It is a collection of thousands of independent networks — ISPs, universities, companies, government agencies — each operating its own routers and managing its own IP address blocks. These independent networks are called <span class="term">Autonomous Systems (AS)</span>.
+      </p>
+      <p>
+        Each AS has a unique <span class="term">AS Number (ASN)</span>. For example, Google's AS is AS15169. Reliance Jio's is AS55836. When you load google.com from an Airtel connection in India, your packet travels: your device → Airtel's network (AS) → one or more transit AS's → Google's AS → Google's servers.
+      </p>
+
+      <h4>BGP — the protocol that glues the internet together</h4>
+      <p>
+        How do routers in different AS's know how to route packets to each other? The answer is <span class="term">BGP (Border Gateway Protocol)</span>, defined in 1989.
+      </p>
+      <p>
+        BGP is the protocol by which Autonomous Systems announce to each other: "I can reach these IP address ranges." Each AS tells its neighbouring AS's which IP prefixes it can deliver to. Those neighbours propagate the information further. Eventually, every router on the internet knows the best path to every IP prefix.
+      </p>
+      <div class="callout">
+        <p><strong>BGP is famously fragile.</strong> If someone mistakenly announces the wrong IP prefixes (as Pakistan Telecom did in 2008, accidentally announcing that they owned YouTube's IP range), traffic can be misdirected globally. These events are called "BGP hijacks" and continue to occur.</p>
+      </div>
+
+      <h4>IXPs — where networks meet physically</h4>
+      <p>
+        Internet Exchange Points (IXPs) are physical locations where many Autonomous Systems connect their networks to each other. Instead of every AS needing a private connection to every other AS, they all connect to the same physical switch at the IXP, and traffic flows between them directly.
+      </p>
+      <p>
+        Major IXPs: DE-CIX Frankfurt (over 10 Tbps peak), AMS-IX Amsterdam, LINX London, DE-CIX Mumbai. Thousands of networks peer at these locations, dramatically reducing the cost and latency of intercontinental traffic.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 7: WIRELESS REVOLUTION
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era7" style="--accent: #ec4899">
+
+  <div class="era-header">
+    <div class="era-num">ERA 7</div>
+    <div class="era-title-block">
+      <h2>The Wireless Revolution</h2>
+      <span class="era-span">1990s–2010s — Wi-Fi, cellular, and the smartphone era</span>
+    </div>
+  </div>
+
+  <!-- CARD: Radio fundamentals -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#200d18">📶</div>
+      <div class="card-title">
+        <h3>Radio waves — the physical medium of wireless communication</h3>
+        <div class="sub">Frequency, wavelength, and the electromagnetic spectrum</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>What radio waves are — from absolute zero</h4>
+      <p>
+        When an electric current changes direction rapidly in a wire (an antenna), it creates a disturbance in the electromagnetic field around it. This disturbance propagates outward through space as an <span class="term">electromagnetic wave</span> — what we call a radio wave.
+      </p>
+      <p>
+        Radio waves are the same physical phenomenon as visible light, X-rays, and microwaves — they are all electromagnetic radiation, differing only in their frequency (how fast they oscillate).
+      </p>
+      <p>
+        <span class="term">Frequency</span> is how many times the wave oscillates per second, measured in Hertz (Hz). A 1 GHz wave oscillates 1,000,000,000 times per second.
+      </p>
+      <p>
+        <span class="term">Wavelength</span> is the physical distance between two consecutive peaks of the wave. Frequency and wavelength are inversely related: higher frequency = shorter wavelength.
+      </p>
+      <div class="diagram">The electromagnetic spectrum (simplified):
+
+Low freq ←──────────────────────────────────→ High freq
+Long wave ←──────────────────────────────────→ Short wave
+
+AM radio     FM radio   Wi-Fi/5G     Visible    X-rays   Gamma
+(MHz)        (88-108MHz) (2.4-60GHz)  light
+   
+Penetrates   Penetrates  Weaker       Blocked    Dangerous
+walls easily walls less  penetration  by walls</div>
+
+      <h4>Frequency bands used in wireless networking</h4>
+      <p>
+        <span class="term">2.4 GHz</span> (used by Wi-Fi, Bluetooth, microwave ovens): Long wavelength (~12.5 cm). Penetrates walls and obstacles well. But also used by many other devices — very congested.
+      </p>
+      <p>
+        <span class="term">5 GHz</span> (used by Wi-Fi 5 and Wi-Fi 6): Shorter wavelength. Much more bandwidth available — faster speeds. But shorter range and worse wall penetration.
+      </p>
+      <p>
+        <span class="term">60 GHz</span> (used by Wi-Fi 6E/7, some 5G): Very short wavelength (~5 mm). Enormous bandwidth — multi-gigabit speeds. But almost no wall penetration; only useful at short distances.
+      </p>
+      <p>
+        <span class="term">Sub-1 GHz</span> (used by LTE, older cellular): Very long wavelength. Travels for kilometres, penetrates buildings well. Less bandwidth but good coverage. Rural 4G uses these bands.
+      </p>
+
+      <h4>Encoding data in radio waves — modulation</h4>
+      <p>
+        To carry data on a radio wave, you vary (modulate) some property of the wave:
+      </p>
+      <p>
+        <span class="term">Amplitude Modulation (AM)</span>: vary the height (amplitude) of the wave. Simple, but sensitive to noise.<br>
+        <span class="term">Frequency Modulation (FM)</span>: vary the frequency slightly. More noise-resistant than AM.<br>
+        <span class="term">Phase Modulation (PM)</span>: vary the phase (the starting point of the wave cycle).<br>
+        <span class="term">QAM (Quadrature Amplitude Modulation)</span>: combine amplitude and phase changes. Modern Wi-Fi uses 1024-QAM — encoding 10 bits per symbol by using 1024 distinct combinations of amplitude and phase.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: Wi-Fi -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#200d18">🛜</div>
+      <div class="card-title">
+        <h3>Wi-Fi — wireless Ethernet</h3>
+        <div class="sub">IEEE 802.11 standards, channels, and how Wi-Fi evolved</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>What Wi-Fi is</h4>
+      <p>
+        Wi-Fi is simply Ethernet without the wires — the same data link layer protocol, but using radio waves instead of copper. Formally, Wi-Fi is a set of standards maintained by the IEEE (Institute of Electrical and Electronics Engineers) under the designation <span class="term">IEEE 802.11</span>.
+      </p>
+      <p>
+        The Wi-Fi Alliance (a trade group) brands these standards with friendly names. The evolution:
+      </p>
+      <div class="mini-timeline">
+        <div class="mini-event"><div class="mini-year">1997</div><div class="mini-desc">IEEE 802.11 original — 2 Mbps maximum. Barely practical.</div></div>
+        <div class="mini-event"><div class="mini-year">1999</div><div class="mini-desc">802.11b — 11 Mbps, 2.4 GHz. The first widely adopted Wi-Fi standard.</div></div>
+        <div class="mini-event"><div class="mini-year">2003</div><div class="mini-desc">802.11g — 54 Mbps, 2.4 GHz. Mass adoption begins.</div></div>
+        <div class="mini-event"><div class="mini-year">2009</div><div class="mini-desc">802.11n (Wi-Fi 4) — up to 600 Mbps. Introduced MIMO: multiple antennas.</div></div>
+        <div class="mini-event"><div class="mini-year">2013</div><div class="mini-desc">802.11ac (Wi-Fi 5) — up to 3.5 Gbps, 5 GHz. Beamforming: focus signal toward client.</div></div>
+        <div class="mini-event"><div class="mini-year">2019</div><div class="mini-desc">802.11ax (Wi-Fi 6/6E) — up to 9.6 Gbps. OFDMA: multiple clients simultaneously.</div></div>
+        <div class="mini-event"><div class="mini-year">2024</div><div class="mini-desc">Wi-Fi 7 (802.11be) — up to 46 Gbps, uses 2.4/5/6 GHz simultaneously.</div></div>
+      </div>
+
+      <h4>MIMO — Multiple Input, Multiple Output</h4>
+      <p>
+        A single antenna can only send/receive one stream of data at a time. <span class="term">MIMO</span> uses multiple antennas — both at the router and at the device — to send multiple independent streams simultaneously. A 4×4 MIMO system has 4 transmit and 4 receive antennas, potentially quadrupling throughput.
+      </p>
+      <p>
+        This works because of a phenomenon called <span class="term">multipath</span>: radio waves bounce off walls and arrive at the receiver from multiple directions at slightly different times. In older systems, multipath caused interference. MIMO uses mathematical algorithms to separate the different paths and use each one as a separate data stream.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: Cellular networks -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#200d18">📱</div>
+      <div class="card-title">
+        <h3>Cellular networks — from 1G voice to 5G data</h3>
+        <div class="sub">Cells, base stations, handoff, and the mobile internet</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>Why "cellular"?</h4>
+      <p>
+        A single powerful radio transmitter could cover a large area — but every call would have to share the same frequency spectrum, severely limiting capacity. The cellular concept (developed at Bell Labs in the 1960s–70s) solved this by dividing a geographic area into small hexagonal zones called <span class="term">cells</span>.
+      </p>
+      <p>
+        Each cell has a low-power base station at its centre. Neighbouring cells use different frequencies. But cells that are far enough apart can reuse the same frequencies without interfering. This <span class="term">frequency reuse</span> dramatically multiplies the total capacity of the system.
+      </p>
+      <div class="diagram">Cellular frequency reuse:
+
+   [A]─────[B]─────[C]
+  / \ / \ / \
+[B] [C][A] [B][C] [A]   ← same letter = same frequency
+  \ / \ / \ /
+   [C]─────[A]─────[B]
+
+Adjacent cells use different frequencies.
+Distant cells can reuse same frequency.
+More cells = more capacity (but more infrastructure).</div>
+
+      <h4>Handoff — moving between cells</h4>
+      <p>
+        When you walk or drive, you move from one cell to another. The system must hand your call or data session from one base station to the next without dropping it. This is called <span class="term">handoff</span> (or handover). Your phone constantly measures signal strength from nearby base stations, and the network coordinates the transfer so seamlessly that you don't notice.
+      </p>
+
+      <h4>The generations of cellular</h4>
+      <div class="mini-timeline">
+        <div class="mini-event"><div class="mini-year">1G (1979)</div><div class="mini-desc">First generation. Analog voice only. No data. Easily intercepted — no encryption.</div></div>
+        <div class="mini-event"><div class="mini-year">2G (1991)</div><div class="mini-desc">Digital voice (GSM standard). Encryption. SMS text messages. GPRS added basic data (9.6–115 kbps).</div></div>
+        <div class="mini-event"><div class="mini-year">3G (2001)</div><div class="mini-desc">Real mobile internet: 384 kbps to ~7 Mbps (HSPA). Enabled smartphones and mobile browsing.</div></div>
+        <div class="mini-event"><div class="mini-year">4G/LTE (2009)</div><div class="mini-desc">True broadband mobile: 10–150 Mbps typical. Enabled streaming video, video calls, app stores.</div></div>
+        <div class="mini-event"><div class="mini-year">5G (2019)</div><div class="mini-desc">Up to 20 Gbps peak, 1 ms latency. Millimetre-wave for ultra-high density, sub-6GHz for coverage.</div></div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ──────────────────────────────────────────
+  ERA 8: CLOUD, SDN, AND MODERN NETWORKING
+────────────────────────────────────────────── -->
+<div class="era-divider"></div>
+<section class="era" id="era8" style="--accent: #06b6d4">
+
+  <div class="era-header">
+    <div class="era-num">ERA 8</div>
+    <div class="era-title-block">
+      <h2>Cloud, SDN, and the Modern Internet</h2>
+      <span class="era-span">2000s–present — virtualisation, content delivery, and software-defined everything</span>
+    </div>
+  </div>
+
+  <!-- CARD: CDNs -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#041820">☁️</div>
+      <div class="card-title">
+        <h3>Content Delivery Networks — bringing the server closer to you</h3>
+        <div class="sub">Why geography matters and how CDNs solve it</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The speed of light problem</h4>
+      <p>
+        Even at the speed of light, distance matters. A packet from Mumbai to New York takes roughly 80ms just in propagation delay (the time for light to physically travel ~13,000 km). Round-trip: 160ms. Any interactive application — gaming, video calls, real-time web — suffers noticeably above 50–100ms.
+      </p>
+      <p>
+        If Netflix's servers were only in California and you streamed a movie in Bengaluru, every packet would cross the Pacific Ocean and come back. The solution is obvious: put copies of the content closer to users.
+      </p>
+
+      <h4>CDN architecture</h4>
+      <p>
+        A <span class="term">Content Delivery Network (CDN)</span> is a geographically distributed network of servers — called <span class="term">edge servers</span> or <span class="term">Points of Presence (PoPs)</span> — that cache (store copies of) content close to users.
+      </p>
+      <p>
+        When you load <code>netflix.com</code>, DNS returns not the IP of Netflix's origin server in California, but the IP of the nearest CDN edge server — maybe one in Mumbai or Hyderabad. That edge server has cached the video you want. Your packets never leave India.
+      </p>
+      <p>
+        Major CDN operators: Cloudflare (270+ cities), Akamai (1300+ cities), AWS CloudFront, Fastly. Cloudflare alone handles ~20% of global web traffic.
+      </p>
+
+      <h4>NAT — sharing one IP among many devices</h4>
+      <p>
+        Remember that IPv4 has only ~4 billion addresses? There are far more than 4 billion connected devices. The solution (a stopgap until IPv6 takes over) is <span class="term">NAT (Network Address Translation)</span>.
+      </p>
+      <p>
+        Your home router has one public IP address (assigned by your ISP). Inside your home, devices get private IP addresses (like <code>192.168.1.x</code>) that are not globally routable. When your laptop makes a request, the router:
+      </p>
+      <p>
+        1. Replaces your laptop's private source IP with the router's public IP.<br>
+        2. Records this translation in a table.<br>
+        3. When the response comes back, the router translates the destination back to your laptop's private IP and forwards it.
+      </p>
+      <p>
+        This allows millions of private networks to share the limited IPv4 address space. The trade-off: NAT breaks the end-to-end principle, since two devices behind different NATs cannot easily connect to each other directly (which is why online gaming and video calls need clever techniques like STUN and hole-punching).
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: SDN and virtualisation -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#041820">⚙️</div>
+      <div class="card-title">
+        <h3>Software-Defined Networking (SDN) and virtualisation</h3>
+        <div class="sub">Separating the control plane from the data plane</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>The traditional router's two jobs</h4>
+      <p>
+        Traditional routers combine two functions:
+      </p>
+      <p>
+        <span class="term">Data plane</span> (forwarding): actually moving packets from input port to output port, at line speed. This must be extremely fast — hardware-based.
+      </p>
+      <p>
+        <span class="term">Control plane</span> (routing): deciding which path packets should take. Running BGP, OSPF, and other routing protocols. Computing and updating the routing table.
+      </p>
+      <p>
+        In traditional networking, these two functions are bundled together in the same physical box, using proprietary software from vendors like Cisco or Juniper.
+      </p>
+
+      <h4>SDN — separating control from forwarding</h4>
+      <p>
+        <span class="term">Software-Defined Networking (SDN)</span>, formalised around 2008–2011 at Stanford, separates the control plane from the data plane:
+      </p>
+      <p>
+        — Physical <span class="term">forwarding hardware</span> (switches/routers) becomes simple and fast — just follows instructions.<br>
+        — A centralised <span class="term">SDN controller</span> (running on standard servers) has a complete view of the entire network and pushes forwarding rules to all the hardware via a standardised protocol (OpenFlow).
+      </p>
+      <p>
+        This makes networks programmable — you can change routing policies by updating software on the controller, without touching any physical hardware. Google's B4 network (connecting its global data centres) has been SDN-based since 2012 and achieves near-100% link utilisation, compared to ~30–40% in traditional networks.
+      </p>
+
+      <h4>Virtual networks — networking without hardware</h4>
+      <p>
+        Cloud providers (AWS, Google Cloud, Azure) now implement entire networks in software. When you create a <span class="term">Virtual Private Cloud (VPC)</span> on AWS, you are not getting any physical networking hardware — AWS creates a software simulation of switches, routers, firewalls, and load balancers, running on commodity servers.
+      </p>
+      <p>
+        Technologies like VXLAN (Virtual Extensible LAN) tunnel virtual network packets inside regular IP packets, so the virtual network is completely isolated from the physical one. Many thousands of customers can share the same physical hardware while each experiencing completely separate, logically isolated networks.
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD: The modern internet stack -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#041820">🔬</div>
+      <div class="card-title">
+        <h3>The modern internet — what happens when you load a webpage</h3>
+        <div class="sub">Tracing every step from keypress to pixels on screen</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>Every step, from the beginning</h4>
+      <p>
+        You type <code>https://www.google.com</code> and press Enter. Here is exactly what happens:
+      </p>
+
+      <p><strong>Step 1 — DNS lookup:</strong> Your OS checks its local cache: do I already know Google's IP? If not, it asks your router's DNS resolver, which asks a recursive resolver (your ISP's or 8.8.8.8), which climbs the DNS hierarchy: root server → .com nameserver → Google's authoritative nameserver → returns <code>142.250.180.46</code>.</p>
+
+      <p><strong>Step 2 — TCP handshake:</strong> Your computer sends a SYN packet to <code>142.250.180.46:443</code>. Google's server responds with SYN-ACK. Your computer responds with ACK. A TCP connection is established. This takes one round-trip time (RTT) — ~10ms if Google's CDN is nearby.</p>
+
+      <p><strong>Step 3 — TLS handshake:</strong> Your browser and Google's server negotiate which cipher suites to use, exchange certificates, and establish a shared encryption key. This takes 1–2 more RTTs. After this, all data is encrypted.</p>
+
+      <p><strong>Step 4 — HTTP request:</strong> Your browser sends an HTTP GET request over the encrypted TLS connection: "GET / HTTP/2 Host: www.google.com"</p>
+
+      <p><strong>Step 5 — Routing:</strong> Your request leaves your laptop, goes to your Wi-Fi router (Layer 2), is NAT'd and sent to your ISP (Layer 3), travels through several routers (BGP routing), reaches a Google IXP connection or edge server (CDN), and arrives at a Google data centre.</p>
+
+      <p><strong>Step 6 — Server processing:</strong> Google's load balancers distribute your request to one of thousands of web servers. The server generates or serves cached HTML. The response is sent back through the same network path.</p>
+
+      <p><strong>Step 7 — Browser rendering:</strong> Your browser receives the HTML, parses it, discovers linked resources (CSS, JavaScript, images), makes additional HTTP requests for each, assembles the page, and renders pixels on screen.</p>
+
+      <p>Total time from Enter key to first pixels: typically 200–500ms for a first visit, 50–200ms for a cached/CDN-nearby site.</p>
+    </div>
+  </div>
+
+  <!-- CARD: Emerging technologies -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <div class="card-icon" style="background:#041820">🚀</div>
+      <div class="card-title">
+        <h3>Where networking is going — HTTP/3, QUIC, satellite, and beyond</h3>
+        <div class="sub">The ongoing evolution continues</div>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <h4>QUIC and HTTP/3 — rethinking transport</h4>
+      <p>
+        TCP, invented in the 1970s, has a fundamental inefficiency for web browsing: if any one packet is lost, the entire stream stalls while waiting for retransmission, even if other parts of the web page could be rendered. This is called <span class="term">head-of-line blocking</span>.
+      </p>
+      <p>
+        Google developed <span class="term">QUIC</span> (Quick UDP Internet Connections) as a replacement for TCP for web traffic. QUIC is built on UDP (a simpler, unreliable transport), adds reliability and security in user-space, and crucially: multiple streams within one connection are independent. If one stream loses a packet, other streams are not blocked.
+      </p>
+      <p>
+        HTTP/3, standardised in 2022, is HTTP running on QUIC. It is now used for ~25% of web traffic.
+      </p>
+
+      <h4>Low Earth Orbit satellites — internet from space</h4>
+      <p>
+        Traditional satellite internet used geosynchronous satellites at 35,786 km altitude — far enough to stay above one spot on Earth. The round-trip signal time is ~600ms — too high for many applications.
+      </p>
+      <p>
+        <span class="term">Starlink</span> (SpaceX), <span class="term">OneWeb</span>, and <span class="term">Project Kuiper</span> (Amazon) are deploying thousands of satellites at 550–1200 km altitude. At this altitude, round-trip time drops to 20–40ms — comparable to ground-based internet. This brings broadband to remote areas with no terrestrial infrastructure: rural India, the Amazon, the Arctic.
+      </p>
+
+      <h4>5G and edge computing</h4>
+      <p>
+        5G's most transformative feature is not just speed — it is ultra-low latency (target: 1ms) and massive device density (up to 1 million devices per km²). This enables new categories: autonomous vehicles communicating in real time, industrial robots, remote surgery, augmented reality that doesn't lag.
+      </p>
+      <p>
+        <span class="term">Edge computing</span> places computing resources (servers) at or near the cell towers and base stations — not in central data centres. When an autonomous vehicle needs to make a split-second decision, it cannot afford 50ms to reach a cloud server. But a nearby edge server, 2ms away, can respond fast enough.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════
+     GLOSSARY
+══════════════════════════════════════════════ -->
+<section class="glossary" id="glossary">
+  <h2>Key Terms — Complete Reference</h2>
+  <div class="glossary-grid">
+    <div class="glossary-item"><div class="g-term">Attenuation</div><div class="g-def">The weakening of a signal as it travels through a medium. All signals attenuate with distance.</div></div>
+    <div class="glossary-item"><div class="g-term">Bandwidth</div><div class="g-def">The range of frequencies available in a channel. More bandwidth = higher potential data rate.</div></div>
+    <div class="glossary-item"><div class="g-term">BGP (Border Gateway Protocol)</div><div class="g-def">The routing protocol that connects all Autonomous Systems on the internet. The "glue" of the internet.</div></div>
+    <div class="glossary-item"><div class="g-term">Bit</div><div class="g-def">The smallest unit of information. Either 0 or 1. Named and defined by Claude Shannon (1948).</div></div>
+    <div class="glossary-item"><div class="g-term">CDN (Content Delivery Network)</div><div class="g-def">A geographically distributed network of servers that cache content close to users to reduce latency.</div></div>
+    <div class="glossary-item"><div class="g-term">Circuit switching</div><div class="g-def">A network model where a dedicated end-to-end path is reserved for the duration of a communication. Used by telephone networks.</div></div>
+    <div class="glossary-item"><div class="g-term">Client-server model</div><div class="g-def">Architecture where clients request resources and servers provide them. The foundation of the web.</div></div>
+    <div class="glossary-item"><div class="g-term">DNS (Domain Name System)</div><div class="g-def">Distributed database mapping human-readable domain names (google.com) to IP addresses.</div></div>
+    <div class="glossary-item"><div class="g-term">Encapsulation</div><div class="g-def">Each network layer wrapping the data from the layer above with its own header, creating nested "envelopes."</div></div>
+    <div class="glossary-item"><div class="g-term">Ethernet</div><div class="g-def">The dominant LAN protocol (IEEE 802.3). Originally shared coaxial cable; now point-to-point copper or fiber.</div></div>
+    <div class="glossary-item"><div class="g-term">Firewall</div><div class="g-def">A network security device that monitors and controls incoming/outgoing traffic based on rules.</div></div>
+    <div class="glossary-item"><div class="g-term">HTTP / HTTPS</div><div class="g-def">HyperText Transfer Protocol — the request/response protocol for the web. HTTPS = HTTP + TLS encryption.</div></div>
+    <div class="glossary-item"><div class="g-term">IP address</div><div class="g-def">A unique numerical identifier for a device on an IP network. IPv4: 32-bit (4 billion addresses). IPv6: 128-bit.</div></div>
+    <div class="glossary-item"><div class="g-term">Latency</div><div class="g-def">The time delay from when data is sent to when it is received. Measured in milliseconds. Separate from bandwidth.</div></div>
+    <div class="glossary-item"><div class="g-term">MAC address</div><div class="g-def">48-bit hardware identifier permanently assigned to a network interface card. Used for local (Layer 2) delivery.</div></div>
+    <div class="glossary-item"><div class="g-term">MIMO</div><div class="g-def">Multiple Input, Multiple Output. Using multiple antennas to send/receive multiple data streams simultaneously.</div></div>
+    <div class="glossary-item"><div class="g-term">Modem</div><div class="g-def">MOdulator-DEModulator. Converts digital computer signals to analog for transmission over telephone lines, and back.</div></div>
+    <div class="glossary-item"><div class="g-term">Multiplexing</div><div class="g-def">Combining multiple signals on one channel. Time-division: take turns. Frequency-division: use different frequencies.</div></div>
+    <div class="glossary-item"><div class="g-term">NAT (Network Address Translation)</div><div class="g-def">Router technique that maps many private IP addresses to one public IP, conserving the IPv4 address space.</div></div>
+    <div class="glossary-item"><div class="g-term">OSI Model</div><div class="g-def">7-layer conceptual framework for network protocols. Physical → Data Link → Network → Transport → Session → Presentation → Application.</div></div>
+    <div class="glossary-item"><div class="g-term">Packet</div><div class="g-def">A small chunk of data (with header + payload) that is routed independently through a packet-switched network.</div></div>
+    <div class="glossary-item"><div class="g-term">Packet switching</div><div class="g-def">Network model where data is broken into packets, each routed independently. The basis of the internet.</div></div>
+    <div class="glossary-item"><div class="g-term">Port (TCP/UDP)</div><div class="g-def">A 16-bit number identifying a specific service on a computer. HTTP=80, HTTPS=443, SSH=22, DNS=53.</div></div>
+    <div class="glossary-item"><div class="g-term">Protocol</div><div class="g-def">A precise, agreed-upon set of rules for how two parties will communicate. Both sides must implement it identically.</div></div>
+    <div class="glossary-item"><div class="g-term">QUIC / HTTP/3</div><div class="g-def">Modern transport protocol (Google, 2012) replacing TCP for web traffic. Eliminates head-of-line blocking. HTTP/3 runs on QUIC.</div></div>
+    <div class="glossary-item"><div class="g-term">Router</div><div class="g-def">A Layer 3 device that reads IP addresses and forwards packets between different networks. The basic node of the internet.</div></div>
+    <div class="glossary-item"><div class="g-term">SDN (Software-Defined Networking)</div><div class="g-def">Architecture separating the control plane (routing decisions) from the data plane (packet forwarding), enabling programmable networks.</div></div>
+    <div class="glossary-item"><div class="g-term">Signal</div><div class="g-def">Any variation in a physical quantity (voltage, light intensity, radio wave amplitude) that carries meaning.</div></div>
+    <div class="glossary-item"><div class="g-term">Switch (network)</div><div class="g-def">Layer 2 device that learns MAC addresses and forwards frames only to the correct port, unlike a hub which broadcasts to all.</div></div>
+    <div class="glossary-item"><div class="g-term">TCP</div><div class="g-def">Transmission Control Protocol. Provides reliable, ordered delivery over IP. Handles retransmission and flow control.</div></div>
+    <div class="glossary-item"><div class="g-term">TLS/SSL</div><div class="g-def">Transport Layer Security. Encryption protocol used by HTTPS. Provides confidentiality, integrity, and authentication.</div></div>
+    <div class="glossary-item"><div class="g-term">UDP</div><div class="g-def">User Datagram Protocol. Faster but unreliable alternative to TCP. Used for DNS, video streaming, online gaming.</div></div>
+    <div class="glossary-item"><div class="g-term">URL</div><div class="g-def">Uniform Resource Locator. Standard web address format: protocol://domain/path (e.g. https://example.com/page).</div></div>
+    <div class="glossary-item"><div class="g-term">Wi-Fi</div><div class="g-def">Wireless Ethernet. IEEE 802.11 standards. Uses radio waves (2.4/5/6 GHz) to create wireless LANs.</div></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <p>The Complete History of Computer Networking — From First Principles</p>
+  <p style="margin-top: 6px; color: var(--muted)">Every concept traced from its origin. Every term defined before use.</p>
+</footer>
+
+<script>
+function toggle(header) {
+  const card = header.parentElement;
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open', !wasOpen);
+}
+
+// Smooth highlight current section in TOC
+const sections = document.querySelectorAll('.era, .glossary');
+const navBtns = document.querySelectorAll('.toc-btn');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navBtns.forEach(btn => {
+        btn.style.color = btn.getAttribute('href') === '#'+id ? 'var(--text)' : '';
+        btn.style.background = btn.getAttribute('href') === '#'+id ? 'var(--surface)' : '';
+        btn.style.borderColor = btn.getAttribute('href') === '#'+id ? 'var(--border)' : '';
+      });
+    }
+  });
+}, { rootMargin: '-40% 0px -40% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
